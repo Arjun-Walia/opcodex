@@ -15,6 +15,8 @@
  */
 package ghidra.framework.plugintool;
 
+// OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
+
 import static ghidra.framework.model.ToolTemplate.*;
 
 import java.awt.*;
@@ -1003,7 +1005,7 @@ public abstract class PluginTool extends AbstractDockingTool {
 	}
 
 	protected void addExitAction() {
-		DockingAction exitAction = new DockingAction("Exit Ghidra", ToolConstants.TOOL_OWNER) {
+		DockingAction exitAction = new DockingAction("Exit Opcodex", ToolConstants.TOOL_OWNER) {
 
 			@Override
 			public void actionPerformed(ActionContext context) {
@@ -1011,9 +1013,9 @@ public abstract class PluginTool extends AbstractDockingTool {
 			}
 		};
 		exitAction.setHelpLocation(
-			new HelpLocation(ToolConstants.FRONT_END_HELP_TOPIC, exitAction.getName()));
+			new HelpLocation(ToolConstants.FRONT_END_HELP_TOPIC, "Exit Ghidra"));
 		exitAction.setMenuBarData(new MenuData(
-			new String[] { ToolConstants.MENU_FILE, "E&xit Ghidra" }, null, "Window_Z"));
+			new String[] { ToolConstants.MENU_FILE, "E&xit Opcodex" }, null, "Window_Z"));
 
 		if (Platform.CURRENT_PLATFORM.getOperatingSystem() != OperatingSystem.MAC_OS_X) {
 			// Only install keybinding on non-OSX systems, as OSX handles the Command-Q
@@ -1146,8 +1148,8 @@ public abstract class PluginTool extends AbstractDockingTool {
 	}
 
 	protected void addHelpActions() {
-		new ActionBuilder("About Ghidra", ToolConstants.TOOL_OWNER)
-				.menuPath(ToolConstants.MENU_HELP, "&About Ghidra")
+		new ActionBuilder("About Opcodex", ToolConstants.TOOL_OWNER)
+				.menuPath(ToolConstants.MENU_HELP, "&About Opcodex")
 				.menuGroup("ZZA")
 				.helpLocation(new HelpLocation(ToolConstants.ABOUT_HELP_TOPIC, "About_Ghidra"))
 				.inWindow(ActionBuilder.When.ALWAYS)

@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main;
 
+// OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -365,7 +367,7 @@ public class FrontEndTool extends PluginTool implements OptionsChangeListener {
 			"This controls whether" + " text cursors blink when focused");
 
 		options.registerOption(RESTORE_PREVIOUS_PROJECT_NAME, true, help,
-			"Restore the previous project when Ghidra starts.");
+			"Restore the previous project when Opcodex starts.");
 
 		defaultLaunchMode = options.getEnum(DEFAULT_TOOL_LAUNCH_MODE, defaultLaunchMode);
 

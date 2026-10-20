@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main;
 
+// OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
@@ -77,7 +79,7 @@ import ghidra.util.filechooser.GhidraFileFilter;
 public class FrontEndPlugin extends Plugin
 		implements FrontEndService, RemoteAdapterListener, ProjectViewListener, ProgramaticUseOnly {
 
-	private final static String TITLE_PREFIX = "Ghidra: ";
+	private final static String TITLE_PREFIX = "Opcodex: ";
 	private final static String EXPORT_TOOL_ACTION_NAME = "Export Tool";
 	private final static String DELETE_TOOL_ACTION_NAME = "Delete Tool";
 	private final static String CLOSE_TOOL_ACTION_NAME = "Close Tool";
@@ -474,8 +476,8 @@ public class FrontEndPlugin extends Plugin
 			Msg.error(this, "Unexpected Exception: " + e.getMessage(), e); // Keep this.
 			int result = OptionDialog.showOptionDialog(null, "Close Project Failed",
 				"Error Description: [ " + e + " ]" + "\n" +
-					"=====> Do you wish to exit Ghidra, possibly losing changes? <=====",
-				"Exit Ghidra (Possibly Lose Changes)", OptionDialog.ERROR_MESSAGE);
+					"=====> Do you wish to exit Opcodex, possibly losing changes? <=====",
+				"Exit Opcodex (Possibly Lose Changes)", OptionDialog.ERROR_MESSAGE);
 			if (result == OptionDialog.CANCEL_OPTION) {
 				return false;
 			}
@@ -496,9 +498,9 @@ public class FrontEndPlugin extends Plugin
 	ProjectLocator chooseProject(GhidraFileChooser fileChooser, String mode,
 			String preferenceName) {
 		boolean create = (mode.equals("Create")) ? true : false;
-		fileChooser.setTitle(mode + " a Ghidra Project");
+		fileChooser.setTitle(mode + " an Opcodex Project");
 		fileChooser.setApproveButtonText(mode + " Project");
-		fileChooser.setApproveButtonToolTipText(mode + " a Ghidra Project");
+		fileChooser.setApproveButtonToolTipText(mode + " an Opcodex Project");
 		fileChooser.setSelectedFile(null);
 
 		boolean validInput = false;
@@ -518,7 +520,7 @@ public class FrontEndPlugin extends Plugin
 				else if (!create && filename.lastIndexOf(".") > path.lastIndexOf(File.separator)) {
 					// treat opening a file without the ghidra extension as an error
 					Msg.showError(this, tool.getToolFrame(), "Invalid Project File",
-						"Cannot open '" + file.getName() + "' as a Ghidra Project");
+						"Cannot open '" + file.getName() + "' as an Opcodex Project");
 					continue;
 				}
 
@@ -783,7 +785,7 @@ public class FrontEndPlugin extends Plugin
 		fileChooser.setFileFilter(new GhidraFileFilter() {
 			@Override
 			public String getDescription() {
-				return "Ghidra Projects (*" + ProjectLocator.getProjectExtension() + ")";
+				return "Opcodex Projects (*" + ProjectLocator.getProjectExtension() + ")";
 			}
 
 			@Override
@@ -1165,7 +1167,7 @@ public class FrontEndPlugin extends Plugin
 				HTMLUtilities.escapeHTML(domainFile.getName()) +
 				"</b>.<br><br>Make sure you have an appropriate tool installed <br>from the " +
 				"<b>Tools->Import Default Tools...</b> menu.  Alternatively, you can " +
-				"use <b>Tool->Set Tool Associations</b> menu to change how Ghidra " +
+				"use <b>Tool->Set Tool Associations</b> menu to change how Opcodex " +
 				"opens this type of file");
 	}
 

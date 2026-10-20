@@ -25,6 +25,7 @@ import javax.swing.text.View;
 import docking.widgets.MultiLineLabel;
 import docking.widgets.label.*;
 import generic.theme.GColor;
+import generic.theme.GIcon;
 import generic.theme.GThemeDefaults.Colors.Palette;
 import generic.theme.Gui;
 import ghidra.framework.Application;
@@ -42,9 +43,7 @@ class InfoPanel extends JPanel {
 	private final static int MARGIN = 10;
 
 	private final static String SPLASH_FILENAME = "splash.txt";
-	private final static String CLOUD_REV_FILENAME = "images/cloudbarReversed.jpg";
-	private final static String GHIDRA_FILENAME = "images/GHIDRA_Splash.png";
-	private final static String CLOUD_FILENAME = "images/cloudbar.jpg";
+	// OPCODEX: themed original identity replaces upstream splash artwork and cloud strips.
 
 	private static final String FONT_ID = "font.splash.infopanel";
 
@@ -149,18 +148,6 @@ class InfoPanel extends JPanel {
 	private Component createSouthPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
-		ImageIcon cloudRevImage = ResourceManager.loadImage(CLOUD_REV_FILENAME);
-		if (cloudRevImage != null) {
-			JLabel cloudRevLabel = new GIconLabel(cloudRevImage);
-			panel.add(cloudRevLabel, BorderLayout.NORTH);
-		}
-
-		ImageIcon cloudImage = ResourceManager.loadImage(CLOUD_FILENAME);
-		if (cloudImage != null) {
-			JLabel cloudLabel = new GIconLabel(cloudImage);
-			panel.add(cloudLabel, BorderLayout.SOUTH);
-		}
-
 		panel.add(buildTextPanel(), BorderLayout.CENTER);
 		panel.setBackground(bgColor);
 
@@ -179,7 +166,7 @@ class InfoPanel extends JPanel {
 		imagePanel.setBackground(bgColor);
 
 		imagePanel.setLayout(new BorderLayout());
-		ImageIcon ghidraSplashImage = ResourceManager.loadImage(GHIDRA_FILENAME);
+		Icon ghidraSplashImage = new GIcon("icon.opcodex.splash");
 
 		JLabel l = new GIconLabel(ghidraSplashImage);
 		imagePanel.add(l, BorderLayout.CENTER);
@@ -199,7 +186,9 @@ class InfoPanel extends JPanel {
 		}
 
 		// set some default values in case we don't have the resource file.
-		version = "Version " + Application.getApplicationVersion() +
+		// OPCODEX: product and compatible engine versions are intentionally independent.
+		version = "Opcodex " + Application.getApplicationProperty("opcodex.version") +
+			"\nBuilt on Ghidra " + Application.getApplicationVersion() +
 			(SystemUtilities.isInDevelopmentMode() ? " - DEVELOPMENT" : "") + buildInfo + "\n" +
 			Application.getBuildDate() + "\n" +
 			"Java Version " + System.getProperty("java.version");

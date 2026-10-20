@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
+# Product launcher; upstream class names and runtime layout remain compatible.
+set -e
+SCRIPT_FILE="$(readlink -f "$0" 2>/dev/null || readlink "$0" 2>/dev/null || echo "$0")"
+SCRIPT_DIR="${SCRIPT_FILE%/*}"
+LAUNCH="${SCRIPT_DIR}/support/launch.sh"
+if [[ ! -f "$LAUNCH" ]]; then
+    LAUNCH="${SCRIPT_DIR}/Ghidra/RuntimeScripts/Linux/support/launch.sh"
+fi
+MAXMEM="${OPCODEX_MAXMEM:-${GHIDRA_GUI_MAXMEM:-${GHIDRA_MAXMEM:-}}}"
+VMARGS="${GHIDRA_JAVA_OPTIONS:-} ${GHIDRA_GUI_JAVA_OPTIONS:-} ${OPCODEX_JAVA_OPTIONS:-}"
+exec "$LAUNCH" bg jdk Opcodex "$MAXMEM" "$VMARGS" ghidra.GhidraRun "$@"

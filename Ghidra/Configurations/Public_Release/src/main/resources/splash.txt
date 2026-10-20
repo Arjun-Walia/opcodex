@@ -1,5 +1,7 @@
+<!-- OPCODEX: independent product attribution added; upstream license text retained. -->
 <HTML>
 <BODY>
+<P>Opcodex is an independent modified distribution built on Ghidra. It is not endorsed by the National Security Agency or the Ghidra project.</P>
 <HR>
 <P>
 Licensed under the Apache License, Version 2.0 (the "License"); Unless required by applicable law or

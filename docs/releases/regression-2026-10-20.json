@@ -1,0 +1,32 @@
+{
+  "reports": 399,
+  "tests": 4505,
+  "skipped": 50,
+  "failures": [
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testCreatingQueryInfo",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testQueryWithStagingOn",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testQueryInvalidServer",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testInvalidUserMadeQuery",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testChangeDatabase",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testResultsListener",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testQueryValidServerWithFunctions",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testBuildQueryWithEmptyFunctions",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testResultsListenerWithMultipleStagesGetsMultipleCallbacks",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testMultipleQueriesToSameDatabaseGeneratesMultipleConnectedCallbacks",
+    "ghidra.features.bsim.query.facade.SimilarFunctionQueryServiceTest.testCancelQuery",
+    "ghidra.features.codecompare.decompile.DualDecompilerActionTest.testVariableTypeTransferAction",
+    "ghidra.features.codecompare.decompile.DualDecompilerActionTest.testCalleeSkeletonTypeTransferAction",
+    "ghidra.features.codecompare.decompile.DualDecompilerActionTest.testCalleeFullTypeTransferAction",
+    "ghidra.features.codecompare.decompile.DualDecompilerActionTest.testLocalNameTransferAction",
+    "ghidra.features.codecompare.decompile.DualDecompilerActionTest.testCalleeNameTransferAction",
+    "ghidra.features.codecompare.decompile.DualDecompilerActionTest.testFullStructTypeTransferAction",
+    "ghidra.features.codecompare.decompile.DualDecompilerActionTest.testGlobalNameTransferAction",
+    "ghidra.features.codecompare.decompile.DualDecompilerActionTest.testSkeletonStructTypeTransferAction",
+    "ghidra.app.plugin.core.debug.gui.breakpoint.DebuggerRmiBreakpointMarkerPluginTest.testActionToggleBreakpointTrace",
+    "ghidra.app.plugin.core.debug.gui.tracermi.launcher.TraceRmiLauncherServicePluginTest.testGetClassName"
+  ],
+  "sourceRevision": "1a51e8bca5cd0586d80df0f4ba3fb0f62640f24f",
+  "run": "https://github.com/Arjun-Walia/opcodex/actions/runs/39405401679",
+  "complete": false,
+  "conclusion": "cancelled after reported failures and stalled debugger test"
+}

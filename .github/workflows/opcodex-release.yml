@@ -1,0 +1,103 @@
+# Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
+name: Draft Opcodex release from verified build
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Successful Opcodex build run whose native artifacts will be released
+        required: true
+        type: string
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: opcodex-release-draft
+  cancel-in-progress: false
+jobs:
+  draft:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Verify the selected build
+        id: build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_RUN_ID: ${{ inputs.run_id }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          run_id = os.environ['BUILD_RUN_ID']
+          assert re.fullmatch(r'[0-9]+', run_id), 'A numeric build run ID is required'
+          repo = os.environ['GITHUB_REPOSITORY']
+          run = json.loads(subprocess.check_output(['gh', 'api', f'repos/{repo}/actions/runs/{run_id}']))
+          assert run['status'] == 'completed' and run['conclusion'] == 'success', 'Build must have passed all jobs'
+          assert run['path'] == '.github/workflows/opcodex.yml', 'Select the Opcodex native build workflow'
+          assert run['event'] in {'push', 'workflow_dispatch'}, 'Use a repository build, not a pull-request run'
+          assert run['head_repository']['full_name'] == repo, 'Foreign source repository'
+          jobs = json.loads(subprocess.check_output(['gh', 'api', f'repos/{repo}/actions/runs/{run_id}/jobs?per_page=100']))['jobs']
+          builds = {job['name']: job for job in jobs if job['name'].startswith('Build ')}
+          assert set(builds) == {'Build linux_x86_64', 'Build win_x86_64', 'Build mac_arm_64'}, 'Incomplete build matrix'
+          assert all(job['conclusion'] == 'success' for job in builds.values()), 'A native build did not pass'
+          linux_steps = builds['Build linux_x86_64']['steps']
+          assert any(step['name'] == 'Upstream unit tests (Linux desktop)' and step['conclusion'] == 'success' for step in linux_steps), 'Upstream test gate did not pass'
+          assert any(step['name'] == 'Verify upstream test results' and step['conclusion'] == 'success' for step in linux_steps), 'JUnit failure verification did not pass'
+          revision = run['head_sha']
+          assert re.fullmatch(r'[0-9a-f]{40}', revision), 'Invalid source revision'
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('revision=' + revision + '\n')
+          PY
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.build.outputs.revision }}
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.run_id }}
+          pattern: opcodex-*
+          merge-multiple: true
+          path: release-assets
+      - name: Verify artifacts against the selected source
+        id: version
+        env:
+          SOURCE_REVISION: ${{ steps.build.outputs.revision }}
+          BUILD_RUN_ID: ${{ inputs.run_id }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib
+          from opcodex.package_release import properties
+          version = properties(pathlib.Path('Ghidra/application.properties').read_text())['opcodex.version']
+          notes = pathlib.Path('docs/releases') / (version + '.md')
+          assert notes.is_file(), 'Missing versioned release notes'
+          assets = pathlib.Path('release-assets')
+          archives = list(assets.glob('*.zip'))
+          assert len(archives) == 3 and len(list(assets.iterdir())) == 9, 'Require exactly three native ZIP/checksum/manifest sets'
+          platforms = set()
+          for file in archives:
+              with file.open('rb') as stream:
+                  checksum = hashlib.file_digest(stream, 'sha256').hexdigest()
+              manifest = json.loads(file.with_suffix('.json').read_text())
+              assert manifest['product'] == 'Opcodex' and manifest['version'] == version
+              assert manifest['sourceRevision'] == os.environ['SOURCE_REVISION'], 'Source mismatch'
+              assert manifest['archiveSha256'] == checksum == file.with_suffix('.zip.sha256').read_text().split()[0], 'Checksum mismatch'
+              platforms.add(manifest['platform'])
+          assert platforms == {'linux_x86_64', 'win_x86_64', 'mac_arm_64'}, 'Incomplete native coverage'
+          run_url = 'https://github.com/' + os.environ['GITHUB_REPOSITORY'] + '/actions/runs/' + os.environ['BUILD_RUN_ID']
+          text = notes.read_text() + '\n\nBuilt from `' + os.environ['SOURCE_REVISION'] + '` in [verified CI](' + run_url + '). All three native builds and the Linux upstream unit-test job passed. Build success does not establish a GUI launch on every platform. See [desktop verification](https://github.com/' + os.environ['GITHUB_REPOSITORY'] + '/blob/main/docs/releases/VERIFICATION.md) for actual launch coverage.\n'
+          pathlib.Path('release-notes.md').write_text(text)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('tag=v' + version + '\nversion=' + version + '\n')
+          PY
+      - name: Create draft prerelease with the verified native packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+          PRODUCT_VERSION: ${{ steps.version.outputs.version }}
+          SOURCE_REVISION: ${{ steps.build.outputs.revision }}
+        shell: bash
+        run: |
+          args=(--draft --title "Opcodex ${PRODUCT_VERSION}" --target "$SOURCE_REVISION" --notes-file release-notes.md)
+          if [[ "$PRODUCT_VERSION" == *-* ]]; then args+=(--prerelease); fi
+          gh release create "$RELEASE_TAG" "${args[@]}" release-assets/*

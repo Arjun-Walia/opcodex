@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.archive;
 
+// OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
+
 import java.awt.*;
 import java.io.File;
 
@@ -324,7 +326,7 @@ public class ArchiveDialog extends ReusableDialogComponentProvider {
 
 		GhidraFileChooser jarFileChooser =
 			createFileChooser(ArchivePlugin.ARCHIVE_EXTENSION, "Ghidra Archives", archivePathName);
-		jarFileChooser.setTitle("Archive a Ghidra Project");
+		jarFileChooser.setTitle("Archive an Opcodex Project");
 		File jarFile = null;
 		if (archivePathName != null && archivePathName.length() != 0) {
 			jarFile = new File(archivePathName);

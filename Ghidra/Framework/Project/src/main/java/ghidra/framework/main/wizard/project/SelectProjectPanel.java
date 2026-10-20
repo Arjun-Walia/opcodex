@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main.wizard.project;
 
+// OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
+
 import java.awt.BorderLayout;
 import java.io.File;
 
@@ -153,9 +155,9 @@ public class SelectProjectPanel extends JPanel {
 
 	private void displayFileChooser() {
 		GhidraFileChooser fileChooser = createFileChooser();
-		fileChooser.setTitle("Select a Ghidra Project Directory");
+		fileChooser.setTitle("Select an Opcodex Project Directory");
 		fileChooser.setApproveButtonText("Select Project Directory");
-		fileChooser.setApproveButtonToolTipText("Select a Ghidra Project Directory");
+		fileChooser.setApproveButtonToolTipText("Select an Opcodex Project Directory");
 
 		File file = fileChooser.getSelectedFile();
 

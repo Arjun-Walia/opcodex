@@ -1,0 +1,21 @@
+// Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
+def opcodexPython = providers.gradleProperty('opcodexPython').getOrElse(
+    System.getProperty('os.name').startsWith('Windows') ? 'python' : 'python3')
+
+tasks.register('testOpcodex', Exec) {
+    group = 'verification'
+    description = 'Test Opcodex release packaging and branding contracts.'
+    commandLine opcodexPython, '-m', 'unittest', 'discover', '-s', 'opcodex/tests', '-v'
+}
+
+tasks.register('buildOpcodex', Exec) {
+    group = 'distribution'
+    description = 'Build and package the branded Opcodex distribution with checksums and provenance.'
+    dependsOn tasks.named('testOpcodex'), tasks.named('buildGhidra')
+    doFirst {
+        commandLine opcodexPython, 'opcodex/package_release.py',
+            '--input', tasks.named('createInstallationZip').get().archiveFile.get().asFile,
+            '--platform', getCurrentPlatformName(),
+            '--output-dir', layout.buildDirectory.dir('releases').get().asFile
+    }
+}

@@ -1,147 +1,78 @@
-<img src="Ghidra/Features/Base/src/main/resources/images/GHIDRA_3.png" width="400">
+<!-- OPCODEX: replacement project README. Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0 -->
 
-# Ghidra Software Reverse Engineering Framework
-Ghidra is a software reverse engineering (SRE) framework created and maintained by the 
-[National Security Agency][nsa] Research Directorate. This framework includes a suite of 
-full-featured, high-end software analysis tools that enable users to analyze compiled code on a 
-variety of platforms including Windows, macOS, and Linux. Capabilities include disassembly, 
-assembly, decompilation, graphing, and scripting, along with hundreds of other features. Ghidra 
-supports a wide variety of processor instruction sets and executable formats and can be run in both 
-user-interactive and automated modes. Users may also develop their own Ghidra extension components 
-and/or scripts using Java or Python.
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="opcodex/branding/mark-dark-surface.svg"><img src="opcodex/branding/mark-light-surface.svg" width="112" alt="Opcodex ribbon mark"></picture></p>
+<h1 align="center">Opcodex</h1>
+<p align="center">A desktop workbench for reverse engineering.</p>
+<p align="center"><a href="https://opcodex.xyz">Website</a> · <a href="https://github.com/Arjun-Walia/opcodex/releases">Releases</a> · <a href="https://github.com/Arjun-Walia/opcodex/issues">Issues</a> · <a href="docs/releases/RELEASING.md">Release process</a></p>
 
-In support of NSA's Cybersecurity mission, Ghidra was built to solve scaling and teaming problems 
-on complex SRE efforts, and to provide a customizable and extensible SRE research platform. NSA has 
-applied Ghidra SRE capabilities to a variety of problems that involve analyzing malicious code and 
-generating deep insights for SRE analysts who seek a better understanding of potential 
-vulnerabilities in networks and systems.
+Opcodex builds on the stable Ghidra engine: disassembly, decompilation, program analysis, graph views, scripting and the existing processor and file-format ecosystem. The project adds its own desktop identity and is developing a more consistent interface while preserving engine behavior and extension compatibility.
 
-If you are a U.S. citizen interested in projects like this, to develop Ghidra and other 
-cybersecurity tools for NSA to help protect our nation and its allies, consider applying for a 
-[career with us][career].
+**Status: v1 alpha development.** The first preview is `1.0.0-alpha.1`, based on **Ghidra 12.1.4**. The initial branding and release foundation does not include the full icon redesign, refined themes, AI assistance or Pro features. A download is available only when an actual platform ZIP is attached to a published Opcodex release; GitHub's automatic source archives are not installable applications.
 
-## Security Warning
-**WARNING:** There are known security vulnerabilities within certain versions of Ghidra.  Before 
-proceeding, please read through Ghidra's [Security Advisories][security] for a better understanding 
-of how you might be impacted.
+Release promotion is currently blocked by the broader upstream regression checks; native build and Windows launch evidence is recorded in [verification](docs/releases/VERIFICATION.md). No final v1 release has been published.
 
-## Install
-To install an official pre-built multi-platform Ghidra release:  
-* Install [JDK 21 64-bit][jdk]
-* Download a Ghidra [release file][releases]
-  - **NOTE:** The official multi-platform release file is named 
-    `ghidra_<version>_<release>_<date>.zip` which can be found under the "Assets" drop-down.
-    Downloading either of the files named "Source Code" is not correct for this step.
-* Extract the Ghidra release file
-  - **NOTE:** Do not extract on top of an existing installation
-* Launch Ghidra: `./ghidraRun` (`ghidraRun.bat` for Windows)
-  - or launch [PyGhidra][pyghidra]: `./support/pyGhidraRun` (`support\pyGhidraRun.bat` for Windows)
+## Download and run
 
-For additional information and troubleshooting tips about installing and running a Ghidra release, 
-please refer to the [Getting Started][gettingstarted] document which can be found at the root of a 
-Ghidra installation directory. 
+1. Open [Opcodex Releases](https://github.com/Arjun-Walia/opcodex/releases) and select the package for your OS/architecture.
+2. Install a **64-bit JDK 21** or newer supported JDK.
+3. Verify the ZIP against its accompanying `.sha256` file.
+4. Extract into a fresh directory.
+5. Launch **`opcodexRun.bat`** on Windows, or **`./opcodexRun`** on Linux/macOS.
 
-## Build
-To create the latest development build for your platform from this source repository:
+Package names identify both versions and the native platform:
 
-##### Install build tools:
-* [JDK 21 64-bit][jdk]
-* [Gradle 8.5+][gradle] (or provided Gradle wrapper if Internet connection is available)
-* [Python3][python3] (version 3.9 to 3.14) with bundled pip
-* GCC or Clang, and make (Linux/macOS-only)
-* [Microsoft Visual Studio][vs] 2017+ or [Microsoft C++ Build Tools][vcbuildtools] with the
-  following components installed (Windows-only):
-  - MSVC
-  - Windows SDK
-  - C++ ATL
-
-##### Download and extract the source:
-[Download from GitHub][master]
-```
-unzip ghidra-master
-cd ghidra-master
-```
-**NOTE:** Instead of downloading the compressed source, you may instead want to clone the GitHub 
-repository: `git clone https://github.com/NationalSecurityAgency/ghidra.git`
-
-##### Download additional build dependencies into source repository:
-**NOTE:** If an Internet connection is available and you did not install Gradle, the 
-`./gradlew` (or `gradlew.bat`) command may be used in place of the `gradle` command in the following
-instructions.
-
-```
-gradle -I gradle/support/fetchDependencies.gradle
+```text
+opcodex_1.0.0-alpha.1_ghidra12.1.4_win_x86_64.zip
+opcodex_1.0.0-alpha.1_ghidra12.1.4_linux_x86_64.zip
+opcodex_1.0.0-alpha.1_ghidra12.1.4_mac_arm_64.zip
 ```
 
-##### Create development build: 
-```
-gradle buildGhidra
-```
-The compressed development build will be located at `build/dist/`.
+These are naming examples, not a claim that all three builds have shipped. Check each release's assets and validation notes. See [release notes](docs/releases/1.0.0-alpha.1.md) and [verification](docs/releases/VERIFICATION.md) for current evidence and limitations.
 
-For more detailed information on building Ghidra, please read the [Developer's Guide][devguide].
+## Build from source
 
-For issues building, please check the [Known Issues][known-issues] section for possible solutions.
+The fork is pinned to [`Ghidra_12.1.4_build`](https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.4_build), commit `8b6bbb857accdfa20dc5b2f5dea471178c2e9fbc`. [upstream.json](opcodex/upstream.json) records this provenance. Opcodex's version is separate from the engine/API version used by extensions.
 
-## Develop
+Requirements: JDK 21+, Python 3.9–3.14 with pip, and the checked-in Gradle wrapper. Linux/macOS also require GCC or Clang and make. Windows requires Visual Studio or C++ Build Tools with MSVC, the Windows SDK and C++ ATL. The selected stable tag's wrapper uses Gradle 9.7.1.
 
-### User Scripts and Extensions
-Ghidra installations support users writing custom scripts and extensions via the *GhidraDev* plugin 
-for Eclipse.  The plugin and its corresponding instructions can be found within a Ghidra release at
-`Extensions/Eclipse/GhidraDev/` or at [this link][ghidradev].  Alternatively, Visual Studio Code may
-be used to edit scripts by clicking the Visual Studio Code icon in the Script Manager.
-Fully-featured Visual Studio Code projects can be created from a Ghidra CodeBrowser window at 
-_Tools -> Create VSCode Module project_.
-
-**NOTE:** Both the *GhidraDev* plugin for Eclipse and Visual Studio Code integrations only support 
-developing against fully built Ghidra installations which can be downloaded from the
-[Releases][releases] page.
-
-### Advanced Development
-To develop the Ghidra tool itself, it is highly recommended to use Eclipse, which the Ghidra 
-development process has been highly customized for.
-
-##### Install build and development tools:
-* Follow the above [build instructions](#build) so the build completes without errors
-* Install [Eclipse IDE for Java Developers][eclipse]
-
-##### Prepare the development environment:
-``` 
-gradle prepdev eclipse buildNatives
+```bash
+git clone --branch main https://github.com/Arjun-Walia/opcodex.git
+cd opcodex
+./gradlew -I gradle/support/fetchDependencies.gradle
+./gradlew testOpcodex
+./gradlew buildOpcodex
 ```
 
-##### Import Ghidra projects into Eclipse:
-* *File* -> *Import...*
-* *General* | *Existing Projects into Workspace*
-* Select root directory to be your downloaded or cloned ghidra source repository
-* Check *Search for nested projects*
-* Click *Finish*
+Use `.\gradlew.bat` in PowerShell. Override the packaging interpreter with `-PopcodexPython=/path/to/python` if needed. The package is written to **`build/releases/`**, with a checksum and JSON build manifest. Packaging requires committed tracked source so every artifact points to an identifiable revision. The underlying `buildGhidra` task remains available for engine-compatible development archives.
 
-When Eclipse finishes building the projects, Ghidra can be launched and debugged with the provided
-**Ghidra** Eclipse *run configuration*.
+To prepare a source launch:
 
-For more detailed information on developing Ghidra, please read the [Developer's Guide][devguide].
+```bash
+./gradlew prepdev buildNatives
+./opcodexRun
+```
 
-## Contribute
-If you would like to contribute bug fixes, improvements, and new features back to Ghidra, please 
-take a look at our [Contributor's Guide][contrib] to see how you can participate in this open 
-source project.
+Existing [developer documentation](DevGuide.md) explains upstream build internals. Java package names, module names, project formats, technical support commands and server protocols retain their upstream identifiers. They are compatibility interfaces. Opcodex settings use a separate application identity; existing Ghidra settings and saved layouts are not automatically overwritten.
 
+## Opcodex v1
 
-[nsa]: https://www.nsa.gov
-[contrib]: CONTRIBUTING.md
-[devguide]: DevGuide.md
-[gettingstarted]: GhidraDocs/GettingStarted.md
-[known-issues]: DevGuide.md#known-issues
-[career]: https://www.intelligencecareers.gov/nsa
-[releases]: https://github.com/NationalSecurityAgency/ghidra/releases
-[jdk]: https://adoptium.net/temurin/releases
-[gradle]: https://gradle.org/releases/
-[python3]: https://www.python.org/downloads/
-[vs]: https://visualstudio.microsoft.com/vs/community/
-[vcbuildtools]: https://visualstudio.microsoft.com/visual-cpp-build-tools/
-[eclipse]: https://www.eclipse.org/downloads/packages/
-[master]: https://github.com/NationalSecurityAgency/ghidra/archive/refs/heads/master.zip
-[security]: https://github.com/NationalSecurityAgency/ghidra/security/advisories
-[ghidradev]: GhidraBuild/EclipsePlugins/GhidraDev/GhidraDevPlugin/README.md
-[pyghidra]: Ghidra/Features/PyGhidra/README.md
+The v1 work proceeds in reviewable stages:
+
+1. Stable engine baseline, product identity and release packaging.
+2. Design system and toolbar/tree icon pilot for review.
+3. Complete icon family and matched light/dark themes.
+4. Layout defaults, discoverability, keyboard access and workflow polish.
+
+Engine algorithms, decompiler implementation, loaders, processors and program storage remain upstream. Community is the open source foundation; private Pro extensions depend on Community. No license validation, paid feature logic or cloud AI integration is included in this repository's current implementation.
+
+## Contributing and security
+
+Open an issue with your platform, Opcodex version and engine version, or submit a focused change. Include checks and update [MODIFICATIONS.md](MODIFICATIONS.md) for upstream-file edits. Keep changes small and retain upstream notices. See [CONTRIBUTING.md](CONTRIBUTING.md) for the inherited engineering conventions.
+
+For a vulnerability, use [GitHub's private reporting flow](https://github.com/Arjun-Walia/opcodex/security/advisories/new) where enabled; avoid public disclosure of sensitive details. The retained [security policy](SECURITY.md) and [upstream advisories](https://github.com/NationalSecurityAgency/ghidra/security/advisories) provide additional engine context. A stable baseline does not eliminate the need to follow advisories.
+
+## License and attribution
+
+Opcodex is an independent modified distribution of [Ghidra](https://github.com/NationalSecurityAgency/ghidra), created and maintained by the National Security Agency Research Directorate and its contributors. Opcodex is not endorsed by the NSA or the Ghidra project.
+
+Original Opcodex additions are Apache-2.0. Retained components keep their existing licenses; bundled dependencies and GPL helper components have additional terms. The upstream **[LICENSE](LICENSE)**, **[NOTICE](NOTICE)**, copyright headers and dependency notices are preserved. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), [licenses/](licenses/) and [MODIFICATIONS.md](MODIFICATIONS.md).

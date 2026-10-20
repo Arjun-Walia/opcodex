@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- OPCODEX: original tool identity; preserve all layout and plugin configuration. -->
 <TOOL_CONFIG CONFIG_NAME="NO_LONGER_USED">
     <SUPPORTED_DATA_TYPE CLASS_NAME="ghidra.program.model.listing.Program" />
     <SUPPORTED_DATA_TYPE CLASS_NAME="ghidra.program.model.listing.DataTypeArchive" />
-    <ICON LOCATION="greenDragon24.png" />
+    <ICON LOCATION="images/opcodex/tool-24.png" />
     <TOOL TOOL_NAME="CodeBrowser" INSTANCE_NAME="">
         <OPTIONS />
         <PACKAGE NAME="Ghidra Core">
