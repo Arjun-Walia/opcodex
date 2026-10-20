@@ -41,6 +41,8 @@ $opcodexBuildRoot = Join-Path $opcodexRepository ('build/desktop/' + $opcodexHas
 $opcodexInput = Join-Path $opcodexBuildRoot 'input'
 $opcodexImage = Join-Path $opcodexBuildRoot 'Opcodex'
 $opcodexRecordPath = Join-Path $opcodexImage 'desktop-build.json'
+$opcodexConfigPath = Join-Path $opcodexImage 'app/Opcodex.cfg'
+$opcodexBootstrap = 'app.classpath=$APPDIR\Ghidra\Framework\Utility\lib\Utility.jar'
 $opcodexJpackagePath = $null
 if ($BuildJavaHome) {
     $opcodexCandidate = Join-Path $BuildJavaHome 'bin/jpackage.exe'
@@ -75,6 +77,13 @@ if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'Opcodex.exe'))) {
     }
     & $opcodexJpackagePath @opcodexArguments
     if ($LASTEXITCODE -ne 0) { throw 'Native app-image creation failed.' }
+    # jpackage enumerates every payload JAR. Preserve the original minimal bootstrap instead;
+    # the existing module loader selects application and extension dependencies at startup.
+    $opcodexConfig = @(Get-Content -LiteralPath $opcodexConfigPath)
+    if ($opcodexBootstrap -notin $opcodexConfig) { throw 'Native launcher is missing its bootstrap classpath.' }
+    $opcodexConfig | Where-Object {
+        -not $_.StartsWith('app.classpath=') -or $_ -eq $opcodexBootstrap
+    } | Set-Content -LiteralPath $opcodexConfigPath -Encoding utf8NoBOM
     $opcodexRecord = [ordered]@{
         product='Opcodex'; version=$opcodexManifest.version
         sourceRevision=$opcodexManifest.sourceRevision; portableSha256=$opcodexHash
@@ -84,6 +93,10 @@ if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'Opcodex.exe'))) {
 }
 $opcodexSavedRecord = Get-Content -LiteralPath $opcodexRecordPath -Raw | ConvertFrom-Json
 if ($opcodexSavedRecord.portableSha256 -ne $opcodexHash) { throw 'Cached app image does not match this package.' }
+$opcodexClasspath = @(Get-Content -LiteralPath $opcodexConfigPath | Where-Object { $_.StartsWith('app.classpath=') })
+if ($opcodexClasspath.Count -ne 1 -or $opcodexClasspath[0] -ne $opcodexBootstrap) {
+    throw 'Native launcher differs from the supported module bootstrap.'
+}
 
 if ($Install) {
     $opcodexInstallRoot = Join-Path $env:LOCALAPPDATA 'Programs/Opcodex/versions'
