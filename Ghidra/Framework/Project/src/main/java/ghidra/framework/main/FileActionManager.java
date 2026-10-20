@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main;
 
+// OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
+
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -312,7 +314,7 @@ class FileActionManager {
 				break;
 			}
 			if (!domainObjects[lastIndex].lock("save changes")) {
-				String title = "Exit Ghidra";
+				String title = "Exit Opcodex";
 				StringBuffer buf = new StringBuffer();
 				DomainObject d = domainObjects[lastIndex];
 				buf.append("The File " + files.get(lastIndex).getPathname() +
@@ -326,14 +328,14 @@ class FileActionManager {
 				}
 				buf.append("\n \n");
 				buf.append(
-					"You may exit Ghidra, but the above action(s) will be aborted and all\n");
+					"You may exit Opcodex, but the above action(s) will be aborted and all\n");
 				buf.append("changes made by those actions (and all changes made since those\n");
 				buf.append("actions started) will be lost!  You will still have the option of \n");
 				buf.append("saving any changes made before those actions began.\n \n");
-				buf.append("Do you want to abort the action(s) and exit Ghidra?");
+				buf.append("Do you want to abort the action(s) and exit Opcodex?");
 
 				int result = OptionDialog.showOptionDialog(tool.getToolFrame(), title,
-					buf.toString(), "Exit Ghidra", OptionDialog.WARNING_MESSAGE);
+					buf.toString(), "Exit Opcodex", OptionDialog.WARNING_MESSAGE);
 
 				if (result == OptionDialog.CANCEL_OPTION) {
 					locked = false;

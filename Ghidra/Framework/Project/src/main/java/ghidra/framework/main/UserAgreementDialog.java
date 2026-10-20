@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main;
 
+// OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
+
 import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.io.InputStream;
@@ -59,9 +61,9 @@ public class UserAgreementDialog extends DialogComponentProvider {
 
 	private JComponent buildWorkPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
-		JLabel label = new GDLabel("Ghidra User Agreement", SwingConstants.CENTER);
+		JLabel label = new GDLabel("Opcodex User Agreement", SwingConstants.CENTER);
 		label.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-		label.getAccessibleContext().setAccessibleName("Ghidra User Agreement");
+		label.getAccessibleContext().setAccessibleName("Opcodex User Agreement");
 		Gui.registerFont(label, FONT_ID);
 		panel.add(label, BorderLayout.NORTH);
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 40, 40, 40));

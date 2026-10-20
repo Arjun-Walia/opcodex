@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.archive;
 
+// OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -408,7 +410,7 @@ public class RestoreDialog extends ReusableDialogComponentProvider {
 
 		GhidraFileChooser jarFileChooser =
 			createFileChooser(ArchivePlugin.ARCHIVE_EXTENSION, "Ghidra Archives", archivePathName);
-		jarFileChooser.setTitle("Restore a Ghidra Project - Archive");
+		jarFileChooser.setTitle("Restore an Opcodex Project - Archive");
 		String lastDirSelected = Preferences.getProperty(ArchivePlugin.LAST_ARCHIVE_DIR);
 		if (lastDirSelected != null) {
 			File dir = new File(lastDirSelected);
@@ -452,7 +454,7 @@ public class RestoreDialog extends ReusableDialogComponentProvider {
 	 */
 	String chooseDirectory(String approveButtonText, String approveToolTip) {
 		GhidraFileChooser dirChooser = createDirectoryChooser();
-		dirChooser.setTitle("Restore a Ghidra Project - Directory");
+		dirChooser.setTitle("Restore an Opcodex Project - Directory");
 		if (restoreLocator != null) {
 			dirChooser.setSelectedFile(new File(restoreLocator.getLocation()));
 		}

@@ -29,6 +29,7 @@ import ghidra.util.HelpLocation;
 
 public class GhidraApplicationInformationDisplayFactory
 		extends ApplicationInformationDisplayFactory {
+	// OPCODEX: brand splash and About titles while retaining upstream help anchors.
 
 	@Override
 	protected List<Image> doGetWindowIcons() {
@@ -50,12 +51,12 @@ public class GhidraApplicationInformationDisplayFactory
 
 	@Override
 	protected String doCreateSplashScreenTitle() {
-		return "Welcome To Ghidra";
+		return "Welcome to Opcodex";
 	}
 
 	@Override
 	protected String doCreateAboutTitle() {
-		return "About Ghidra";
+		return "About Opcodex";
 	}
 
 	@Override

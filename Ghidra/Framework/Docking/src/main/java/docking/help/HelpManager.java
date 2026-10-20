@@ -15,6 +15,8 @@
  */
 package docking.help;
 
+// OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
+
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,7 +67,7 @@ public class HelpManager implements HelpService {
 
 	private static final String TABLE_OF_CONTENTS_VIEW_NAME = "TOC";
 
-	private static final String GHIDRA_HELP_TITLE = "Ghidra Help";
+	private static final String GHIDRA_HELP_TITLE = "Opcodex Help";
 
 	private GHelpSet mainHS;
 	private HelpBroker mainHB;
