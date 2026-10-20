@@ -81,6 +81,8 @@ def package_release(source: Path, destination: Path, platform: str,
     additions = {
         'NOTICE': repository / 'NOTICE',
         'README.md': repository / 'opcodex/DISTRIBUTION_README.md',
+        'RELEASE_NOTES.md': repository / f'docs/releases/{product_version}.md',
+        'docs/WhatsNew.html': repository / 'opcodex/WHATS_NEW.html',
         'MODIFICATIONS.md': repository / 'MODIFICATIONS.md',
         'THIRD_PARTY_NOTICES.md': repository / 'THIRD_PARTY_NOTICES.md',
         'opcodexRun': repository / 'opcodexRun',

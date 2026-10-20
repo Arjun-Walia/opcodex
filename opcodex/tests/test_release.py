@@ -18,8 +18,10 @@ class ReleaseTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.directory = Path(self.temporary.name)
         self.repository = self.directory / 'repository'
+        product_version = properties((ROOT / 'Ghidra/application.properties').read_text())['opcodex.version']
         for name in ('opcodex/upstream.json', 'Ghidra/application.properties', 'LICENSE', 'NOTICE',
                      'MODIFICATIONS.md', 'THIRD_PARTY_NOTICES.md', 'opcodex/DISTRIBUTION_README.md',
+                     f'docs/releases/{product_version}.md', 'opcodex/WHATS_NEW.html',
                      'opcodexRun', 'opcodexRun.bat', 'opcodex/branding/opcodex.ico'):
             target = self.repository / name
             target.parent.mkdir(parents=True, exist_ok=True)
