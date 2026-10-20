@@ -140,6 +140,8 @@ apply from: "GPL/nativePlatforms.gradle"      // adds native platform support
 apply from: "gradle/root/test.gradle"         // adds tasks for running tests
 apply from: "gradle/root/prepDev.gradle"      // adds prepDev task for each subproject
 apply from: 'gradle/root/distribution.gradle' // adds zip tasks
+// OPCODEX: isolated product packaging; preserve upstream buildGhidra and engine tasks.
+apply from: 'opcodex/build.gradle'
 apply from: 'gradle/root/usage.gradle'        // adds task documentation
 apply from: "gradle/root/svg.gradle"          // adds task to process svg files
 apply from: "gradle/root/jacoco.gradle"       // adds tasks for java code coverage
