@@ -9,6 +9,8 @@ Opcodex builds on the stable Ghidra engine: disassembly, decompilation, program 
 
 **Status: v1 alpha development.** The first preview is `1.0.0-alpha.1`, based on **Ghidra 12.1.4**. The initial branding and release foundation does not include the full icon redesign, refined themes, AI assistance or Pro features. A download is available only when an actual platform ZIP is attached to a published Opcodex release; GitHub's automatic source archives are not installable applications.
 
+Release promotion is currently blocked by the broader upstream regression checks; native build and Windows launch evidence is recorded in [verification](docs/releases/VERIFICATION.md). No final v1 release has been published.
+
 ## Download and run
 
 1. Open [Opcodex Releases](https://github.com/Arjun-Walia/opcodex/releases) and select the package for your OS/architecture.
@@ -34,7 +36,7 @@ The fork is pinned to [`Ghidra_12.1.4_build`](https://github.com/NationalSecurit
 Requirements: JDK 21+, Python 3.9–3.14 with pip, and the checked-in Gradle wrapper. Linux/macOS also require GCC or Clang and make. Windows requires Visual Studio or C++ Build Tools with MSVC, the Windows SDK and C++ ATL. The selected stable tag's wrapper uses Gradle 9.7.1.
 
 ```bash
-git clone --branch codex/v1-stable https://github.com/Arjun-Walia/opcodex.git
+git clone --branch main https://github.com/Arjun-Walia/opcodex.git
 cd opcodex
 ./gradlew -I gradle/support/fetchDependencies.gradle
 ./gradlew testOpcodex

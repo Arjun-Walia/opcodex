@@ -6,6 +6,8 @@ Opcodex v1 starts from the official stable **Ghidra 12.1.4** tag, `Ghidra_12.1.4
 
 The previous development checkout (`master`, `f70f07d07ca6284c1f26557ad19071885ed8590b`) identified itself as 12.3 DEV. Its audit remains preserved on `codex/ui-audit`. The owner selected stable for v1; `codex/v1-stable` starts directly from the stable tag rather than reverting files in the newer engine or rewriting published history.
 
+The stable release line is `main`, created from this pinned baseline. Integrate branding into `main`; keep the previous `master` as historical development source. Merging branding into the newer `master` would retain its 12.3 engine and defeat the stable selection.
+
 The stable source requires JDK 21 or newer supported JDK, Gradle 8.5 minimum and Python 3.9–3.14. Its checked-in wrapper selects Gradle 9.7.1. The engine compatibility version remains 12.1.4. Product version and branding are a separate layer. The PUBLIC engine release channel is retained because the upstream wrapper supports PUBLIC/DEV; preview status is carried in the independent Opcodex semantic version.
 
 Keep the stable tag's original LICENSE, NOTICE, copyright headers, dependency licenses and GPL helper terms. Changes to upstream files carry an `OPCODEX:` marker and are listed in MODIFICATIONS.md. No mass package/module renaming or analysis-engine modifications are part of branding. Existing application identity determines preference directories; Opcodex uses its own identity and does not automatically migrate another application's settings.
