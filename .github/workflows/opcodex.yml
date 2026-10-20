@@ -57,9 +57,6 @@ jobs:
       - name: Build native Opcodex package (Windows)
         if: runner.os == 'Windows'
         run: .\gradlew.bat --no-daemon buildOpcodex
-      - name: Upstream unit tests (Linux desktop)
-        if: runner.os == 'Linux'
-        run: xvfb-run -a ./gradlew --no-daemon unitTestReport
       - name: Upload native package and provenance
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -67,6 +64,13 @@ jobs:
           path: build/releases/*
           if-no-files-found: error
           retention-days: 14
+      - name: Upstream unit tests (Linux desktop)
+        if: runner.os == 'Linux'
+        timeout-minutes: 45
+        run: xvfb-run -a ./gradlew --no-daemon unitTestReport
+      - name: Verify upstream test results
+        if: runner.os == 'Linux'
+        run: python opcodex/check_test_results.py
       - name: Preserve test reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
