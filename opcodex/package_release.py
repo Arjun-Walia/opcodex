@@ -70,7 +70,7 @@ def package_release(source: Path, destination: Path, platform: str,
                                            cwd=repository, text=True).strip()
     if not re.fullmatch(r'[0-9a-f]{40}', revision):
         raise ValueError('A full source commit is required')
-    name = f'opcodex_{product_version}_ghidra{upstream["version"]}_{platform}'
+    name = f'opcodex_{product_version}_{platform}'
     destination.mkdir(parents=True, exist_ok=True)
     target = destination / f'{name}.zip'
     manifest = {

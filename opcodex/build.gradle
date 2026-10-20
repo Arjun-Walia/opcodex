@@ -19,3 +19,27 @@ tasks.register('buildOpcodex', Exec) {
             '--output-dir', layout.buildDirectory.dir('releases').get().asFile
     }
 }
+
+// Native Windows app image and current-user shortcuts; portable ZIP builds remain unchanged.
+['buildOpcodexDesktop': false, 'installOpcodexDesktop': true].each { taskName, install ->
+    tasks.register(taskName, Exec) {
+        group = 'distribution'
+        description = install ? 'Build and install the native Opcodex desktop app.' :
+            'Build the native Opcodex Windows app image with its runtime.'
+        dependsOn tasks.named('buildOpcodex')
+        doFirst {
+            if (!System.getProperty('os.name').startsWith('Windows')) {
+                throw new GradleException('Native desktop installation currently supports Windows.')
+            }
+            def product = new Properties()
+            file('Ghidra/application.properties').withInputStream { product.load(it) }
+            def archive = file("build/releases/opcodex_${product.getProperty('opcodex.version')}_win_x86_64.zip")
+            def args = ['pwsh', '-NoProfile', '-File', file('opcodex/build-desktop.ps1'),
+                '-PackagePath', archive, '-BuildJavaHome', System.getProperty('java.home')]
+            if (install) {
+                args += '-Install'
+            }
+            commandLine args
+        }
+    }
+}
