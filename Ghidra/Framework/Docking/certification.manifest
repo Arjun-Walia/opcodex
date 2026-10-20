@@ -1,4 +1,5 @@
 ##VERSION: 2.0
+##MODULE IP: Apache License 2.0
 ##MODULE IP: Crystal Clear Icons - LGPL 2.1
 ##MODULE IP: FAMFAMFAM Icons - CC 2.5
 ##MODULE IP: GPL 2 With Classpath Exception
@@ -127,3 +128,7 @@ src/main/svg/images/cause.svg||GHIDRA||reviewed||END|
 src/main/svg/images/exception.svg||GHIDRA||reviewed||END|
 src/main/svg/images/report.svg||GHIDRA||reviewed||END|
 src/test.slow/resources/docking/widgets/table/threaded/threaded.table.test.csv.txt||GHIDRA||||END|
+
+##OPCODEX: original artwork and theme resources licensed under Apache License 2.0.
+src/main/resources/images/opcodex-framework-dark-256.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex-framework-light-256.png||Apache License 2.0||||END|
