@@ -2,7 +2,7 @@
 
 # Windows desktop app
 
-Run `.\gradlew.bat installOpcodexDesktop` from a clean committed checkout after fetching the pinned build dependencies. The task builds the portable Windows package, verifies its checksum and provenance, then uses the build JDK's jpackage tool to create a native **Opcodex.exe**.
+With PowerShell 7 (`pwsh`) installed, run `.\gradlew.bat installOpcodexDesktop` from a clean committed checkout after fetching the pinned build dependencies. The task builds the portable Windows package, verifies its checksum and provenance, then uses the build JDK's jpackage tool to create a native **Opcodex.exe**.
 
 The app includes a Java runtime and its original legal notices. It launches without a console window and uses the Opcodex icon in Windows. No separate Java installation is required to run that app image. Packaging/signing for public Windows distribution is separate; this local preview is unsigned.
 

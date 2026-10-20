@@ -8,7 +8,7 @@ A quiet, dense workbench for repeated reverse-engineering workflows. The program
 
 Original **outline** glyphs on a 24×24 grid, 2px rounded strokes and open interiors. Main geometry stays within the icon bounds; arrows and small node glyphs use optical adjustments. Monochrome controls use neutral ink; warning, error and confirmation use semantic colors. Do not use color alone to distinguish an action.
 
-67 glyphs map to 141 existing IDs in this pilot. Sources and the ID mapping live in [catalog.json](../../ui-assets/icons/catalog.json). Exports at 16/20/24/32/48/64px support the sizes actually used in the toolbar and trees. Product themes install `BaseMultiResolutionImage` variants at a 16px logical size, so Java can select real 125%, 150%, 200% and higher-resolution images. Merely exporting large PNGs would not establish runtime HiDPI support.
+67 glyphs map to 141 existing IDs in this pilot. Sources and the ID mapping live in [catalog.json](../../ui-assets/icons/catalog.json). Exports at 16/20/24/32/48/64px support the sizes actually used in the toolbar and trees. Product themes install `BaseMultiResolutionImage` variants at a 16px logical size, so Java can select real 125%, 150%, 200% and higher-resolution images. Icons load lazily and retain their resource paths when users export custom themes. Merely exporting large PNGs would not establish runtime HiDPI support.
 
 Existing semantic IDs and legacy raw filenames remain compatible. Fallback product artwork and the Debugger/Emulator tool icons are replaced by original art. Specialized unconverted action icons remain outside this pilot; this is not a claim to have replaced all 878 IDs in the initial inventory.
 

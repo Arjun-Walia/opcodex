@@ -5,12 +5,9 @@
  */
 package generic.theme.builtin;
 
-import java.awt.Image;
-import java.awt.image.BaseMultiResolutionImage;
 import java.util.*;
 import javax.swing.*;
 import generic.theme.GTheme;
-import resources.ResourceManager;
 
 /** Generated from ui-assets/icons/catalog.json; 16px logical size, 1x through 4x variants. */
 final class OpcodexIcons {
@@ -165,13 +162,6 @@ final class OpcodexIcons {
 		}
 	}
 	private static Icon load(String glyph, boolean dark) {
-		int[] sizes = {16, 20, 24, 32, 48, 64};
-		Image[] variants = new Image[sizes.length];
-		for (int i = 0; i < sizes.length; i++) {
-			String path = "images/opcodex/ui/" + (dark ? "dark/" : "light/") +
-				glyph + "-" + sizes[i] + ".png";
-			variants[i] = ResourceManager.loadImage(path).getImage();
-		}
-		return new ImageIcon(new BaseMultiResolutionImage(variants));
+		return new OpcodexImageIcon(glyph, dark);
 	}
 }

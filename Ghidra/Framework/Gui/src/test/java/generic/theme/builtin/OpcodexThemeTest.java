@@ -40,6 +40,20 @@ public class OpcodexThemeTest {
 	}
 
 	@Test
+	public void iconSerializationKeepsAReusableResourcePath() throws Exception {
+		for (GTheme theme : new GTheme[] {new OpcodexDarkTheme(), new OpcodexLightTheme()}) {
+			IconValue original = theme.getIcon("icon.folder.open");
+			String serialized = original.getSerializationString();
+			assertFalse(serialized.contains(GTheme.JAVA_ICON));
+			String path = serialized.split("=", 2)[1].trim();
+			assertTrue(path.startsWith("images/opcodex/ui/"));
+			IconValue restored = IconValue.parse("icon.folder.open", path);
+			assertEquals(16, restored.getRawValue().getIconWidth());
+			assertEquals(16, restored.getRawValue().getIconHeight());
+		}
+	}
+
+	@Test
 	public void iconsCarryRealResolutionVariantsAndStableLogicalDimensions() {
 		for (GTheme theme : new GTheme[] {new OpcodexDarkTheme(), new OpcodexLightTheme()}) {
 			ImageIcon icon = (ImageIcon) theme.getIcon("icon.folder.open").getRawValue();
