@@ -873,8 +873,9 @@ public class FrontEndPlugin extends Plugin
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		mainPanel.add(toolBar, BorderLayout.NORTH);
 		projectContent = new JPanel(new CardLayout());
-		projectContent.add(new OpcodexWelcomePanel(fileActionManager::newProject,
-			fileActionManager::openProject), "welcome");
+		// OPCODEX: resolve project actions on activation; the manager initializes after the GUI.
+		projectContent.add(new OpcodexWelcomePanel(() -> fileActionManager.newProject(),
+			() -> fileActionManager.openProject()), "welcome");
 		projectContent.add(projectDataPanel, "project");
 		mainPanel.add(projectContent, BorderLayout.CENTER);
 

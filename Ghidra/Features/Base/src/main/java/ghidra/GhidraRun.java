@@ -219,11 +219,11 @@ public class GhidraRun implements GhidraLaunchable {
 			RepositoryAdapter repository = activeProject.getRepository();
 			if (repository != null && !repository.isConnected()) {
 				Msg.showInfo(GhidraRun.class, null, "Working Off-Line ",
-					"Even though you are not connected to the Ghidra Server,\n" +
+					"Even though you are not connected to the repository server,\n" +
 						"you can still work off-line on checked out files or private files.\n" +
 						"You can also try reconnecting to the server by selecting the connect\n" +
-						"button on the Ghidra Project Window.\n \n" +
-						"See the Ghidra Help topic 'Project Repository' for troubleshooting\n" +
+						"button on the Opcodex Project Window.\n \n" +
+						"See the Help topic 'Project Repository' for troubleshooting\n" +
 						"a failed connection.");
 			}
 
