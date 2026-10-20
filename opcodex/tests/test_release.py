@@ -29,7 +29,8 @@ class ReleaseTests(unittest.TestCase):
         self.source = self.directory / 'engine.zip'
         self.entries = {
             'engine/LICENSE': (ROOT / 'LICENSE').read_bytes(),
-            'engine/Ghidra/application.properties': (ROOT / 'Ghidra/application.properties').read_bytes(),
+            'engine/Ghidra/application.properties': (ROOT / 'Ghidra/application.properties').read_bytes()
+                + ('\napplication.revision.opcodex=' + 'a' * 40 + '\n').encode(),
             'engine/Ghidra/Features/Decompiler/os/linux_x86_64/decompile': b'fixture-not-executable',
             'engine/support/launch.sh': b'fixture-launch',
             'engine/ghidraRun': b'old-launcher',
@@ -87,6 +88,21 @@ class ReleaseTests(unittest.TestCase):
         file.write_text(file.read_text().replace('application.version=12.1.4', 'application.version=12.3'))
         with self.assertRaisesRegex(ValueError, 'pinned upstream'):
             self.package()
+
+    def test_rejects_a_stale_archive_even_when_product_version_matches(self):
+        key = 'engine/Ghidra/application.properties'
+        self.entries[key] = self.entries[key].replace(b'a' * 40, b'b' * 40)
+        with self.assertRaisesRegex(ValueError, 'current source revision'):
+            self.package()
+
+    def test_untracked_source_cannot_be_misrepresented_as_a_clean_release(self):
+        subprocess.run(['git', 'init', '-q', str(self.repository)], check=True)
+        subprocess.run(['git', 'add', '.'], cwd=self.repository, check=True)
+        subprocess.run(['git', '-c', 'user.name=Opcodex tests', '-c', 'user.email=tests@opcodex.invalid',
+                        'commit', '-qm', 'Test fixture'], cwd=self.repository, check=True)
+        (self.repository / 'uncommitted-source.java').write_text('untracked source')
+        with self.assertRaisesRegex(ValueError, 'untracked files'):
+            package_release(self.archive(), self.directory / 'output', 'linux_x86_64', self.repository)
 
     def test_rejects_unsafe_names_and_multiple_roots(self):
         for bad in ('engine/../escape', '/engine/absolute', 'engine\\windows', 'engine/C:drive', 'other/file'):

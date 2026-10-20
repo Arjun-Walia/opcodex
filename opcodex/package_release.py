@@ -63,9 +63,9 @@ def package_release(source: Path, destination: Path, platform: str,
     if config['application.version'] != upstream['version']:
         raise ValueError('Engine version does not match the pinned upstream release')
     if revision is None:
-        if subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'],
+        if subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'],
                                    cwd=repository, text=True).strip():
-            raise ValueError('Commit tracked source changes before packaging a release')
+            raise ValueError('Commit source changes, including untracked files, before packaging a release')
         revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'],
                                            cwd=repository, text=True).strip()
     if not re.fullmatch(r'[0-9a-f]{40}', revision):
@@ -105,6 +105,10 @@ def package_release(source: Path, destination: Path, platform: str,
         for key in ('application.name', 'application.version', 'opcodex.version'):
             if bundled.get(key) != config.get(key) or bundled.get('application.name') != 'Opcodex':
                 raise ValueError('Build the branded source before packaging; input identity differs')
+        build_revisions = [value for key, value in bundled.items()
+                           if key.startswith('application.revision.')]
+        if revision not in build_revisions:
+            raise ValueError('Input archive was not built from the current source revision; rebuild it')
         if incoming.read(prefix + 'LICENSE') != (repository / 'LICENSE').read_bytes():
             raise ValueError('The input license differs from the preserved source license')
         for added in additions.values():
