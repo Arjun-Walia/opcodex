@@ -2,22 +2,14 @@
 
 # Opcodex
 
-A desktop workbench for reverse engineering, built on Ghidra 12.1.4.
+A local desktop workbench for reverse engineering.
 
-This is a **v1 alpha preview** of the branded stable engine. The planned icon redesign, refined themes and workflow improvements are being developed separately. Paid editions and AI integrations are not included in this build.
+Verify this ZIP against its SHA-256 file, extract into a fresh directory and run `opcodexRun.bat` on Windows or `./opcodexRun` on Linux/macOS. Portable packages require a supported 64-bit JDK 21 or newer. The native Windows desktop app includes its own Java runtime.
 
-1. Install a 64-bit JDK 21 or newer supported JDK.
-2. Verify the downloaded ZIP against its `.sha256` file.
-3. Extract into a new directory; do not overlay an existing installation.
-4. Run `opcodexRun.bat` on Windows or `./opcodexRun` on Linux/macOS.
-5. Create a project, import a file and use the existing analysis tools.
+Create or open a project, import a program and explore the listing, decompiler, symbols and graphs. Choose Opcodex Light or Opcodex Dark from Edit > Theme > Switch. Existing keyboard shortcuts and configurable listing/decompiler fonts remain available.
 
-`opcodex-release.json` records the product version, engine version, source revision, source-archive hash and native platform. `Ghidra/application.properties` retains the engine/API version for extension compatibility. Your settings live under the Opcodex application identity; existing Ghidra settings are not overwritten or automatically migrated.
+The manifest `opcodex-release.json` records version, platform and source/component provenance. Product settings are separate from other applications' settings. The `OPCODEX_MAXMEM` and `OPCODEX_JAVA_OPTIONS` environment variables configure portable launches.
 
 Website: https://opcodex.xyz · Source/issues: https://github.com/Arjun-Walia/opcodex
 
-Use `OPCODEX_MAXMEM` to override the JVM heap (for example `4G`), or `OPCODEX_JAVA_OPTIONS` for additional JVM options. The existing `GHIDRA_*` overrides are accepted for compatibility. Build tools, Node.js and the SVG renderer are not needed to run this distribution.
-
-Upstream manuals remain in `docs/` and `GhidraDocs/` where included by the platform build. Technical package names, project formats, support commands and server protocols retain their upstream identifiers.
-
-Opcodex is an independent modified distribution of Ghidra, created and maintained by the National Security Agency Research Directorate and its contributors. Opcodex is not endorsed by the NSA or the Ghidra project. See `LICENSE`, `NOTICE`, `licenses/`, `MODIFICATIONS.md` and `THIRD_PARTY_NOTICES.md` for terms, attribution and changes. Some bundled components have additional licenses.
+See RELEASE_NOTES.md for preview scope and validation limits. This is a development preview, not final v1. License terms, required attribution and modifications are included in LICENSE, NOTICE, licenses/, THIRD_PARTY_NOTICES.md and MODIFICATIONS.md.

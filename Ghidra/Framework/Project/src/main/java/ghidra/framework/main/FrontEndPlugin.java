@@ -18,6 +18,7 @@ package ghidra.framework.main;
 // OPCODEX: product-facing UI wording; preserve upstream APIs, formats and help anchors.
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -72,7 +73,7 @@ import ghidra.util.filechooser.GhidraFileFilter;
 	packageName = "Ghidra Core",
 	category = PluginCategoryNames.COMMON,
 	shortDescription = "Front End",
-	description = "Front End Components for Ghidra",
+	description = "Opcodex project workspace",
 	servicesProvided = { FrontEndService.class }
 )
 //@formatter:on
@@ -86,6 +87,8 @@ public class FrontEndPlugin extends Plugin
 	private final static String PROPERTIES_ACTION_NAME = "Configure Plugins";
 
 	private JPanel mainGuiPanel;
+	// OPCODEX: preserve project commands/data panels and show useful actions before a project opens.
+	private JPanel projectContent;
 	private ProjectToolBar toolBar;
 	private ProjectDataTreePanel dataTreePanel;
 	private ProjectDataTablePanel dataTablePanel;
@@ -347,7 +350,7 @@ public class FrontEndPlugin extends Plugin
 	private void showDisconnectedDialog(final RepositoryAdapter repository) {
 
 		// @formatter:off
-		String message = "The Ghidra Server repository unexpectedly disconnected: " +
+		String message = "The project server repository unexpectedly disconnected: " +
 			repository +
 			"\nThis can occur if your system becomes suspended or due to a server/network problem." +
 			"\n \nRepository status and actions will be unavailable until" +
@@ -355,7 +358,7 @@ public class FrontEndPlugin extends Plugin
 			"\nserver may be forced to close as a result.";
 		// @formatter:on
 
-		OkDialog info = new OkDialog("Ghidra Server Error", message, DISCONNECTED_ICON);
+		OkDialog info = new OkDialog("Project Server Error", message, DISCONNECTED_ICON);
 		info.show(tool.getToolFrame());
 	}
 
@@ -398,7 +401,10 @@ public class FrontEndPlugin extends Plugin
 
 		// update the rest of the panels with new (or inactive) project
 		toolBar.setActiveProject(project);
+		toolBar.setVisible(project != null);
 		projectDataPanel.setActiveProject(project);
+		((CardLayout) projectContent.getLayout()).show(projectContent,
+			project == null ? "welcome" : "project");
 		fileActionManager.setActiveProject(activeProject);
 		projectActionManager.setActiveProject(activeProject);
 		toolActionManager.setActiveProject(activeProject);
@@ -407,6 +413,7 @@ public class FrontEndPlugin extends Plugin
 		}
 
 		workspacePanel.setActiveProject(project);
+		workspacePanel.setVisible(project != null);
 		// update the title bar and other panel's border titles
 		setProjectName();
 		updateConnectionPanel(project);
@@ -865,7 +872,11 @@ public class FrontEndPlugin extends Plugin
 		// data tree panels (active and read-only views)
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		mainPanel.add(toolBar, BorderLayout.NORTH);
-		mainPanel.add(projectDataPanel, BorderLayout.CENTER);
+		projectContent = new JPanel(new CardLayout());
+		projectContent.add(new OpcodexWelcomePanel(fileActionManager::newProject,
+			fileActionManager::openProject), "welcome");
+		projectContent.add(projectDataPanel, "project");
+		mainPanel.add(projectContent, BorderLayout.CENTER);
 
 		JPanel bottomPane = new JPanel();
 		bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
@@ -877,7 +888,8 @@ public class FrontEndPlugin extends Plugin
 		bottomPane.add(statusPanel);
 		bottomPane.add(Box.createVerticalGlue());
 
-		mainGuiPanel = new JPanel(new BorderLayout(5, 5));
+		mainGuiPanel = new JPanel(new BorderLayout(8, 8));
+		mainGuiPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 8, 12));
 		mainGuiPanel.add(mainPanel, BorderLayout.CENTER);
 		mainGuiPanel.add(bottomPane, BorderLayout.SOUTH);
 	}
@@ -1113,7 +1125,7 @@ public class FrontEndPlugin extends Plugin
 			Msg.showInfo(this, tool.getToolFrame(), "Cannot Find Tool",
 				"<html>File type is unrecognized: <b>" +
 					HTMLUtilities.escapeHTML(domainFile.getName()) +
-					"</b>.<br><br>File may have been created with a newer version of Ghidra.");
+					"</b>.<br><br>File may require a newer compatible engine version.");
 			return;
 		}
 

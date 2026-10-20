@@ -23,8 +23,6 @@ import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 
 import generic.theme.builtin.*;
-import ghidra.framework.OperatingSystem;
-import ghidra.framework.Platform;
 import ghidra.util.Msg;
 import ghidra.util.datastruct.WeakDataStructureFactory;
 import ghidra.util.datastruct.WeakSet;
@@ -634,12 +632,8 @@ public abstract class ThemeManager {
 	 * @return the default theme for the current platform.
 	 */
 	public static GTheme getDefaultTheme() {
-		OperatingSystem OS = Platform.CURRENT_PLATFORM.getOperatingSystem();
-		return switch (OS) {
-			case MAC_OS_X -> new MacTheme();
-			case WINDOWS -> new WindowsTheme();
-			default -> new FlatLightTheme();
-		};
+		// OPCODEX: a consistent first-run workbench; saved theme choices still take precedence.
+		return new OpcodexDarkTheme();
 	}
 
 	/**

@@ -1,3 +1,5 @@
+##OPCODEX: original product/outline artwork exported from SVG sources.
+##MODULE IP: Apache License 2.0
 ##VERSION: 2.0
 ##MODULE IP: FAMFAMFAM Icons - CC 2.5
 ##MODULE IP: Modified Nuvola Icons - LGPL 2.1
@@ -94,11 +96,11 @@ src/main/resources/images/connect-outbound.png||GHIDRA||||END|
 src/main/resources/images/connect.png||GHIDRA||||END|
 src/main/resources/images/console.png||GHIDRA||||END|
 src/main/resources/images/debugger.png||GHIDRA||||END|
-src/main/resources/images/debugger32.png||GHIDRA||||END|
+src/main/resources/images/debugger32.png||Apache License 2.0||||END|
 src/main/resources/images/delete.png||FAMFAMFAM Icons - CC 2.5|||famfamfam silk icon set|END|
 src/main/resources/images/detach.png||GHIDRA||||END|
 src/main/resources/images/disconnect.png||GHIDRA||||END|
-src/main/resources/images/emulator32.png||GHIDRA||||END|
+src/main/resources/images/emulator32.png||Apache License 2.0||||END|
 src/main/resources/images/interrupt.png||GHIDRA||||END|
 src/main/resources/images/kill.png||GHIDRA||||END|
 src/main/resources/images/launch.png||GHIDRA||||END|

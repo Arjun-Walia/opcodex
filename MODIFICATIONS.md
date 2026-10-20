@@ -2,31 +2,71 @@
 
 # Opcodex modifications
 
-Baseline: Ghidra_12.1.4_build, commit `8b6bbb857accdfa20dc5b2f5dea471178c2e9fbc`. Date: 2026-10-20. Product: Opcodex 1.0.0-alpha.1.
+Baseline: Ghidra_12.1.4_build, commit `8b6bbb857accdfa20dc5b2f5dea471178c2e9fbc`. Date: 2026-10-20. Product: Opcodex 1.0.0-alpha.2.
 
-All paths below are modified upstream files and carry an `OPCODEX:` marker. Original headers remain intact. The original stable LICENSE, NOTICE, dependency notices, engine, decompiler, loader, processor and program database implementation remain unchanged. New files live under opcodex/, docs/, .github/ and original-brand resource paths; their notices supplement upstream licensing.
+All paths below are modified upstream files and carry an `OPCODEX:` marker (text or embedded image metadata). Original headers remain intact. The original stable LICENSE, NOTICE, dependency notices, engine, decompiler, loader, processor and program database implementation remain unchanged. New files live under opcodex/, docs/, .github/, ui-assets/ and original-brand UI resource/class paths; their notices supplement upstream licensing.
 
 | Upstream file | Modification |
 |---|---|
+| `.github/ISSUE_TEMPLATE/bug_report.md` | Provide Opcodex contribution and issue guidance with this repository as the destination. |
+| `.github/ISSUE_TEMPLATE/feature_request.md` | Provide Opcodex contribution and issue guidance with this repository as the destination. |
+| `.github/ISSUE_TEMPLATE/question.md` | Provide Opcodex contribution and issue guidance with this repository as the destination. |
+| `CONTRIBUTING.md` | Provide Opcodex contribution and issue guidance with this repository as the destination. |
 | `Ghidra/Configurations/Public_Release/src/main/resources/UserAgreement.html` | Product document title; preserve upstream agreement and usage terms. |
-| `Ghidra/Configurations/Public_Release/src/main/resources/defaultTools/CodeBrowser.tool` | Use the original Opcodex tool-chest icon while retaining the saved plugin layout. |
-| `Ghidra/Configurations/Public_Release/src/main/resources/splash.txt` | Add independent-product attribution while preserving original license text. |
-| `Ghidra/Features/Base/certification.manifest` | Register the Apache-2.0 terms for original Opcodex image/theme assets in the existing licensing audit. |
-| `Ghidra/Features/Base/data/base.icons.theme.properties` | Map existing application icon IDs to original transparent light/dark artwork. |
+| `Ghidra/Configurations/Public_Release/src/main/resources/defaultTools/CodeBrowser.tool` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Configurations/Public_Release/src/main/resources/splash.txt` | Use a concise product-only About summary; complete original terms and attribution remain in the included LICENSE, NOTICE and third-party notices. |
+| `Ghidra/Debug/Debugger/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
+| `Ghidra/Debug/Debugger/src/main/resources/images/debugger32.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Debug/Debugger/src/main/resources/images/emulator32.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Features/Base/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
+| `Ghidra/Features/Base/data/base.icons.theme.properties` | Map common action/tree IDs to original transparent light/dark icons; preserve semantic IDs and aliases. |
+| `Ghidra/Features/Base/src/main/help/help/TOC_Source.xml` | Rebrand visible help tree labels; preserve all technical IDs, anchor targets and links. |
+| `Ghidra/Features/Base/src/main/help/help/topics/Misc/Welcome_to_Ghidra_Help.htm` | Use product-facing help-home text and original identity while retaining existing anchors. |
+| `Ghidra/Features/Base/src/main/java/ghidra/GhidraRun.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/archive/ArchiveDialog.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/archive/RestoreDialog.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
-| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/runtimeinfo/VersionInfoPanel.java` | Show the independent Opcodex product version alongside the compatible Ghidra engine version. |
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/totd/TipOfTheDayPlugin.java` | Make the workspace the first-run surface; preserve saved tip preferences and Help access. |
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/runtimeinfo/VersionInfoPanel.java` | Show product version and technical engine compatibility without an engine-brand headline. |
 | `Ghidra/Features/Base/src/main/java/ghidra/framework/main/GhidraApplicationInformationDisplayFactory.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
-| `Ghidra/Features/Base/src/main/java/ghidra/framework/main/InfoPanel.java` | Themed original splash identity and separate product/engine versions; remove upstream decorative strips. |
-| `Ghidra/Framework/Docking/certification.manifest` | Register the Apache-2.0 terms for original Opcodex image/theme assets in the existing licensing audit. |
-| `Ghidra/Framework/Docking/data/docking.theme.properties` | Retain the framework icon ID while mapping it to original light/dark artwork within its own module. |
+| `Ghidra/Features/Base/src/main/java/ghidra/framework/main/InfoPanel.java` | Use original themed identity and product-only version presentation; retain complete legal files. |
+| `Ghidra/Features/Base/src/main/resources/defaultTools/images/greenDragon24.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Features/Base/src/main/resources/defaultTools/images/red-dragon.gif` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Features/Base/src/main/resources/images/GHIDRA_1.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Features/Base/src/main/resources/images/GHIDRA_2.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Features/Base/src/main/resources/images/GHIDRA_3.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Features/Base/src/main/resources/images/GHIDRA_Splash.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Framework/Docking/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
+| `Ghidra/Framework/Docking/data/docking.theme.properties` | Map common action/tree IDs to original transparent light/dark icons; preserve semantic IDs and aliases. |
 | `Ghidra/Framework/Docking/src/main/java/docking/help/HelpManager.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Framework/Gui/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
+| `Ghidra/Framework/Gui/data/gui.theme.properties` | Map common action/tree IDs to original transparent light/dark icons; preserve semantic IDs and aliases. |
+| `Ghidra/Framework/Gui/src/main/java/generic/theme/ThemeManager.java` | Use Opcodex Dark for new profiles; saved theme preferences retain precedence. |
+| `Ghidra/Framework/Gui/src/main/java/generic/theme/laf/FlatLookAndFeelManager.java` | Install product-theme sizing after FlatLaf loading and before component refresh. |
+| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon128.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon16.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon24.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon256.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon32.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon40.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon48.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon64.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/Framework/Project/data/project.theme.properties` | Map common action/tree IDs to original transparent light/dark icons; preserve semantic IDs and aliases. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/AcceptUrlContentTask.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/EditPluginPathDialog.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FileActionManager.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
-| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FrontEndPlugin.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
-| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FrontEndTool.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FrontEndPlugin.java` | Add welcome/project cards using existing Create/Open commands, cleaner spacing and product wording. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FrontEndTool.java` | Use product wording; new profiles start in the workspace while saved startup preferences remain respected. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/ImportGhidraToolsDialog.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/ProjectToolBar.java` | Use a quiet inset and labelled Code Browser button without changing tool launch behavior. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/RepositoryChooser.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/ToolActionManager.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/UserAgreementDialog.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/projectdata/actions/VersionControlAction.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/wizard/project/SelectProjectPanel.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/plugintool/PluginTool.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/plugintool/dialog/PluginManagerComponent.java` | Display Opcodex Core while preserving the persisted plugin-package identifier. |
+| `Ghidra/RuntimeScripts/Windows/support/ghidra.ico` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
+| `Ghidra/RuntimeScripts/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
 | `Ghidra/application.properties` | Product name, release identity and independent version; engine/API version remains 12.1.4. |
 | `README.md` | Replace upstream project marketing/install instructions with Opcodex status, downloads, build, releases and attribution. |
 | `build.gradle` | Apply isolated Opcodex packaging/test tasks; retain upstream distribution tasks. |

@@ -15,6 +15,8 @@
  */
 package ghidra;
 
+// OPCODEX: product-facing UI wording; compatibility identifiers and help anchors are retained.
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -74,7 +76,7 @@ public class GhidraRun implements GhidraLaunchable {
 			Application.initializeApplication(layout, configuration);
 
 			log = LogManager.getLogger(GhidraRun.class);
-			log.info("User " + SystemUtilities.getUserName() + " started Ghidra.");
+			log.info("User " + SystemUtilities.getUserName() + " started Opcodex.");
 			log.info("User settings directory: " + Application.getUserSettingsDirectory());
 			log.info("User temp directory: " + Application.getUserTempDirectory());
 			log.info("User cache directory: " + Application.getUserCacheDirectory());
@@ -93,7 +95,7 @@ public class GhidraRun implements GhidraLaunchable {
 				String projectPath = processArguments(args);
 				openProject(projectPath);
 				
-				log.info("Ghidra startup complete (" + GhidraLauncher.getMillisecondsFromLaunch() +
+				log.info("Opcodex startup complete (" + GhidraLauncher.getMillisecondsFromLaunch() +
 					" ms)");
 
 				checkForMissingNativeComponents();
@@ -106,7 +108,7 @@ public class GhidraRun implements GhidraLaunchable {
 	}
 
 	private void writeLastRun() {
-		// Write the Ghidra installation location to the "lastrun" file
+		// Write the Opcodex installation location to the "lastrun" file
 		File settingsDir = Application.getUserSettingsDirectory();
 		ResourceFile rootDir = Application.getApplicationRootDirectory();
 		if (settingsDir != null && rootDir != null) {
@@ -259,7 +261,7 @@ public class GhidraRun implements GhidraLaunchable {
 		catch (OSFileNotFoundException e) {
 			//@formatter:off
 			String msg =
-				"It appears that native components have not been built for this Ghidra installation.\n" +
+				"It appears that native components have not been built for this Opcodex installation.\n" +
 					"See the \"Building Native Components\" section of the Getting Started guide for build instructions.";
 			//@formatter:on
 			Msg.showWarn(GhidraRun.class, null, "Missing Native Components", msg);

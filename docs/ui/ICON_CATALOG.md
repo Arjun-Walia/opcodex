@@ -1,0 +1,161 @@
+<!-- Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0 -->
+
+# Opcodex icon pilot
+
+67 original outline glyphs replace 141 existing semantic IDs. Transparent PNGs are exported at 16/20/24/32/48/64px; product themes use real multi-resolution ImageIcons, with a 16px logical base. Existing raw filename callers retain compatibility fallbacks with original Opcodex artwork.
+
+Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-assets/icons/src). Regenerate with `node opcodex/generate-ui-assets.cjs` and `node opcodex/generate-design-preview.cjs` using Sharp as a development-only dependency.
+
+## Light
+
+![Light icon samples](catalog-light.png)
+
+## Dark
+
+![Dark icon samples](catalog-dark.png)
+
+## Semantic mapping
+
+| Existing ID | Original glyph |
+|---|---|
+| `icon.add` | `plus` |
+| `icon.base.lock` | `lock` |
+| `icon.base.pinned` | `pin` |
+| `icon.base.search.marker` | `search` |
+| `icon.base.unlock` | `unlock` |
+| `icon.check` | `check` |
+| `icon.checkmark.green` | `check` |
+| `icon.clear` | `close` |
+| `icon.collapse.all` | `collapse` |
+| `icon.configure.filter` | `settings` |
+| `icon.console` | `terminal` |
+| `icon.copy` | `copy` |
+| `icon.cut` | `cut` |
+| `icon.delete` | `trash` |
+| `icon.domain.file.uknown` | `file` |
+| `icon.down` | `down` |
+| `icon.drive` | `drive` |
+| `icon.error` | `error` |
+| `icon.expand.all` | `expand` |
+| `icon.extension.configure` | `settings` |
+| `icon.flag` | `flag` |
+| `icon.folder.closed` | `folder` |
+| `icon.folder.new` | `folder-add` |
+| `icon.folder.open` | `folder-open` |
+| `icon.help` | `help` |
+| `icon.home` | `home` |
+| `icon.information` | `info` |
+| `icon.left` | `left` |
+| `icon.left.alt` | `left` |
+| `icon.lock` | `lock` |
+| `icon.make.selection` | `selection` |
+| `icon.navigate.in` | `import` |
+| `icon.navigate.out` | `export` |
+| `icon.not.allowed` | `error` |
+| `icon.paste` | `paste` |
+| `icon.plugin.bookmark.type.analysis` | `wand` |
+| `icon.plugin.bookmark.type.note` | `bookmark` |
+| `icon.plugin.calltree.function` | `function` |
+| `icon.plugin.calltree.node.external` | `export` |
+| `icon.plugin.codebrowser.cursor.location` | `right` |
+| `icon.plugin.codebrowser.cursor.marker` | `search` |
+| `icon.plugin.codebrowser.provider` | `code` |
+| `icon.plugin.console.clear` | `close` |
+| `icon.plugin.console.provider` | `terminal` |
+| `icon.plugin.datatypes.built.in` | `cube` |
+| `icon.plugin.datatypes.enum` | `table` |
+| `icon.plugin.datatypes.function` | `function` |
+| `icon.plugin.datatypes.pointer` | `right` |
+| `icon.plugin.datatypes.provider` | `layers` |
+| `icon.plugin.datatypes.structure` | `grid` |
+| `icon.plugin.datatypes.typedef` | `tag` |
+| `icon.plugin.datatypes.union` | `layers` |
+| `icon.plugin.datatypes.util.open.root` | `library` |
+| `icon.plugin.datatypes.util.root` | `library` |
+| `icon.plugin.fsbrowser.import` | `import` |
+| `icon.plugin.fsbrowser.library` | `library` |
+| `icon.plugin.functionwindow.provider` | `function` |
+| `icon.plugin.manager.default` | `grid` |
+| `icon.plugin.navigation.bookmark` | `bookmark` |
+| `icon.plugin.navigation.bookmark.analysis` | `wand` |
+| `icon.plugin.navigation.bookmark.note` | `bookmark` |
+| `icon.plugin.navigation.bytes` | `grid` |
+| `icon.plugin.navigation.data` | `table` |
+| `icon.plugin.navigation.function` | `function` |
+| `icon.plugin.navigation.highlight.range.next` | `down` |
+| `icon.plugin.navigation.highlight.range.previous` | `up` |
+| `icon.plugin.navigation.instruction` | `code` |
+| `icon.plugin.navigation.label` | `tag` |
+| `icon.plugin.navigation.selection.range.next` | `down` |
+| `icon.plugin.navigation.selection.range.previous` | `up` |
+| `icon.plugin.navigation.undefined` | `help` |
+| `icon.plugin.programtree.closed.folder` | `folder` |
+| `icon.plugin.programtree.docs` | `book` |
+| `icon.plugin.programtree.fragment` | `code` |
+| `icon.plugin.programtree.fragment.closed.folder` | `folder` |
+| `icon.plugin.programtree.fragment.empty` | `file` |
+| `icon.plugin.programtree.fragment.open.folder` | `folder-open` |
+| `icon.plugin.programtree.fragment.viewed` | `code` |
+| `icon.plugin.programtree.fragment.viewed.closed.folder.with.description` | `folder` |
+| `icon.plugin.programtree.fragment.viewed.empty` | `file` |
+| `icon.plugin.programtree.new.tree` | `folder-add` |
+| `icon.plugin.programtree.open.folder` | `folder-open` |
+| `icon.plugin.symboltree.node.category.classes.closed` | `folder` |
+| `icon.plugin.symboltree.node.category.classes.open` | `folder-open` |
+| `icon.plugin.symboltree.node.category.exports.closed` | `folder` |
+| `icon.plugin.symboltree.node.category.exports.open` | `folder-open` |
+| `icon.plugin.symboltree.node.category.function.closed` | `folder` |
+| `icon.plugin.symboltree.node.category.function.open` | `folder-open` |
+| `icon.plugin.symboltree.node.category.imports.closed` | `folder` |
+| `icon.plugin.symboltree.node.category.imports.open` | `folder-open` |
+| `icon.plugin.symboltree.node.category.label.closed` | `folder` |
+| `icon.plugin.symboltree.node.category.label.open` | `folder-open` |
+| `icon.plugin.symboltree.node.category.namespace.closed` | `folder` |
+| `icon.plugin.symboltree.node.category.namespace.open` | `folder-open` |
+| `icon.plugin.symboltree.node.class` | `cube` |
+| `icon.plugin.symboltree.node.code` | `tag` |
+| `icon.plugin.symboltree.node.code.external` | `export` |
+| `icon.plugin.symboltree.node.function` | `function` |
+| `icon.plugin.symboltree.node.function.external` | `export` |
+| `icon.plugin.symboltree.node.function.thunk` | `link` |
+| `icon.plugin.symboltree.node.group.folder.closed` | `folder` |
+| `icon.plugin.symboltree.node.group.folder.open` | `folder-open` |
+| `icon.plugin.symboltree.node.library` | `library` |
+| `icon.plugin.symboltree.node.local.variable` | `variable` |
+| `icon.plugin.symboltree.node.namespace` | `braces` |
+| `icon.plugin.symboltree.node.organization.closed` | `folder` |
+| `icon.plugin.symboltree.node.organization.open` | `folder-open` |
+| `icon.plugin.symboltree.node.parameter` | `parameter` |
+| `icon.plugin.symboltree.node.root` | `graph` |
+| `icon.plugin.symboltree.provider` | `graph` |
+| `icon.projectdata.delete` | `trash` |
+| `icon.projectdata.rename` | `edit` |
+| `icon.properties` | `settings` |
+| `icon.provider.clone` | `camera` |
+| `icon.redo` | `redo` |
+| `icon.refresh` | `refresh` |
+| `icon.rename` | `edit` |
+| `icon.right` | `right` |
+| `icon.right.alt` | `right` |
+| `icon.run` | `play` |
+| `icon.save` | `save` |
+| `icon.save.as` | `save` |
+| `icon.search` | `search` |
+| `icon.sort.ascending` | `sort-up` |
+| `icon.sort.descending` | `sort-down` |
+| `icon.stop` | `stop` |
+| `icon.subtract` | `minus` |
+| `icon.table` | `table` |
+| `icon.toggle.collapse` | `collapse` |
+| `icon.toggle.expand` | `expand` |
+| `icon.undo` | `undo` |
+| `icon.up` | `up` |
+| `icon.warning` | `warning` |
+| `icon.warning.strong` | `warning` |
+| `icon.widget.filterpanel.filter.off` | `filter-off` |
+| `icon.widget.filterpanel.filter.on` | `filter` |
+| `icon.widget.tabs.close` | `close` |
+| `icon.widget.tabs.close.highlight` | `close` |
+| `icon.widget.tabs.list` | `down` |
+| `icon.zoom.in` | `zoom-in` |
+| `icon.zoom.out` | `zoom-out` |

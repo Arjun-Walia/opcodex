@@ -193,7 +193,8 @@ class FileActionManager {
 		return null;
 	}
 
-	private void openProject() {
+	// OPCODEX: share the existing command with the welcome screen.
+	void openProject() {
 		ProjectLocator currentProjectLocator = null;
 		Project activeProject = plugin.getActiveProject();
 		if (activeProject != null) {

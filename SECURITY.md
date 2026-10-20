@@ -6,4 +6,4 @@ For a suspected Opcodex vulnerability, use this repository's [private vulnerabil
 
 If private reporting is unavailable, open an issue asking the maintainer for a private reporting channel without disclosing the vulnerability details, sensitive files or credentials. Do not send proprietary binaries through public issues.
 
-For engine-specific issues, also consult [Ghidra's upstream security policy and advisories](https://github.com/NationalSecurityAgency/ghidra/security). This fork's alpha previews are development releases and have no promised support or response-time agreement. Released artifacts identify their exact upstream version and source revision so affected builds can be tracked.
+Preview builds are development releases and have no promised support or response-time agreement. Component provenance is retained in the build manifest and third-party notices so security advisories can be checked against the exact included versions.

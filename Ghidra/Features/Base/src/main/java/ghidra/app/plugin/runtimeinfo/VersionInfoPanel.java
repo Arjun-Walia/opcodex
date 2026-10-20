@@ -79,10 +79,10 @@ class VersionInfoPanel extends JPanel {
 		ApplicationProperties props = Application.getApplicationLayout().getApplicationProperties();
 		// OPCODEX: distinguish the product release from its compatible upstream engine.
 		lines.add("Opcodex Version: " + props.getProperty("opcodex.version", def));
-		lines.add("Ghidra Engine Version: " + props.getApplicationVersion());
-		lines.add("Ghidra Release: " + props.getApplicationReleaseName());
-		lines.add("Ghidra Build Date: " + props.getApplicationBuildDate());
-		lines.add("Ghidra Revision: " +
+		lines.add("Engine Compatibility: " + props.getApplicationVersion());
+		lines.add("Build Channel: " + props.getApplicationReleaseName());
+		lines.add("Build Date: " + props.getApplicationBuildDate());
+		lines.add("Source Revision: " +
 			props.getProperty(ApplicationProperties.REVISION_PROPERTY_PREFIX + "ghidra", def));
 		lines.add("Ghidra Development Mode: " + SystemUtilities.isInDevelopmentMode());
 	}

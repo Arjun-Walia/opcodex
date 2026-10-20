@@ -166,11 +166,11 @@ class InfoPanel extends JPanel {
 		imagePanel.setBackground(bgColor);
 
 		imagePanel.setLayout(new BorderLayout());
-		Icon ghidraSplashImage = new GIcon("icon.opcodex.splash");
+		Icon splashImage = new GIcon("icon.opcodex.splash");
 
-		JLabel l = new GIconLabel(ghidraSplashImage);
+		JLabel l = new GIconLabel(splashImage);
 		imagePanel.add(l, BorderLayout.CENTER);
-		imageWidth = ghidraSplashImage.getIconWidth();
+		imageWidth = splashImage.getIconWidth();
 		return imagePanel;
 	}
 
@@ -187,8 +187,7 @@ class InfoPanel extends JPanel {
 
 		// set some default values in case we don't have the resource file.
 		// OPCODEX: product and compatible engine versions are intentionally independent.
-		version = "Opcodex " + Application.getApplicationProperty("opcodex.version") +
-			"\nBuilt on Ghidra " + Application.getApplicationVersion() +
+		version = "Version " + Application.getApplicationProperty("opcodex.version") +
 			(SystemUtilities.isInDevelopmentMode() ? " - DEVELOPMENT" : "") + buildInfo + "\n" +
 			Application.getBuildDate() + "\n" +
 			"Java Version " + System.getProperty("java.version");

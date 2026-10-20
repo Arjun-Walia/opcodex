@@ -1,3 +1,4 @@
+##OPCODEX: original product/outline artwork exported from SVG sources.
 ##VERSION: 2.0
 ##MODULE IP: Apache License 2.0
 ##MODULE IP: Copyright Distribution Permitted
@@ -815,14 +816,14 @@ src/main/resources/defaultTools/images/edu_science.png||Nuvola Icons - LGPL 2.1|
 src/main/resources/defaultTools/images/encrypted.png||Nuvola Icons - LGPL 2.1|||Nuvola icon set|END|
 src/main/resources/defaultTools/images/exit.png||Nuvola Icons - LGPL 2.1|||Nuvola icon set|END|
 src/main/resources/defaultTools/images/ftp.png||Nuvola Icons - LGPL 2.1|||Nuvola icon set|END|
-src/main/resources/defaultTools/images/greenDragon24.png||GHIDRA||reviewed||END|
+src/main/resources/defaultTools/images/greenDragon24.png||Apache License 2.0||||END|
 src/main/resources/defaultTools/images/homepage.png||Nuvola Icons - LGPL 2.1|||Nuvola icon set|END|
 src/main/resources/defaultTools/images/internet-web-browser.png||Tango Icons - Public Domain|||originally internet-web-browser.png from tango|END|
 src/main/resources/defaultTools/images/kcmprocessor.png||Nuvola Icons - LGPL 2.1|||Nuvola icon set|END|
 src/main/resources/defaultTools/images/mergemgr.gif||GHIDRA||||END|
 src/main/resources/defaultTools/images/network-receive.png||Tango Icons - Public Domain|||originally network-receive.png from tango|END|
 src/main/resources/defaultTools/images/preferences-web-browser-cache.png||Oxygen Icons - LGPL 3.0|||originally preferences-web-browser.png|END|
-src/main/resources/defaultTools/images/red-dragon.gif||GHIDRA|||Renamed GIF version of redDragon24.png|END|
+src/main/resources/defaultTools/images/red-dragon.gif||Apache License 2.0||||END|
 src/main/resources/defaultTools/images/tar.png||Nuvola Icons - LGPL 2.1|||Nuvola icon set|END|
 src/main/resources/defaultTools/images/tools.png||Oxygen Icons - LGPL 3.0|||originally configure.png from tango|END|
 src/main/resources/defaultTools/images/video-x-generic.png||Tango Icons - Public Domain|||tango|END|
@@ -850,10 +851,10 @@ src/main/resources/images/F.gif||GHIDRA||||END|
 src/main/resources/images/FilterArrays.png||GHIDRA||||END|
 src/main/resources/images/FilterPointers.png||GHIDRA|||Modified version of fingerPointer.png|END|
 src/main/resources/images/FunctionScope.gif||GHIDRA||||END|
-src/main/resources/images/GHIDRA_1.png||GHIDRA||||END|
-src/main/resources/images/GHIDRA_2.png||GHIDRA||||END|
-src/main/resources/images/GHIDRA_3.png||GHIDRA||||END|
-src/main/resources/images/GHIDRA_Splash.png||GHIDRA||||END|
+src/main/resources/images/GHIDRA_1.png||Apache License 2.0||||END|
+src/main/resources/images/GHIDRA_2.png||Apache License 2.0||||END|
+src/main/resources/images/GHIDRA_3.png||Apache License 2.0||||END|
+src/main/resources/images/GHIDRA_Splash.png||Apache License 2.0||||END|
 src/main/resources/images/I.gif||GHIDRA||||END|
 src/main/resources/images/L.gif||GHIDRA||||END|
 src/main/resources/images/LocalVariable.gif||GHIDRA||||END|

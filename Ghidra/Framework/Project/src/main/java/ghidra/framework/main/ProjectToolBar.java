@@ -39,7 +39,8 @@ class ProjectToolBar extends JToolBar implements ToolChestChangeListener {
 		toolButtonMap = new HashMap<>(TYPICAL_NUM_TOOLS);
 
 		// remove the default etched border
-		setBorder(BorderFactory.createTitledBorder("Tool Chest"));
+		// OPCODEX: a quiet inset instead of the inherited etched title frame.
+		setBorder(BorderFactory.createEmptyBorder(8, 4, 12, 4));
 
 		setActiveProject(plugin.getActiveProject());
 
@@ -125,6 +126,12 @@ class ProjectToolBar extends JToolBar implements ToolChestChangeListener {
 	 */
 	private void addConfig(ToolTemplate toolConfig) {
 		ToolButton button = new ToolButton(plugin, toolConfig);
+		// OPCODEX: retain icon-only scanning for secondary tools and label the primary workbench.
+		if ("CodeBrowser".equals(toolConfig.getName())) {
+			button.setText("Code Browser");
+			button.setIconTextGap(8);
+		}
+		button.setMargin(new java.awt.Insets(6, 8, 6, 8));
 		this.add(button);
 		toolButtonMap.put(toolConfig.getName(), button);
 	}

@@ -6,6 +6,10 @@ Updated 2026-10-20 (Asia/Calcutta). The owner selected the stable Ghidra 12.1.4 
 
 The earlier 12.3 DEV audit is preserved on the `codex/ui-audit` branch. It is historical, superseded evidence for the old baseline. These CSVs refresh the tracked stable source after the branding implementation at `e3463a7054347ba142457af28f3872fce642b8fc`.
 
+## Modern interface pilot
+
+This inventory is the recorded initial stable snapshot, not a fresh count of the alpha.2 resources. The modern pilot maps 141 existing IDs to 67 original outline glyphs and introduces multi-resolution variants, product themes and compatibility artwork. See [design system](DESIGN_SYSTEM.md), [catalog](ICON_CATALOG.md) and [interface changes](UX_CHANGES.md) for the current delta.
+
 ## Measured scope
 
 | Measurement | Count |

@@ -98,7 +98,8 @@ public class TipOfTheDayPlugin extends Plugin implements ApplicationLevelOnlyPlu
 
 	private void readPreferences() {
 		String tipIndexStr = Preferences.getProperty(TIP_INDEX, "0", true);
-		String showTipsStr = Preferences.getProperty(SHOW_TIPS, "true", true);
+		// OPCODEX: the welcome screen is the first-run surface; preserve saved tip preferences.
+		String showTipsStr = Preferences.getProperty(SHOW_TIPS, "false", true);
 
 		int tipIndex = Integer.parseInt(tipIndexStr);
 		final boolean showTips = Boolean.parseBoolean(showTipsStr);
