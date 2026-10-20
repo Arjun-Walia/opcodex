@@ -9,11 +9,42 @@ import static org.junit.Assert.*;
 import java.awt.Color;
 import java.awt.image.MultiResolutionImage;
 import javax.swing.ImageIcon;
+import javax.swing.UIDefaults;
+import javax.swing.LookAndFeel;
 import org.junit.Test;
 import generic.theme.*;
+import generic.theme.laf.*;
 
 /** Contracts for the real theme objects rather than a duplicate palette fixture. */
 public class OpcodexThemeTest {
+	@Test
+	public void chromeUsesItsSurfaceTokenThroughRealFlatLafNormalization() throws Exception {
+		for (GTheme theme : new GTheme[] {new OpcodexDarkTheme(), new OpcodexLightTheme()}) {
+			String laf = theme.useDarkDefaults() ? "FlatDarkLaf" : "FlatLightLaf";
+			LookAndFeel lookAndFeel = (LookAndFeel) Class.forName("com.formdev.flatlaf." + laf)
+				.getConstructor().newInstance();
+			UIDefaults defaults = lookAndFeel.getDefaults();
+			GThemeValueMap values = (theme.useDarkDefaults() ? new DarkMapper(defaults) :
+				new LightMapper(defaults)).getNormalizedJavaDefaults();
+			values.load(theme);
+			for (String key : new String[] {"Panel.background", "ToolBar.background",
+					"MenuBar.background", "TitlePane.background", "TabbedPane.background"}) {
+				assertNotNull("Real FlatLaf key: " + key, defaults.getColor(key));
+				assertEquals(theme.getName() + " " + key,
+					values.getResolvedColor("system.color.bg.control"),
+					values.getResolvedColor("laf.color." + key));
+			}
+		}
+	}
+
+	private static class DarkMapper extends FlatDarkUiDefaultsMapper {
+		DarkMapper(UIDefaults defaults) { super(defaults); }
+	}
+
+	private static class LightMapper extends FlatUiDefaultsMapper {
+		LightMapper(UIDefaults defaults) { super(defaults); }
+	}
+
 	@Test
 	public void productThemesHaveMatchedLookAndFeelsAndNames() {
 		GTheme dark = new OpcodexDarkTheme();

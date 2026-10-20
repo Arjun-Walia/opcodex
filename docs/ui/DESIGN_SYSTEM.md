@@ -32,7 +32,7 @@ See the [rendered catalog](ICON_CATALOG.md). Asset export uses Sharp/libvips as 
 | Type / parameter | #714796 | #d2b8ee |
 | Constant | #7a5313 | #eac286 |
 
-The implementation uses theme IDs, not hardcoded per-component painting. `OpcodexThemeTest` measures the actual theme colors: primary/control/selection/secondary text and representative syntax meet at least 4.5:1; focus against the control surface meets at least 3:1. This is token-level verification, not a complete accessibility certification of every specialized view.
+The implementation uses theme IDs, not hardcoded per-component painting. Panel, toolbar, menu, title and tab surfaces explicitly reference the control token so shared FlatLaf default RGB values cannot accidentally bind them to the border group. A regression test exercises the real FlatLaf normalization for both themes. `OpcodexThemeTest` measures the actual theme colors: primary/control/selection/secondary text and representative syntax meet at least 4.5:1; focus against the control surface meets at least 3:1. This is token-level verification, not a complete accessibility certification of every specialized view.
 
 Selection is quiet, with readable text; active docking headers and tabs use matched theme tokens. Existing listing/decompiler font settings remain configurable. This pilot covers common chrome and representative syntax; detailed graph/debugger palettes remain later work.
 

@@ -39,6 +39,23 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		color("system.color.fg.disabled", secondary);
 		color("color.fg.disabled", secondary);
 		color("color.fg.messages.hint", secondary);
+		// FlatLaf's normalized palette can associate a panel with the border group when
+		// its original RGB matches. Bind chrome by role instead of inheriting that match.
+		refs("system.color.bg.control", "Panel.background", "Label.background",
+			"ToolBar.background", "ToolBar.floatingBackground", "SplitPane.background",
+			"TabbedPane.background", "ScrollBar.background", "MenuBar.background",
+			"Menu.background", "MenuItem.background", "PopupMenu.background",
+			"TitlePane.background", "TitlePane.inactiveBackground", "TableHeader.background");
+		refs("system.color.bg.border", "Component.borderColor", "Component.disabledBorderColor",
+			"ToolBar.separatorColor", "MenuBar.borderColor", "PopupMenu.borderColor",
+			"TableHeader.separatorColor", "TableHeader.bottomSeparatorColor",
+			"TabbedPane.contentAreaColor", "Button.borderColor", "Button.disabledBorderColor");
+		refs("system.color.bg.selected.view", "Button.hoverBackground",
+			"Button.pressedBackground", "Button.selectedBackground", "Button.default.background",
+			"Button.default.hoverBackground", "Button.default.pressedBackground",
+			"Button.toolbar.hoverBackground", "Button.toolbar.pressedBackground",
+			"Button.toolbar.selectedBackground", "MenuBar.hoverBackground",
+			"Table.selectionInactiveBackground", "Tree.selectionInactiveBackground");
 		color("color.bg.table.row.alt", dark ? "#1e2125" : "#f1f4f6");
 		color("color.bg.table.grid", dark ? "#30363e" : "#dce1e6");
 		color("color.bg.header.active", selection);
@@ -88,6 +105,19 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		color("color.fg.decompiler.constant", constant);
 		color("color.fg.decompiler.global", accent);
 		color("color.fg.decompiler.external.function", type);
+		color("color.fg.decompiler.special", keyword);
+		color("color.fg.decompiler.error", dark ? "#f18b91" : "#b64248");
+		color("color.bg.decompiler.current.variable", dark ? "#3b3527" : "#fff0d5");
+		color("color.fg.listing.ext.entrypoint", keyword);
+		for (String suffix : new String[] {"function.return.type", "function.variable",
+				"function.variable.assigned", "function.tag"}) {
+			color("color.fg.listing." + suffix, type);
+		}
+		for (String suffix : new String[] {"function.param", "function.param.dynamic",
+				"register", "xref", "xref.read", "xref.write"}) {
+			color("color.fg.listing." + suffix, variable);
+		}
+		color("color.fg.listing.function.param.auto", comment);
 		color("color.fg.listing.constant", constant);
 		color("color.fg.listing.bytes", secondary);
 		Font ui = new Font(Font.DIALOG, Font.PLAIN, 13);
@@ -103,6 +133,12 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 
 	private void color(String id, String hex) {
 		setColor(id, Color.decode(hex));
+	}
+
+	private void refs(String token, String... keys) {
+		for (String key : keys) {
+			setColorRef("laf.color." + key, token);
+		}
 	}
 
 	/** Called after FlatLaf installation and before component UIs update. */
