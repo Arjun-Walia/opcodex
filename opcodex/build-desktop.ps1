@@ -115,7 +115,7 @@ if ($Installer) {
             '--app-version',$opcodexInstallerConfig.installerVersion,'--dest',$opcodexInstallerOutput,
             '--vendor','Opcodex','--description',('Opcodex ' + $opcodexManifest.version),
             '--about-url','https://opcodex.xyz','--win-per-user-install','--win-dir-chooser',
-            '--win-menu','--win-menu-group','Opcodex','--win-shortcut','--install-dir','Opcodex',
+            '--win-menu','--win-menu-group','Opcodex','--win-shortcut','--install-dir','Programs\Opcodex\Application',
             '--win-upgrade-uuid',$opcodexInstallerConfig.upgradeUuid)
         & $opcodexJpackagePath @opcodexInstallerArgs
         if ($LASTEXITCODE -ne 0) { throw 'Windows installer creation failed.' }
@@ -129,6 +129,7 @@ if ($Installer) {
         [ordered]@{product='Opcodex'; version=$opcodexManifest.version; platform='win_x86_64';
             sourceRevision=$opcodexManifest.sourceRevision; installerVersion=$opcodexInstallerConfig.installerVersion;
             installerSha256=$opcodexInstallerHash; portableSha256=$opcodexHash; bundledRuntime=$true;
+            installScope='current-user'; installSubdirectory='Programs\Opcodex\Application';
             upgradeUuid=$opcodexInstallerConfig.upgradeUuid; signed=$false} |
             ConvertTo-Json | Set-Content -LiteralPath ($opcodexPublishedMsi + '.json') -Encoding utf8NoBOM
         Write-Output ('Installer: ' + $opcodexPublishedMsi)

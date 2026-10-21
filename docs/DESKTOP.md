@@ -18,6 +18,6 @@ For portable launches, use `opcodexRun.bat`. Portable ZIPs do not bundle Java. N
 
 Building this installer requires JDK 25, PowerShell 7, WiX 5.0.2 and the matching `WixToolset.UI.wixext`/`WixToolset.Util.wixext` extensions. WiX is a build tool, not an application dependency. Put `wix.exe` on PATH or set `OPCODEX_WIX_HOME` to its directory. CI pins these tools. Use a clean committed checkout.
 
-The Windows numeric installer version is `0.1.2` for product `1.0.0-alpha.2`, allowing the final `1.0.0` installer to upgrade it. Both identities and the stable upgrade UUID are recorded in `opcodex/windows-installer.json`. Keep the upgrade UUID across releases. Projects/settings live outside the installation directory.
+The Windows numeric installer version is `0.1.2` for product `1.0.0-alpha.2`, allowing the final `1.0.0` installer to upgrade it. Both identities and the stable upgrade UUID are recorded in `opcodex/windows-installer.json`. Keep the upgrade UUID across releases. The MSI application directory is `%LOCALAPPDATA%\Programs\Opcodex\Application`, separate from the existing `%LOCALAPPDATA%\opcodex` cache and the older versioned preview folders. Projects/settings live outside the installation directory.
 
 Creating an MSI does not publish a release. Public promotion still requires the checks in [RELEASING](releases/RELEASING.md), and actual installation/launch evidence belongs in [VERIFICATION](releases/VERIFICATION.md).
