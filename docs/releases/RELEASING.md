@@ -21,7 +21,7 @@ The packager rejects incompatible versions, unbranded inputs, missing platform b
 
 ## GitHub workflow
 
-The Opcodex workflow runs on pushes/PRs and can be started manually. It builds native Windows x86-64, Linux x86-64 and macOS ARM64 packages. The Linux job also runs upstream unit tests. Each platform uploads its ZIP, `.sha256` and JSON manifest; test reports are separate artifacts.
+The Opcodex workflow runs on pushes/PRs and can be started manually. It builds native Windows x86-64, Linux x86-64 and macOS ARM64 packages. The Linux job also runs upstream unit tests. Each platform uploads its ZIP, `.sha256` and JSON manifest; Windows also uploads the bundled-runtime MSI, `.msi.sha256` and `.msi.json` provenance. Windows uses JDK 25 with pinned WiX 5.0.2; the other platforms use JDK 21. Test reports are separate artifacts. The strict icon completeness check must pass.
 
 To create a release, run the workflow manually with `create_draft` enabled, or push a matching version tag after review. The release job requires every build/test job to pass and creates a **draft** with the matching release notes and real native artifacts. It verifies that a tag-triggered version matches the source product version. Publishing the reviewed draft is a separate action. Do not attach an upstream stock ZIP under an Opcodex filename or call untested platforms verified.
 

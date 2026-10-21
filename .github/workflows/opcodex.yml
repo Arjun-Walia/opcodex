@@ -39,12 +39,15 @@ jobs:
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: ${{ runner.os == 'Windows' && '25' || '21' }}
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
       - name: Release-boundary tests
-        run: python -m unittest discover -s opcodex/tests -v
+        shell: bash
+        run: |
+          python -m unittest discover -s opcodex/tests -v
+          python opcodex/check_ui_coverage.py
       - name: Fetch pinned engine dependencies (Unix)
         if: runner.os != 'Windows'
         run: ./gradlew --no-daemon -I gradle/support/fetchDependencies.gradle -DhideDownloadProgress=true
@@ -57,6 +60,21 @@ jobs:
       - name: Build native Opcodex package (Windows)
         if: runner.os == 'Windows'
         run: .\gradlew.bat --no-daemon buildOpcodex
+      - name: Build Windows installer with bundled runtime
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $opcodexWixBin = Join-Path $env:RUNNER_TEMP 'opcodex-wix'
+          dotnet tool install wix --version 5.0.2 --tool-path $opcodexWixBin
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:PATH = $opcodexWixBin + ';' + $env:PATH
+          wix extension add --global WixToolset.UI.wixext/5.0.2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          wix extension add --global WixToolset.Util.wixext/5.0.2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .\gradlew.bat --no-daemon buildOpcodexInstaller
+          exit $LASTEXITCODE
       - name: Upload native package and provenance
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -112,6 +130,7 @@ jobs:
           files = list(pathlib.Path('release-assets').glob('*.zip'))
           assert len(files) == 3, 'Every native platform package is required'
           platforms = set()
+          windows_checksum = None
           for file in files:
               with file.open('rb') as stream:
                   checksum = hashlib.file_digest(stream, 'sha256').hexdigest()
@@ -120,7 +139,19 @@ jobs:
               assert manifest['sourceRevision'] == os.environ['GITHUB_SHA']
               assert manifest['version'] == version and manifest['archiveSha256'] == checksum
               platforms.add(manifest['platform'])
+              if manifest['platform'] == 'win_x86_64': windows_checksum = checksum
           assert platforms == {'linux_x86_64', 'win_x86_64', 'mac_arm_64'}
+          installers = list(pathlib.Path('release-assets').glob('*.msi'))
+          assert len(installers) == 1, 'A bundled-runtime Windows installer is required'
+          installer = installers[0]
+          with installer.open('rb') as stream:
+              checksum = hashlib.file_digest(stream, 'sha256').hexdigest()
+          manifest = json.loads(pathlib.Path(str(installer) + '.json').read_text())
+          assert manifest['product'] == 'Opcodex' and manifest['platform'] == 'win_x86_64'
+          assert manifest['sourceRevision'] == os.environ['GITHUB_SHA']
+          assert manifest['version'] == version and manifest['bundledRuntime'] is True
+          assert manifest['portableSha256'] == windows_checksum, 'Installer payload differs from Windows ZIP'
+          assert checksum == manifest['installerSha256'] == pathlib.Path(str(installer) + '.sha256').read_text().split()[0]
           with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
               stream.write('tag=' + tag + '\nversion=' + version + '\n')
           PY

@@ -3,7 +3,9 @@
 param(
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [string]$BuildJavaHome = $env:JAVA_HOME,
-    [switch]$Install
+    [switch]$Install,
+    [switch]$Installer,
+    [string]$WixDirectory = $env:OPCODEX_WIX_HOME
 )
 $ErrorActionPreference = 'Stop'
 if (-not $IsWindows) { throw 'Native desktop installation currently supports Windows.' }
@@ -96,6 +98,42 @@ if ($opcodexSavedRecord.portableSha256 -ne $opcodexHash) { throw 'Cached app ima
 $opcodexClasspath = @(Get-Content -LiteralPath $opcodexConfigPath | Where-Object { $_.StartsWith('app.classpath=') })
 if ($opcodexClasspath.Count -ne 1 -or $opcodexClasspath[0] -ne $opcodexBootstrap) {
     throw 'Native launcher differs from the supported module bootstrap.'
+}
+
+if ($Installer) {
+    $opcodexInstallerConfig = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'windows-installer.json') -Raw | ConvertFrom-Json
+    if ($opcodexInstallerConfig.productVersion -ne $opcodexManifest.version -or
+        $opcodexInstallerConfig.installerVersion -notmatch '^\d+\.\d+\.\d+$' -or
+        $opcodexInstallerConfig.upgradeUuid -notmatch '^[0-9a-f-]{36}$') { throw 'Installer identity must match this product release.' }
+    $opcodexSavedPath = $env:PATH
+    try {
+        if ($WixDirectory) { $env:PATH = $WixDirectory + [IO.Path]::PathSeparator + $env:PATH }
+        if (-not (Get-Command wix.exe -ErrorAction SilentlyContinue)) { throw 'Install the pinned WiX 5.0.2 build tool and UI/Util extensions, or provide -WixDirectory.' }
+        $opcodexInstallerOutput = Join-Path $opcodexBuildRoot 'installer'
+        New-Item -ItemType Directory -Path $opcodexInstallerOutput -Force | Out-Null
+        $opcodexInstallerArgs = @('--type','msi','--name','Opcodex','--app-image',$opcodexImage,
+            '--app-version',$opcodexInstallerConfig.installerVersion,'--dest',$opcodexInstallerOutput,
+            '--vendor','Opcodex','--description',('Opcodex ' + $opcodexManifest.version),
+            '--about-url','https://opcodex.xyz','--win-per-user-install','--win-dir-chooser',
+            '--win-menu','--win-menu-group','Opcodex','--win-shortcut','--install-dir','Opcodex',
+            '--win-upgrade-uuid',$opcodexInstallerConfig.upgradeUuid)
+        & $opcodexJpackagePath @opcodexInstallerArgs
+        if ($LASTEXITCODE -ne 0) { throw 'Windows installer creation failed.' }
+        $opcodexBuiltMsi = Join-Path $opcodexInstallerOutput ('Opcodex-' + $opcodexInstallerConfig.installerVersion + '.msi')
+        if (-not (Test-Path -LiteralPath $opcodexBuiltMsi)) { throw 'Expected Windows installer was not created.' }
+        $opcodexPublishedMsi = Join-Path (Split-Path -Parent $opcodexArchive) ('opcodex_' + $opcodexManifest.version + '_win_x86_64_setup.msi')
+        Copy-Item -LiteralPath $opcodexBuiltMsi -Destination $opcodexPublishedMsi -Force
+        $opcodexInstallerHash = (Get-FileHash -LiteralPath $opcodexPublishedMsi -Algorithm SHA256).Hash.ToLowerInvariant()
+        ($opcodexInstallerHash + '  ' + (Split-Path -Leaf $opcodexPublishedMsi)) |
+            Set-Content -LiteralPath ($opcodexPublishedMsi + '.sha256') -Encoding utf8NoBOM
+        [ordered]@{product='Opcodex'; version=$opcodexManifest.version; platform='win_x86_64';
+            sourceRevision=$opcodexManifest.sourceRevision; installerVersion=$opcodexInstallerConfig.installerVersion;
+            installerSha256=$opcodexInstallerHash; portableSha256=$opcodexHash; bundledRuntime=$true;
+            upgradeUuid=$opcodexInstallerConfig.upgradeUuid; signed=$false} |
+            ConvertTo-Json | Set-Content -LiteralPath ($opcodexPublishedMsi + '.json') -Encoding utf8NoBOM
+        Write-Output ('Installer: ' + $opcodexPublishedMsi)
+    }
+    finally { $env:PATH = $opcodexSavedPath }
 }
 
 if ($Install) {

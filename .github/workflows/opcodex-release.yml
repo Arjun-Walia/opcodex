@@ -73,8 +73,9 @@ jobs:
           assert notes.is_file(), 'Missing versioned release notes'
           assets = pathlib.Path('release-assets')
           archives = list(assets.glob('*.zip'))
-          assert len(archives) == 3 and len(list(assets.iterdir())) == 9, 'Require exactly three native ZIP/checksum/manifest sets'
+          assert len(archives) == 3 and len(list(assets.iterdir())) == 12, 'Require three native ZIP sets and the Windows installer set'
           platforms = set()
+          windows_checksum = None
           for file in archives:
               with file.open('rb') as stream:
                   checksum = hashlib.file_digest(stream, 'sha256').hexdigest()
@@ -83,7 +84,19 @@ jobs:
               assert manifest['sourceRevision'] == os.environ['SOURCE_REVISION'], 'Source mismatch'
               assert manifest['archiveSha256'] == checksum == file.with_suffix('.zip.sha256').read_text().split()[0], 'Checksum mismatch'
               platforms.add(manifest['platform'])
+              if manifest['platform'] == 'win_x86_64': windows_checksum = checksum
           assert platforms == {'linux_x86_64', 'win_x86_64', 'mac_arm_64'}, 'Incomplete native coverage'
+          installers = list(assets.glob('*.msi'))
+          assert len(installers) == 1, 'A bundled-runtime Windows installer is required'
+          installer = installers[0]
+          with installer.open('rb') as stream:
+              checksum = hashlib.file_digest(stream, 'sha256').hexdigest()
+          manifest = json.loads(pathlib.Path(str(installer) + '.json').read_text())
+          assert manifest['product'] == 'Opcodex' and manifest['version'] == version
+          assert manifest['sourceRevision'] == os.environ['SOURCE_REVISION'], 'Installer source mismatch'
+          assert manifest['bundledRuntime'] is True
+          assert manifest['platform'] == 'win_x86_64' and manifest['portableSha256'] == windows_checksum, 'Installer payload mismatch'
+          assert checksum == manifest['installerSha256'] == pathlib.Path(str(installer) + '.sha256').read_text().split()[0], 'Installer checksum mismatch'
           run_url = 'https://github.com/' + os.environ['GITHUB_REPOSITORY'] + '/actions/runs/' + os.environ['BUILD_RUN_ID']
           text = notes.read_text() + '\n\nBuilt from `' + os.environ['SOURCE_REVISION'] + '` in [verified CI](' + run_url + '). All three native builds and the Linux upstream unit-test job passed. Build success does not establish a GUI launch on every platform. See [desktop verification](https://github.com/' + os.environ['GITHUB_REPOSITORY'] + '/blob/main/docs/releases/VERIFICATION.md) for actual launch coverage.\n'
           pathlib.Path('release-notes.md').write_text(text)

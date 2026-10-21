@@ -21,7 +21,8 @@ tasks.register('buildOpcodex', Exec) {
 }
 
 // Native Windows app image and current-user shortcuts; portable ZIP builds remain unchanged.
-['buildOpcodexDesktop': false, 'installOpcodexDesktop': true].each { taskName, install ->
+['buildOpcodexDesktop': false, 'installOpcodexDesktop': true,
+ 'buildOpcodexInstaller': false].each { taskName, install ->
     tasks.register(taskName, Exec) {
         group = 'distribution'
         description = install ? 'Build and install the native Opcodex desktop app.' :
@@ -38,6 +39,9 @@ tasks.register('buildOpcodex', Exec) {
                 '-PackagePath', archive, '-BuildJavaHome', System.getProperty('java.home')]
             if (install) {
                 args += '-Install'
+            }
+            if (taskName == 'buildOpcodexInstaller') {
+                args += '-Installer'
             }
             commandLine args
         }
