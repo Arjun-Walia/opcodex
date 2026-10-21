@@ -126,12 +126,21 @@ class ProjectToolBar extends JToolBar implements ToolChestChangeListener {
 	 */
 	private void addConfig(ToolTemplate toolConfig) {
 		ToolButton button = new ToolButton(plugin, toolConfig);
-		// OPCODEX: retain icon-only scanning for secondary tools and label the primary workbench.
-		if ("CodeBrowser".equals(toolConfig.getName())) {
-			button.setText("Code Browser");
-			button.setIconTextGap(8);
-		}
+		// OPCODEX: align every startup tool on the same icon/caption baseline and hit target.
+		String label = switch (toolConfig.getName()) {
+			case "CodeBrowser" -> "Code Browser";
+			case "VersionTracking" -> "Version Tracking";
+			default -> toolConfig.getName();
+		};
+		button.setText(label);
+		button.setIconTextGap(8);
+		button.getAccessibleContext().setAccessibleName(label);
 		button.setMargin(new java.awt.Insets(6, 8, 6, 8));
+		java.awt.Dimension tile = new java.awt.Dimension(Math.max(128,
+			button.getFontMetrics(button.getFont()).stringWidth(label) + 24), 72);
+		button.setPreferredSize(tile);
+		button.setMinimumSize(tile);
+		button.setMaximumSize(tile);
 		this.add(button);
 		toolButtonMap.put(toolConfig.getName(), button);
 	}

@@ -76,12 +76,12 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 | `Ghidra/Framework/Project/data/project.theme.properties` | Map common action/tree IDs to original transparent light/dark icons; preserve semantic IDs and aliases. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/AcceptUrlContentTask.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/EditPluginPathDialog.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
-| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FileActionManager.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FileActionManager.java` | Product-facing identity and New/Open/Save Project toolbar access using the existing commands; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FrontEndPlugin.java` | Add welcome/project cards using existing Create/Open commands, cleaner spacing and product wording. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/app/plugin/gui/ThemeManagerPlugin.java` | Product-facing theme descriptions; retain plugin identifiers and theme commands. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FrontEndTool.java` | Use product wording; new profiles start in the workspace while saved startup preferences remain respected. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/ImportGhidraToolsDialog.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
-| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/ProjectToolBar.java` | Use a quiet inset and labelled Code Browser button without changing tool launch behavior. |
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/ProjectToolBar.java` | Use a quiet inset and consistently sized, labelled startup-tool tiles without changing launch behavior. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/RepositoryChooser.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/ToolActionManager.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/UserAgreementDialog.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |

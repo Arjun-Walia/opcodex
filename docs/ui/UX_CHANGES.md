@@ -14,7 +14,7 @@
 | File selection | Custom Swing file browser with large stacked shortcuts | Windows Common Item Dialog for local files/folders, multiple selection and extension filters. Virtual files and arbitrary predicates retain their application-specific picker. |
 | Loading | Animated mascot and a framed loading panel | Thin, accessible progress bar with task status; preserve completion and cancellation behavior. |
 | Separation | Raised pane frames, etched dialog borders and several gray edges | Flat surfaces, padded dialogs and visible grips on resizable dividers, hover feedback and double-click equal sizing. |
-| Controls | Dense defaults and an etched Tool Chest frame | Roomier common controls and a quieter inset; the primary Code Browser tool has a text label. |
+| Controls | Dense defaults and an etched Tool Chest frame | Roomier common controls and a quieter inset; every startup tool has an aligned icon, caption and consistent tile size. Existing New/Open/Save Project commands also appear on the primary toolbar. |
 | About | Product name accompanied by an engine-brand headline and large boilerplate | Product-only identity and a concise license summary; complete required terms/attribution remain in the included legal files. |
 | Windows launch | Portable batch file requiring an installed JDK | Native Opcodex.exe with bundled runtime, desktop and Start menu shortcuts. Portable launches remain available. |
 | Repository | Fork relationship, inherited contribution copy and engine-name filenames | Standalone repository presentation, Opcodex contribution/issue guidance and product-only archive names. |
