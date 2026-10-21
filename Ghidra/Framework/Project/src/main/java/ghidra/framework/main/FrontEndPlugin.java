@@ -790,6 +790,11 @@ public class FrontEndPlugin extends Plugin
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setFileSelectionMode(GhidraFileChooserMode.FILES_ONLY);
 		fileChooser.setFileFilter(new GhidraFileFilter() {
+			// OPCODEX: The native picker uses the stable project format's extension.
+			@Override
+			public java.util.List<String> getNativePatterns() {
+				return java.util.List.of("*" + ProjectLocator.getProjectExtension());
+			}
 			@Override
 			public String getDescription() {
 				return "Opcodex Projects (*" + ProjectLocator.getProjectExtension() + ")";

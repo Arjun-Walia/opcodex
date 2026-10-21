@@ -2,7 +2,7 @@
 
 # Opcodex design system
 
-A quiet, dense workbench for repeated reverse-engineering workflows. The program and analysis views remain the focus. Graphite and neutral light surfaces carry a small teal accent; status colors retain semantic meaning. No new animation or runtime icon dependency is introduced.
+A quiet, dense workbench for repeated reverse-engineering workflows. The program and analysis views remain the focus. Black and neutral light surfaces carry a small teal accent; status colors retain semantic meaning. No new animation or runtime icon dependency is introduced.
 
 ## Icon family
 
@@ -18,13 +18,13 @@ See the [rendered catalog](ICON_CATALOG.md). Asset export uses Sharp/libvips as 
 
 | Role | Opcodex Light | Opcodex Dark |
 |---|---|---|
-| Canvas | #fbfcfd | #181a1d |
-| Controls / surface | #f1f3f5 | #202327 |
-| Text | #252930 | #e8eaed |
-| Secondary text | #5d6672 | #a7aeb8 |
-| Border | #a6afba | #454c56 |
+| Canvas | #fbfcfd | #000000 |
+| Controls / surface | #f1f3f5 | #080808 |
+| Text | #252930 | #eaeaea |
+| Secondary text | #5d6672 | #a3a3a3 |
+| Border | #d5d9de | #242424 |
 | Accent / focus | #087582 | #75d9de |
-| Selection background | #d7edf0 | #273e43 |
+| Selection background | #d7edf0 | #122225 |
 | Error | #b64248 | #f18b91 |
 | Warning | #8a5a0c | #edbd6c |
 | Keyword / mnemonic | #245b9c | #8bbcec |
@@ -46,7 +46,7 @@ Theme-specific UI defaults install after FlatLaf loading and before component up
 
 ## Workspace
 
-A tabbed navigator occupies 18.5% of the default workspace; the remaining area is split evenly between disassembly and pseudocode. The console opens on demand. The main toolbar shows saving, history, undo/redo, graph, scripts and Go To. More groups secondary actions by their existing menu, preserves original dispatch/context and offers the complete toolbar. Existing layouts are respected; More > Restore focused workspace applies the new default and retains the previous layout for reversal within that tool session. Panel headers are flat with a small focus indicator and text-only provider tabs.
+A tabbed function list, symbols and types navigator occupies 20% of the default workspace; the remaining area is split evenly between disassembly and pseudocode. The console opens on demand. The main toolbar shows saving, history, undo/redo, graph, scripts and Go To. More groups secondary actions by their existing menu, preserves original dispatch/context and offers the complete toolbar. Existing layouts are respected; More > Restore focused workspace applies the new default and retains the previous layout for reversal within that tool session. Panel headers are flat with a small focus indicator and text-only provider tabs. Pane frames and scroll-pane boxes are removed. Resizable dividers show one subtle line with a 6px drag target and clear hover feedback. Indeterminate tasks use a thin progress bar with their status and existing cancellation behavior; there is no mascot animation. The title area uses the theme surface directly rather than FlatLaf's unified parent background.
 
 ## First-run behavior
 
@@ -57,3 +57,7 @@ The project welcome screen provides Create Project and Open Project through the 
 ## Verification boundaries
 
 Read [release verification](../releases/VERIFICATION.md) for actual build/launch results and display-scale coverage. Theme constructors, contrast, native installation and screenshots must be checked before claiming completion. Engine code, project formats and analysis behavior are unchanged.
+
+### File selection
+
+Windows local selection uses the Common Item Dialog (`IFileOpenDialog`) with native folders, multiple selection and explicit extension patterns. Shell appearance follows Windows. COM objects live on a dedicated STA thread; an invisible modal owner keeps Swing responsive and blocks unrelated application actions. Cancellation returns no files. New names remain supported, with existing callers retaining overwrite and format validation. Custom models, subclasses, mixed file/directory selection and arbitrary filters keep the application picker; native initialization failures are logged and fall back. `-Dopcodex.filechooser.native=false` provides a diagnostic fallback.

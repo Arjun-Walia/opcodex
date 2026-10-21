@@ -8,6 +8,15 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 
 | Upstream file | Modification |
 |---|---|
+| `Ghidra/Framework/Docking/build.gradle` | Declare the existing audited JNA version for Windows shell file selection. |
+| `Ghidra/Framework/Docking/Module.manifest` | Retain Apache 2.0 dependency notices for native picker support. |
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/filechooser/GhidraFileChooser.java` | Use Windows Common Item Dialog for supported local files and folders; preserve virtual models, custom filters and cancellation. |
+| `Ghidra/Framework/Gui/src/main/java/ghidra/util/filechooser/GhidraFileFilter.java` | Optional exact native filter patterns; existing filters retain custom-model behavior. |
+| `Ghidra/Framework/Gui/src/main/java/ghidra/util/filechooser/ExtensionFileFilter.java` | Export exact extension patterns for the native picker. |
+| `Ghidra/Framework/Docking/src/main/java/docking/framework/AboutDialog.java` | Flat About surface with consistent dialog padding. |
+| `Ghidra/Framework/Docking/src/main/java/docking/DialogComponentProvider.java` | Padded, flat dialog surfaces in product themes; retain dialog behavior. |
+| `Ghidra/Framework/Docking/src/main/java/docking/SplitPanel.java` | Single hairline divider with hover feedback and a wider drag target; retain docking geometry. |
+| `Ghidra/Framework/Docking/src/main/java/ghidra/util/task/ChompingBitsAnimationPanel.java` | Replace the animated mascot with an indeterminate progress bar; retain the public compatibility class and task lifecycle. |
 | `Ghidra/Framework/Docking/src/main/java/docking/ComponentNode.java` | Flat pane boundaries in product themes; retain original borders in other themes. |
 | `Ghidra/Framework/Docking/src/main/java/docking/StatusBar.java` | Quiet status strip with readable spacing instead of sunken boxes. |
 | `Ghidra/Framework/Docking/src/main/java/docking/widgets/tabbedpane/DockingTabRenderer.java` | Compact vector close controls and text-only provider tabs for product themes. |

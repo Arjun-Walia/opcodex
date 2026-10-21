@@ -6,11 +6,14 @@
 |---|---|---|
 | First run | Empty project surface with no clear next action | Create/Open Project welcome screen using existing commands and keyboard shortcuts. |
 | Startup noise | Tip and release popups interrupt a fresh workspace | New profiles open the welcome screen directly; existing saved preferences and Help actions remain available. |
-| Appearance | Platform-dependent default, saturated active headers | Matched Opcodex Light/Dark with neutral surfaces, quiet selection and readable syntax; saved user themes remain respected. |
+| Appearance | Platform-dependent default, saturated active headers | Matched Opcodex Light/Dark with black/neutral-light surfaces, quiet selection and readable syntax; saved user themes remain respected. |
 | Icons | Mixed small raster styles across common actions and trees | 67 original outline glyphs map to 163 existing IDs; direct Java2D painting preserves sharp geometry at fractional display scales, including disabled controls. |
-| Workspace | Three stacked navigator panels, uneven code panes and a blank console | Tabbed navigator, balanced disassembly/pseudocode panes, console available on demand. Existing saved layouts remain respected. |
+| Workspace | Three stacked navigator panels, uneven code panes and a blank console | Tabbed function/symbol/type navigator, balanced disassembly/pseudocode panes, console available on demand. Existing saved layouts remain respected. |
 | Toolbar | Dozens of tiny actions visible at once | Core actions and Go To stay visible; secondary commands are grouped in More, with a reversible complete-toolbar option. Original menus, context handling and shortcuts remain intact. |
 | Panel headers | Gradients, bevels and mixed provider artwork | Flat headers, a small active indicator, consistent vector action sizing and 32px button targets. |
+| File selection | Custom Swing file browser with large stacked shortcuts | Windows Common Item Dialog for local files/folders, multiple selection and extension filters. Virtual files and arbitrary predicates retain their application-specific picker. |
+| Loading | Animated mascot and a framed loading panel | Thin, accessible progress bar with task status; preserve completion and cancellation behavior. |
+| Separation | Raised pane frames, etched dialog borders and several gray edges | Flat surfaces, padded dialogs and one subtle resizable divider with hover feedback. |
 | Controls | Dense defaults and an etched Tool Chest frame | Roomier common controls and a quieter inset; the primary Code Browser tool has a text label. |
 | About | Product name accompanied by an engine-brand headline and large boilerplate | Product-only identity and a concise license summary; complete required terms/attribution remain in the included legal files. |
 | Windows launch | Portable batch file requiring an installed JDK | Native Opcodex.exe with bundled runtime, desktop and Start menu shortcuts. Portable launches remain available. |

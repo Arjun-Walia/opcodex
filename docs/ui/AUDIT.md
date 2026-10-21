@@ -44,7 +44,7 @@ The local extraction command was `python C:\Users\pc\AppData\Local\Temp\opcodex-
 - Toolbar paths normalize to 16 px; tool icons use 16/22/24 px. Table sort/filter glyphs and theme overlays require smaller 8/10/12/14 px exceptions. Cursors, strips, splash artwork and native application icons need their own size rules.
 - Raw loader paths and programmatically drawn symbols require explicit handling beyond theme IDs. Confirmed raw UI color bypasses remain in `BrokenLinkIcon` and `ToolTipUtils`; Palette constants are already GColor-backed. Color pickers, serialization, ANSI colors and user annotations must not be blindly recolored.
 - Searchable action selection already exists through ActionChooserDialog, with Ctrl+3 in SystemKeyBindings. The requested palette should evaluate that mechanism before adding a duplicate.
-- CodeBrowser.tool now changes only its identity icon. The inherited layout and plugins remain intact; design-system, toolbar/tree pilot, full icon set, refined themes and workflow changes are later reviewed stages.
+- Alpha.2 updates CodeBrowser.tool with a tabbed function/symbol/type navigator, equal code panes and an on-demand console. Provider identities and plugins remain intact; full icon replacement is still incomplete.
 
 ## Checks and limits
 

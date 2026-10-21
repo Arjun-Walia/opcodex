@@ -32,6 +32,10 @@ public class SplitPanel extends JPanel {
 	private boolean isHorizontal;
 	//private int dividerLocation = Integer.MIN_VALUE;
 	private float dividerPosition = 0;
+	// OPCODEX: a quiet hairline with a wider invisible drag target, rather than pane frames.
+	private int dividerSize() {
+		return generic.theme.builtin.OpcodexUi.active() ? 6 : DIVIDER_SIZE;
+	}
 
 	public SplitPanel(SplitNode splitNode, Component leftComp, Component rightComp,
 			boolean isHorizontal) {
@@ -102,7 +106,7 @@ public class SplitPanel extends JPanel {
 			}
 
 			if (horizontal) {
-				width -= DIVIDER_SIZE;
+				width -= dividerSize();
 				int minWidth = minSize1.width + minSize2.width;
 				int dividerPixelPosition = Math.round(width * dividerPosition);
 
@@ -118,13 +122,13 @@ public class SplitPanel extends JPanel {
 
 				dividerPixelPosition = Math.round(width * dividerPosition);
 				leftComp.setBounds(insets.left, insets.top, dividerPixelPosition, height);
-				divider.setBounds(insets.left + dividerPixelPosition, insets.top, DIVIDER_SIZE,
+				divider.setBounds(insets.left + dividerPixelPosition, insets.top, dividerSize(),
 					height);
-				rightComp.setBounds(insets.left + dividerPixelPosition + DIVIDER_SIZE, insets.top,
+				rightComp.setBounds(insets.left + dividerPixelPosition + dividerSize(), insets.top,
 					width - dividerPixelPosition, height);
 			}
 			else {
-				height -= DIVIDER_SIZE;
+				height -= dividerSize();
 				int minHeight = minSize1.height + minSize2.height;
 				int dividerPixelPosition = Math.round(height * dividerPosition);
 
@@ -142,8 +146,8 @@ public class SplitPanel extends JPanel {
 
 				leftComp.setBounds(insets.left, insets.top, width, dividerPixelPosition);
 				divider.setBounds(insets.left, insets.top + dividerPixelPosition, width,
-					DIVIDER_SIZE);
-				rightComp.setBounds(insets.left, dividerPixelPosition + DIVIDER_SIZE + insets.top,
+					dividerSize());
+				rightComp.setBounds(insets.left, dividerPixelPosition + dividerSize() + insets.top,
 					width, height - dividerPixelPosition);
 
 			}
@@ -156,11 +160,11 @@ public class SplitPanel extends JPanel {
 			Insets insets = parent.getInsets();
 			if (horizontal) {
 				return new Dimension(
-					d1.width + d2.width + DIVIDER_SIZE + insets.left + insets.right,
+					d1.width + d2.width + dividerSize() + insets.left + insets.right,
 					Math.max(d1.height, d2.height) + insets.top + insets.bottom);
 			}
 			return new Dimension(Math.max(d1.width, d2.width) + insets.left + insets.right,
-				d1.height + d2.height + DIVIDER_SIZE + insets.top + insets.bottom);
+				d1.height + d2.height + dividerSize() + insets.top + insets.bottom);
 		}
 
 		@Override
@@ -170,11 +174,11 @@ public class SplitPanel extends JPanel {
 			Insets insets = parent.getInsets();
 			if (horizontal) {
 				return new Dimension(
-					d1.width + d2.width + DIVIDER_SIZE + insets.left + insets.right,
+					d1.width + d2.width + dividerSize() + insets.left + insets.right,
 					Math.max(d1.height, d2.height) + insets.top + insets.bottom);
 			}
 			return new Dimension(Math.max(d1.width, d2.width) + insets.left + insets.right,
-				d1.height + d2.height + DIVIDER_SIZE + insets.top + insets.bottom);
+				d1.height + d2.height + dividerSize() + insets.top + insets.bottom);
 		}
 
 		@Override
@@ -187,7 +191,12 @@ public class SplitPanel extends JPanel {
 	}
 
 	class Divider extends JPanel {
+		private boolean hovered;
 		Divider() {
+			addMouseListener(new java.awt.event.MouseAdapter() {
+				@Override public void mouseEntered(java.awt.event.MouseEvent e) { hovered = true; repaint(); }
+				@Override public void mouseExited(java.awt.event.MouseEvent e) { hovered = false; repaint(); }
+			});
 			if (isHorizontal) {
 				setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
 			}
@@ -209,6 +218,15 @@ public class SplitPanel extends JPanel {
 					SplitPanel.this.validate();
 				}
 			});
+		}
+
+		@Override protected void paintComponent(Graphics graphics) {
+			super.paintComponent(graphics);
+			if (generic.theme.builtin.OpcodexUi.active()) {
+				graphics.setColor(new GColor(hovered ? "color.border.button.focused" : "system.color.bg.border"));
+				if (isHorizontal) graphics.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight());
+				else graphics.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);
+			}
 		}
 
 	}

@@ -23,10 +23,11 @@ Portable ZIPs use product-only names such as `opcodex_1.0.0-alpha.2_win_x86_64.z
 
 ## A clearer workbench
 
-- **Opcodex Dark and Light:** neutral surfaces, readable syntax, quieter selection and visible focus.
-- **Focused layout:** a tabbed navigator, balanced disassembly/pseudocode panes and a console that opens when needed.
+- **Opcodex Dark and Light:** black and neutral-light surfaces, readable syntax, quieter selection and visible focus.
+- **Focused layout:** tabbed functions, symbols and types, balanced disassembly/pseudocode panes and a console that opens when needed.
 - **Quieter controls:** common actions stay visible; More keeps secondary commands within reach.
 - **Consistent icons:** original outline artwork for common actions, project navigation, symbols and data types.
+- **Native file selection:** the Windows system picker handles ordinary files and folders.
 - **Start with a project:** Create/Open actions on the welcome screen, with existing keyboard shortcuts.
 - **Local workflows:** projects, analysis, decompilation, scripting and the existing extension ecosystem.
 

@@ -20,13 +20,13 @@ import generic.theme.*;
 public abstract class OpcodexTheme extends DiscoverableGTheme {
 	protected OpcodexTheme(String name, LafType laf, boolean dark) {
 		super(name, laf);
-		String canvas = dark ? "#181a1d" : "#fbfcfd";
-		String surface = dark ? "#202327" : "#f1f3f5";
-		String text = dark ? "#e8eaed" : "#252930";
-		String secondary = dark ? "#a7aeb8" : "#5d6672";
-		String border = dark ? "#454c56" : "#a6afba";
+		String canvas = dark ? "#000000" : "#fbfcfd";
+		String surface = dark ? "#080808" : "#f1f3f5";
+		String text = dark ? "#eaeaea" : "#252930";
+		String secondary = dark ? "#a3a3a3" : "#5d6672";
+		String border = dark ? "#242424" : "#d5d9de";
 		String accent = dark ? "#75d9de" : "#087582";
-		String selection = dark ? "#273e43" : "#d7edf0";
+		String selection = dark ? "#122225" : "#d7edf0";
 		color("system.color.bg.control", surface);
 		color("system.color.bg.view", canvas);
 		color("system.color.bg.tooltip", surface);
@@ -46,6 +46,13 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 			"TabbedPane.background", "ScrollBar.background", "MenuBar.background",
 			"Menu.background", "MenuItem.background", "PopupMenu.background",
 			"TitlePane.background", "TitlePane.inactiveBackground", "TableHeader.background");
+		refs("system.color.bg.view", "ScrollBar.track", "ScrollBar.trackColor");
+		refs("system.color.bg.border", "ScrollBar.thumb", "ScrollBar.thumbColor");
+		refs("system.color.bg.selected.view", "ScrollBar.hoverThumbColor",
+			"ScrollBar.pressedThumbColor", "TitlePane.buttonHoverBackground",
+			"TitlePane.buttonPressedBackground");
+		refs("color.border.button.focused", "ProgressBar.foreground");
+		refs("system.color.bg.control", "ProgressBar.background");
 		refs("system.color.bg.border", "Component.borderColor", "Component.disabledBorderColor",
 			"ToolBar.separatorColor", "MenuBar.borderColor", "PopupMenu.borderColor",
 			"TableHeader.separatorColor", "TableHeader.bottomSeparatorColor",
@@ -56,8 +63,8 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 			"Button.toolbar.hoverBackground", "Button.toolbar.pressedBackground",
 			"Button.toolbar.selectedBackground", "MenuBar.hoverBackground",
 			"Table.selectionInactiveBackground", "Tree.selectionInactiveBackground");
-		color("color.bg.table.row.alt", dark ? "#1e2125" : "#f1f4f6");
-		color("color.bg.table.grid", dark ? "#30363e" : "#dce1e6");
+		color("color.bg.table.row.alt", dark ? "#080808" : "#f1f4f6");
+		color("color.bg.table.grid", dark ? "#161616" : "#dce1e6");
 		color("color.bg.header.active", selection);
 		color("color.bg.header.inactive", surface);
 		color("color.fg.header.active", text);
@@ -83,8 +90,8 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		color("color.bg.find.highlight.active", dark ? "#75602a" : "#ffd775");
 		color("color.bg.selection", selection);
 		color("color.bg.fieldpanel.selection", selection);
-		color("color.bg.currentline", dark ? "#202d31" : "#edf5f6");
-		color("color.bg.listing.highlighter", dark ? "#303a40" : "#e7eff1");
+		color("color.bg.currentline", dark ? "#0c1516" : "#edf5f6");
+		color("color.bg.listing.highlighter", dark ? "#111c1e" : "#e7eff1");
 		String keyword = dark ? "#8bbcec" : "#245b9c";
 		String comment = dark ? "#a1a8b3" : "#606a76";
 		String type = dark ? "#d2b8ee" : "#714796";
@@ -153,6 +160,9 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 
 	/** Called after FlatLaf installation and before component UIs update. */
 	public static void installComponentDefaults() {
+		// FlatLaf 3.5.4 otherwise paints the unified title area using its parent's cached border color.
+		UIManager.put("TitlePane.unifiedBackground", false);
+		UIManager.put("ScrollPane.border", BorderFactory.createEmptyBorder());
 		UIManager.put("Component.arc", 8);
 		UIManager.put("Button.arc", 8);
 		UIManager.put("TextComponent.arc", 8);
@@ -167,7 +177,11 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		UIManager.put("List.cellMargins", new InsetsUIResource(3, 6, 3, 6));
 		UIManager.put("ScrollBar.width", 12);
 		UIManager.put("ScrollBar.showButtons", false);
+		UIManager.put("ScrollBar.thumbArc", 999);
+		UIManager.put("ProgressBar.arc", 4);
+		UIManager.put("ProgressBar.horizontalSize", new java.awt.Dimension(260, 4));
 		UIManager.put("TabbedPane.tabHeight", 32);
+		UIManager.put("TabbedPane.tabInsets", new InsetsUIResource(4, 4, 4, 4));
 		UIManager.put("MenuItem.minimumWidth", 190);
 		UIManager.put("MenuItem.margin", new InsetsUIResource(5, 8, 5, 8));
 	}

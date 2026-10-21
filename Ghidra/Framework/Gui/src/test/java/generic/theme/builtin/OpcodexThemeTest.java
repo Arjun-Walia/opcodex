@@ -18,6 +18,18 @@ import generic.theme.laf.*;
 /** Contracts for the real theme objects rather than a duplicate palette fixture. */
 public class OpcodexThemeTest {
 	@Test
+	public void darkCanvasIsBlackAndBothThemesDefineTheSameRoles() {
+		GTheme dark = new OpcodexDarkTheme();
+		GTheme light = new OpcodexLightTheme();
+		assertEquals(Color.BLACK, dark.getColor("system.color.bg.view").getRawValue());
+		assertEquals(dark.getColors().stream().map(ColorValue::getId).collect(java.util.stream.Collectors.toSet()),
+			light.getColors().stream().map(ColorValue::getId).collect(java.util.stream.Collectors.toSet()));
+		assertEquals(dark.getFonts().stream().map(FontValue::getId).collect(java.util.stream.Collectors.toSet()),
+			light.getFonts().stream().map(FontValue::getId).collect(java.util.stream.Collectors.toSet()));
+		assertEquals(dark.getIcons().stream().map(IconValue::getId).collect(java.util.stream.Collectors.toSet()),
+			light.getIcons().stream().map(IconValue::getId).collect(java.util.stream.Collectors.toSet()));
+	}
+	@Test
 	public void sizedAndDisabledIconsKeepLiveVectorPaintingAtDisplayScale() {
 		final double[] observed = new double[2];
 		javax.swing.Icon vector = new javax.swing.Icon() {

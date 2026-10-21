@@ -5,7 +5,7 @@ async function run(){
   const docs=path.join(root,'docs/ui');await fs.mkdir(docs,{recursive:true});
   const names=Object.keys(catalog.glyphs).sort();
   for(const theme of ['light','dark']){
-    const dark=theme==='dark', bg=dark?'#181a1d':'#fbfcfd', fg=dark?'#e8eaed':'#252930', muted=dark?'#a7aeb8':'#5d6672';
+    const dark=theme==='dark', bg=dark?'#000000':'#fbfcfd', fg=dark?'#eaeaea':'#252930', muted=dark?'#a3a3a3':'#5d6672';
     const height=120+Math.ceil(names.length/6)*86;
     let content='<rect width="1120" height="'+height+'" fill="'+bg+'"/><text x="32" y="44" font-family="Arial,sans-serif" font-size="24" font-weight="600" fill="'+fg+'">Opcodex / '+(dark?'Dark':'Light')+'</text><text x="32" y="73" font-family="Arial,sans-serif" font-size="14" fill="'+muted+'">Original outline family · 16 px and 24 px samples · '+Object.keys(catalog.mappings).length+' semantic IDs</text>';
     names.forEach((name,i)=>{

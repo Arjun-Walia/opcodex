@@ -12,12 +12,12 @@
         </PACKAGE>
 	<PACKAGE NAME="BSim" />
         <ROOT_NODE X_POS="60" Y_POS="60" WIDTH="1520" HEIGHT="900" EX_STATE="0" FOCUSED_OWNER="CodeBrowserPlugin" FOCUSED_NAME="Listing" FOCUSED_TITLE="Listing: ">
-            <SPLIT_NODE WIDTH="1500" HEIGHT="800" DIVIDER_LOCATION="185" ORIENTATION="HORIZONTAL">
+            <SPLIT_NODE WIDTH="1500" HEIGHT="800" DIVIDER_LOCATION="200" ORIENTATION="HORIZONTAL">
                 <COMPONENT_NODE TOP_INFO="0">
+                    <COMPONENT_INFO NAME="Functions Window" OWNER="FunctionWindowPlugin" TITLE="Functions" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819980101091906" />
                     <COMPONENT_INFO NAME="Symbol Tree" OWNER="SymbolTreePlugin" TITLE="Symbol Tree" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819977680978496" />
-                    <COMPONENT_INFO NAME="Program Tree" OWNER="ProgramTreePlugin" TITLE="Program Trees" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819926581772895" />
                     <COMPONENT_INFO NAME="DataTypes Provider" OWNER="DataTypeManagerPlugin" TITLE="Data Type Manager" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819978370941521" />
-                    <COMPONENT_INFO NAME="Functions Window" OWNER="FunctionWindowPlugin" TITLE="Functions" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819980101091906" />
+                    <COMPONENT_INFO NAME="Program Tree" OWNER="ProgramTreePlugin" TITLE="Program Trees" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772895" />
                 </COMPONENT_NODE>
                 <SPLIT_NODE WIDTH="1244" HEIGHT="800" DIVIDER_LOCATION="500" ORIENTATION="HORIZONTAL">
                     <COMPONENT_NODE TOP_INFO="0">
@@ -403,27 +403,38 @@
                     </Table_State>
                 </XML>
             </PREFERENCE_STATE>
-            <PREFERENCE_STATE NAME="ghidra.app.plugin.core.functionwindow.FunctionTableModel:Label:Location:Function Signature:">
+            <PREFERENCE_STATE NAME="ghidra.app.plugin.core.functionwindow.FunctionTableModel:Name:Location:Function Signature:Function Size:Tags:Inline:Non-returning:Varargs:Custom Storage:Local Stack Size:Parameter Stack Size:">
                 <XML NAME="COLUMN_DATA">
                     <Table_State>
-                        <COLUMN NAME="ghidra.util.table.field.LabelTableColumn" WIDTH="148" VISIBLE="true" />
-                        <COLUMN NAME="ghidra.util.table.field.AddressTableColumn" WIDTH="124" VISIBLE="true" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionSignatureTableColumn" WIDTH="148" VISIBLE="true" />
-                        <COLUMN NAME="ghidra.util.table.field.OffcutReferenceCountToAddressTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.SymbolTypeTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.MemorySectionProgramLocationBasedTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.ReferenceCountToAddressTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionBodySizeTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionParameterCountTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.NamespaceTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionNameTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.SourceTypeTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionPurgeTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.MemoryTypeProgramLocationBasedTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.ByteCountProgramLocationBasedTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.BytesTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionCallingConventionTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.PreviewTableColumn" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.app.plugin.core.functionwindow.FunctionTableModel$NameTableColumn.Name" WIDTH="180" VISIBLE="true" />
+                        <COLUMN NAME="ghidra.util.table.field.AddressTableColumn.Location" WIDTH="110" VISIBLE="true" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionSignatureTableColumn.Function Signature" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionBodySizeTableColumn.Function Size" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionTagTableColumn.Tags" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.IsFunctionInlineTableColumn.Inline" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.IsFunctionNonReturningTableColumn.Non-returning" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.IsFunctionVarargsTableColumn.Varargs" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.IsFunctionCustomStorageTableColumn.Custom Storage" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionLocalStackSizeColumn.Local Stack Size" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionParameterStackSizeColumn.Parameter Stack Size" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.PreviewTableColumn.Preview" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.ByteCountProgramLocationBasedTableColumn.Byte Count" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.EOLCommentTableColumn.EOL Comment" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.OffcutReferenceCountToAddressTableColumn.Offcut Reference Count" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.BytesTableColumn.Bytes" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.SourceTypeTableColumn.Symbol Source" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.SymbolTypeTableColumn.Symbol Type" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.CodeUnitTableColumn.Code Unit" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.LabelTableColumn.Label" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionCallingConventionTableColumn.Function Calling Convention" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.MemoryTypeProgramLocationBasedTableColumn.Mem Type" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionNameTableColumn.Function Name" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionPurgeTableColumn.Function Purge" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.NamespaceTableColumn.Namespace" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.ReferenceCountToAddressTableColumn.Reference Count" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.MemorySourceProgramLocationBasedTableColumn.Mem Source" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionParameterCountTableColumn.Param Count" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.MemorySectionProgramLocationBasedTableColumn.Mem Block" WIDTH="75" VISIBLE="false" />
                         <TABLE_SORT_STATE>
                             <COLUMN_SORT_STATE COLUMN_MODEL_INDEX="1" SORT_DIRECTION="ascending" SORT_ORDER="1" />
                         </TABLE_SORT_STATE>
