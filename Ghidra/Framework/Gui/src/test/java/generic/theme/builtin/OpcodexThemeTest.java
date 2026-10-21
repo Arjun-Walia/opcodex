@@ -55,13 +55,15 @@ public class OpcodexThemeTest {
 
 	@Test
 	public void everyOriginalGlyphPaintsDirectlyAtFractionalScale() {
-		for (IconValue entry : new OpcodexDarkTheme().getIcons()) {
+		GTheme theme = new OpcodexDarkTheme();
+		for (IconValue entry : theme.getIcons()) {
+			if (!entry.getId().startsWith("icon.opcodex.glyph.")) continue;
 			java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(40, 40,
 				java.awt.image.BufferedImage.TYPE_INT_ARGB);
 			java.awt.Graphics2D g = image.createGraphics();
 			try {
 				g.scale(1.5, 1.5);
-				entry.getRawValue().paintIcon(null, g, 0, 0);
+				entry.get(theme).paintIcon(null, g, 0, 0);
 			} finally { g.dispose(); }
 			boolean painted = false;
 			for (int x = 0; x < 40; x++) for (int y = 0; y < 40; y++) {
@@ -69,6 +71,31 @@ public class OpcodexThemeTest {
 			}
 			assertTrue("Empty glyph: " + entry.getId(), painted);
 		}
+	}
+	@Test
+	public void composedStatusesKeepTheirSizeAndEveryBindingResolves() {
+		for (GTheme theme : new GTheme[] {new OpcodexDarkTheme(), new OpcodexLightTheme()}) {
+			for (IconValue entry : theme.getIcons()) {
+				javax.swing.Icon icon = entry.get(theme);
+				assertNotNull(entry.getId(), icon);
+				assertNotSame("Unresolved icon: " + entry.getId(), IconValue.LAST_RESORT_DEFAULT, icon);
+			}
+			assertEquals(20, theme.getIcon("icon.empty.20").get(theme).getIconWidth());
+			assertEquals(8, theme.getIcon("icon.widget.tabs.empty.small").get(theme).getIconWidth());
+			assertEquals(16, theme.getIcon("icon.widget.tabs.empty.small").get(theme).getIconHeight());
+			assertNotEquals(theme.getIcon("icon.debugger.breakpoint.enable").getSerializationString(),
+				theme.getIcon("icon.debugger.breakpoint.disable").getSerializationString());
+		}
+	}
+	@Test
+	public void legacyImageIconScalingKeepsDeviceScaleAndVariants() {
+		javax.swing.ImageIcon source = new OpcodexImageIcon("branch", true);
+		javax.swing.ImageIcon scaled = resources.ResourceManager.getScaledIcon(source, 24, 24);
+		assertTrue(OpcodexUi.isVector(scaled));
+		assertEquals(24, scaled.getIconWidth());
+		MultiResolutionImage image = (MultiResolutionImage) scaled.getImage();
+		assertEquals(48, image.getResolutionVariant(48, 48).getWidth(null));
+		assertEquals(96, image.getResolutionVariant(96, 96).getWidth(null));
 	}
 	@Test
 	public void chromeUsesItsSurfaceTokenThroughRealFlatLafNormalization() throws Exception {
@@ -126,7 +153,7 @@ public class OpcodexThemeTest {
 	@Test
 	public void iconSerializationKeepsAReusableResourcePath() throws Exception {
 		for (GTheme theme : new GTheme[] {new OpcodexDarkTheme(), new OpcodexLightTheme()}) {
-			IconValue original = theme.getIcon("icon.folder.open");
+			IconValue original = theme.getIcon("icon.opcodex.glyph.folder-open");
 			String serialized = original.getSerializationString();
 			assertFalse(serialized.contains(GTheme.JAVA_ICON));
 			String path = serialized.split("=", 2)[1].trim();
@@ -140,7 +167,7 @@ public class OpcodexThemeTest {
 	@Test
 	public void iconsCarryRealResolutionVariantsAndStableLogicalDimensions() {
 		for (GTheme theme : new GTheme[] {new OpcodexDarkTheme(), new OpcodexLightTheme()}) {
-			ImageIcon icon = (ImageIcon) theme.getIcon("icon.folder.open").getRawValue();
+			ImageIcon icon = (ImageIcon) theme.getIcon("icon.folder.open").get(theme);
 			assertEquals(16, icon.getIconWidth());
 			assertEquals(16, icon.getIconHeight());
 			MultiResolutionImage image = (MultiResolutionImage) icon.getImage();

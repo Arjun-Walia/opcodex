@@ -29,13 +29,10 @@ final class OpcodexImageIcon extends UrlImageIcon {
 			canvas.scale(16d / 24d, 16d / 24d);
 			canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			canvas.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-			String ink = dark ? "#c8cdd3" : "#4b5563";
-			if (glyph.equals("warning")) ink = dark ? "#edbd6c" : "#8a5a0c";
-			if (glyph.equals("error")) ink = dark ? "#f18b91" : "#b64248";
-			if (glyph.equals("check")) ink = dark ? "#89d7a6" : "#216a43";
+			String ink = OpcodexIcons.ink(glyph, dark);
 			canvas.setColor(Color.decode(ink));
 			for (OpcodexVectorPaths.Part part : OpcodexVectorPaths.get(glyph)) {
-				canvas.setStroke(new BasicStroke(1.8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+				canvas.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
 					10, part.dash(), 0));
 				if (part.fill()) canvas.fill(part.shape());
 				if (part.stroke()) canvas.draw(part.shape());

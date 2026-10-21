@@ -14,6 +14,8 @@ import java.util.Map;
 import javax.swing.*;
 import docking.*;
 import docking.action.ToggleDockingActionIf;
+import docking.action.MultiActionDockingActionIf;
+import docking.action.DockingActionIf;
 import docking.widgets.EmptyBorderButton;
 import docking.widgets.VariableHeightPanel;
 import generic.theme.GColor;
@@ -41,11 +43,13 @@ final class OpcodexToolbars {
 		bar.removeAll();
 		Set<String> visible = local ? LOCAL : PRIMARY;
 		List<ToolBarItemManager> hidden = items.stream()
-			.filter(item -> !expanded && !visible.contains(item.getAction().getName())).toList();
+			.filter(item -> !expanded && !isPrimary(item, visible)).toList();
 		for (ToolBarItemManager item : items) {
-			if (expanded || visible.contains(item.getAction().getName())) bar.add(item.getButton());
+			if (expanded || isPrimary(item, visible)) bar.add(item.getButton());
 		}
-		if (!local && manager != null && manager.getTool() != null &&
+		if (!local && items.stream().anyMatch(item ->
+			item.getAction().getName().equals("Previous Location in History")) &&
+			manager != null && manager.getTool() != null &&
 			manager.getTool().getAllActions().stream()
 				.anyMatch(action -> action.getName().equals("Go To Address/Label"))) {
 			bar.add(Box.createHorizontalStrut(16));
@@ -63,14 +67,14 @@ final class OpcodexToolbars {
 		if (!hidden.isEmpty() || expanded) {
 			EmptyBorderButton more = new EmptyBorderButton(OpcodexUi.sized(new MoreIcon(), 20));
 			more.setName(local ? "More panel actions" : "More workspace actions");
-			more.setToolTipText(more.getName());
+			more.setToolTipText(more.getName() + " · includes complete toolbar option");
 			more.getAccessibleContext().setAccessibleName(more.getName());
 			more.addActionListener(event -> {
 				JPopupMenu menu = new JPopupMenu();
 				Map<String, JMenu> groups = new LinkedHashMap<>();
 				for (ToolBarItemManager item : hidden) {
 					JButton source = item.getButton();
-					JMenuItem entry = item.getAction() instanceof ToggleDockingActionIf
+					JMenuItem entry = effectiveAction(item.getAction()) instanceof ToggleDockingActionIf
 						? new JCheckBoxMenuItem(item.getAction().getName(), source.isSelected())
 						: new JMenuItem(item.getAction().getName());
 					entry.setEnabled(source.isEnabled());
@@ -108,6 +112,18 @@ final class OpcodexToolbars {
 			});
 			bar.add(more);
 		}
+	}
+
+	private static boolean isPrimary(ToolBarItemManager item, Set<String> visible) {
+		// Split controls own additional commands and state choices. Keep the real button
+		// visible so its complete original dropdown and context behavior remain available.
+		return visible.contains(item.getAction().getName()) ||
+			effectiveAction(item.getAction()) instanceof MultiActionDockingActionIf;
+	}
+	private static DockingActionIf effectiveAction(DockingActionIf action) {
+		// Window proxies implement optional interfaces even when their delegate does not.
+		while (action instanceof DockingActionProxy proxy) action = proxy.getProxyAction();
+		return action;
 	}
 
 	private static final class MoreIcon implements Icon {

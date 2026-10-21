@@ -26,7 +26,28 @@ def audit(root):
             errors.append('Unknown semantic ID: ' + name)
         if glyph not in catalog['glyphs']:
             errors.append('Unknown original glyph: ' + glyph)
+    bindings = catalog.get('bindings', {})
+    resource_roots = list((root / 'Ghidra').glob('*/*/src/main/resources'))
+    private = {'icon.opcodex.glyph.' + glyph for glyph in catalog['glyphs']}
     covered = mapped & definitions.keys()
+    for name, pair in bindings.items():
+        if name not in definitions:
+            errors.append('Unknown binding ID: ' + name)
+        if set(pair) != {'light', 'dark'}:
+            errors.append('Unpaired icon binding: ' + name)
+            continue
+        for expression in pair.values():
+            refs = re.findall(r'icon\.[\w.-]+', expression)
+            for ref in refs:
+                if ref not in definitions and ref not in private:
+                    errors.append('Unknown icon reference: ' + name + ' -> ' + ref)
+            resources = re.findall(r'[\w./+()-]+\.(?:png|gif|jpg|svg)', expression)
+            for resource in resources:
+                if 'opcodex' not in resource:
+                    errors.append('Legacy artwork in binding: ' + name + ' -> ' + resource)
+                elif not any((directory / resource).is_file() for directory in resource_roots):
+                    errors.append('Missing product artwork: ' + resource)
+        covered.add(name)
     while True:
         before = set(covered)
         for name, expressions in definitions.items():
@@ -49,10 +70,11 @@ def audit(root):
                     errors.append('Expected transparent PNG: ' + str(png.relative_to(root)))
     missing = sorted(definitions.keys() - covered)
     return {'uniqueIconIds': len(definitions), 'explicitOriginalMappings': len(mapped),
+            'explicitThemeBindings': len(bindings), 'originalGlyphs': len(catalog['glyphs']),
             'coveredIncludingPlainAliases': len(covered), 'missingCount': len(missing),
             'missingIconIds': missing, 'assetErrors': errors,
             'complete': not errors and not missing,
-            'scope': 'Theme IDs and declared original exports. Raw-path callers and specialized workflows also require visual review.'}
+            'scope': 'Declared theme IDs, paired composed bindings and original exports. Empty layout placeholders and product artwork retain their intended dimensions. Raw-path adapters and specialized workflows also require visual review.'}
 
 
 def main():

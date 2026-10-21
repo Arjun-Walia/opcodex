@@ -32,9 +32,9 @@ public class SplitPanel extends JPanel {
 	private boolean isHorizontal;
 	//private int dividerLocation = Integer.MIN_VALUE;
 	private float dividerPosition = 0;
-	// OPCODEX: a quiet hairline with a wider invisible drag target, rather than pane frames.
+	// OPCODEX: a visible grip and generous drag target without raised pane frames.
 	private int dividerSize() {
-		return generic.theme.builtin.OpcodexUi.active() ? 6 : DIVIDER_SIZE;
+		return generic.theme.builtin.OpcodexUi.active() ? 10 : DIVIDER_SIZE;
 	}
 
 	public SplitPanel(SplitNode splitNode, Component leftComp, Component rightComp,
@@ -193,9 +193,18 @@ public class SplitPanel extends JPanel {
 	class Divider extends JPanel {
 		private boolean hovered;
 		Divider() {
+			setToolTipText("Drag to resize panels; double-click for equal sizes");
+			getAccessibleContext().setAccessibleName("Resize panels");
 			addMouseListener(new java.awt.event.MouseAdapter() {
 				@Override public void mouseEntered(java.awt.event.MouseEvent e) { hovered = true; repaint(); }
 				@Override public void mouseExited(java.awt.event.MouseEvent e) { hovered = false; repaint(); }
+				@Override public void mouseClicked(java.awt.event.MouseEvent e) {
+					if (generic.theme.builtin.OpcodexUi.active() && e.getClickCount() == 2) {
+						dividerPosition = .5f;
+						SplitPanel.this.doLayout();
+						SplitPanel.this.repaint();
+					}
+				}
 			});
 			if (isHorizontal) {
 				setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
@@ -223,9 +232,26 @@ public class SplitPanel extends JPanel {
 		@Override protected void paintComponent(Graphics graphics) {
 			super.paintComponent(graphics);
 			if (generic.theme.builtin.OpcodexUi.active()) {
-				graphics.setColor(new GColor(hovered ? "color.border.button.focused" : "system.color.bg.border"));
-				if (isHorizontal) graphics.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight());
-				else graphics.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);
+				Graphics2D g = (Graphics2D) graphics.create();
+				try {
+					g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					int x = getWidth() / 2, y = getHeight() / 2;
+					g.setColor(new GColor("system.color.bg.border"));
+					if (isHorizontal) {
+						g.drawLine(x, 0, x, getHeight());
+						g.fillRoundRect(x - 4, y - 18, 8, 36, 8, 8);
+					}
+					else {
+						g.drawLine(0, y, getWidth(), y);
+						g.fillRoundRect(x - 18, y - 4, 36, 8, 8, 8);
+					}
+					g.setColor(new GColor(hovered ? "color.border.button.focused" : "system.color.fg.disabled"));
+					for (int offset : new int[] {-6, 0, 6}) {
+						g.fillOval(x - 1 + (isHorizontal ? 0 : offset),
+							y - 1 + (isHorizontal ? offset : 0), 2, 2);
+					}
+				}
+				finally { g.dispose(); }
 			}
 		}
 

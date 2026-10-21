@@ -8,6 +8,8 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 
 | Upstream file | Modification |
 |---|---|
+| `Ghidra/Features/FunctionGraph/src/main/java/ghidra/app/plugin/core/functiongraph/graph/vertex/ListingGraphComponentPanel.java` | Flat themed node boundaries; retain graph interactions, listing content and grouping. |
+| `Ghidra/Features/FunctionGraph/src/main/java/ghidra/app/plugin/core/functiongraph/graph/vertex/GroupedFunctionGraphComponentPanel.java` | Flat themed node boundaries; retain graph interactions, listing content and grouping. |
 | `Ghidra/Framework/Docking/src/test/java/docking/widgets/tab/GTabPanelTest.java` | Keep overflow tests deterministic across product fonts by sizing from the tab strip. |
 | `Ghidra/Framework/Help/src/test/java/help/HelpBuildUtilsTest.java` | Assert that runtime help references resolve the current refresh artwork. |
 | `Ghidra/Framework/Docking/build.gradle` | Declare the existing audited JNA version for Windows shell file selection. |
@@ -17,7 +19,7 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 | `Ghidra/Framework/Gui/src/main/java/ghidra/util/filechooser/ExtensionFileFilter.java` | Export exact extension patterns for the native picker. |
 | `Ghidra/Framework/Docking/src/main/java/docking/framework/AboutDialog.java` | Flat About surface with consistent dialog padding. |
 | `Ghidra/Framework/Docking/src/main/java/docking/DialogComponentProvider.java` | Padded, flat dialog surfaces in product themes; retain dialog behavior. |
-| `Ghidra/Framework/Docking/src/main/java/docking/SplitPanel.java` | Single hairline divider with hover feedback and a wider drag target; retain docking geometry. |
+| `Ghidra/Framework/Docking/src/main/java/docking/SplitPanel.java` | Visible resize grips, hover feedback and a 10px drag target; retain docking geometry and support equal sizes on double-click. |
 | `Ghidra/Framework/Docking/src/main/java/ghidra/util/task/ChompingBitsAnimationPanel.java` | Replace the animated mascot with an indeterminate progress bar; retain the public compatibility class and task lifecycle. |
 | `Ghidra/Framework/Docking/src/main/java/docking/ComponentNode.java` | Flat pane boundaries in product themes; retain original borders in other themes. |
 | `Ghidra/Framework/Docking/src/main/java/docking/StatusBar.java` | Quiet status strip with readable spacing instead of sunken boxes. |
@@ -92,6 +94,9 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 | `Ghidra/application.properties` | Product name, release identity and independent version; engine/API version remains 12.1.4. |
 | `README.md` | Replace upstream project marketing/install instructions with Opcodex status, downloads, build, releases and attribution. |
 | `build.gradle` | Apply isolated Opcodex packaging/test tasks; retain upstream distribution tasks. |
+| `Ghidra/Framework/Gui/src/main/java/resources/ResourceManager.java` | OPCODEX: adapt explicitly registered built-in filenames to live vectors while preserving URL identity, dimensions, user images and other themes; preserve vector scaling and disabled opacity through ImageIcon APIs. |
+| `Ghidra/Framework/Gui/src/main/java/resources/icons/ReflectedIcon.java` | OPCODEX: paint reflected original vectors at device scale, retaining legacy reflection behavior for other images. |
+| `Ghidra/Features/FunctionGraph/src/main/java/ghidra/app/plugin/core/functiongraph/graph/vertex/SetVertexMostRecentColorAction.java` | OPCODEX: replace the raised color swatch with an outline palette and current-color underline, keeping every color action. |
 
 ## Verification and release evidence
 

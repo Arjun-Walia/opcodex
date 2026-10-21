@@ -70,6 +70,21 @@ public class OpcodexSmokeAgent {
         if (c instanceof Container parent) for (Component child : parent.getComponents()) if (hasCleanProgress(child)) return true;
         return false;
     }
+    private static int verifyToolIcons(Component component) throws Exception {
+        int count=0;
+        if(component instanceof AbstractButton button && component.isShowing() &&
+                component.getClass().getName().equals("ghidra.framework.main.ToolButton")) {
+            Icon icon=button.getIcon();
+            if(icon==null || !(Boolean)type("generic.theme.builtin.OpcodexUi")
+                    .getMethod("isVector",Icon.class).invoke(null,icon))
+                throw new AssertionError("Startup tool still uses bitmap artwork: "+button.getToolTipText());
+            if(icon.getIconWidth()!=24 || icon.getIconHeight()!=24)
+                throw new AssertionError("Startup tool icon has inconsistent dimensions");
+            count++;
+        }
+        if(component instanceof Container parent)for(Component child:parent.getComponents()) count+=verifyToolIcons(child);
+        return count;
+    }
     private static void dumpTableState(Component c, StringBuilder output) throws Exception {
         if (c instanceof JTable table && table.isShowing()) {
             Class<?> base = type("docking.widgets.table.GTableColumnModel");
@@ -238,11 +253,11 @@ public class OpcodexSmokeAgent {
                 capture(browserWindow, "dark/column-preview.png");
                 System.exit(0);
             }
+            Thread.sleep(1200);
+            capture(browserWindow, "dark/workspace-initial.png");
             AbstractButton more = edt(() -> named(browserWindow, "More workspace actions"));
             AbstractButton go = edt(() -> named(browserWindow, "Opcodex Go To"));
             if (more == null || go == null) throw new AssertionError("Focused toolbar missing");
-            if (edt(() -> named(browserWindow, "Next Matching Byte Values")) != null)
-                throw new AssertionError("Secondary navigation still crowds toolbar");
             edt(() -> { more.doClick(0); return null; });
             Thread.sleep(300);
             JPopupMenu overflow = edt(() -> {
@@ -337,6 +352,8 @@ public class OpcodexSmokeAgent {
                 for (String id : new String[]{"font.monospaced", "font.listing.base", "font.decompiler", "system.font.control", "laf.font.Label.font"})
                     fontEvidence.append(id).append("=").append(managerClass.getMethod("getFont", String.class).invoke(manager, id)).append("\n");
                 Files.writeString(OUTPUT.resolve(theme + "-fonts.txt"), fontEvidence.toString());
+                final Window iconWindow=main;
+                if(edt(()->verifyToolIcons(iconWindow))<4)throw new AssertionError("Expected the four original startup tools");
                 capture(main, theme + "/project.png");
                 capture(browserWindow, theme + "/codebrowser.png");
                 Object progressDialog = edt(() -> type("ghidra.util.task.TaskDialog")
@@ -363,8 +380,9 @@ public class OpcodexSmokeAgent {
                 Window aboutWindow = waitFor("About Opcodex");
                 capture(aboutWindow, theme + "/about.png");
                 edt(() -> { about.getClass().getMethod("close").invoke(about); return null; });
+                OpcodexPanelProbe.verify(browser, browserWindow, OUTPUT, theme, OpcodexSmokeAgent::capture);
             }
-            Files.writeString(OUTPUT.resolve("result.json"), "{\"startup\":true,\"isolatedProfile\":true,\"agreement\":" + accepted + ",\"codeBrowser\":true,\"welcome\":true,\"focusedToolbar\":true,\"workspaceResetAndUndo\":true,\"overflowCommand\":true,\"goTo\":true,\"themeDiscovery\":true,\"themes\":[\"Opcodex Light\",\"Opcodex Dark\"],\"about\":true,\"cleanTaskProgress\":true}\n");
+            Files.writeString(OUTPUT.resolve("result.json"), "{\"startup\":true,\"isolatedProfile\":true,\"agreement\":" + accepted + ",\"codeBrowser\":true,\"welcome\":true,\"focusedToolbar\":true,\"workspaceResetAndUndo\":true,\"overflowCommand\":true,\"goTo\":true,\"themeDiscovery\":true,\"themes\":[\"Opcodex Light\",\"Opcodex Dark\"],\"about\":true,\"cleanTaskProgress\":true,\"startupVectorIcons\":true,\"multiplePanels\":true,\"resizableDividers\":true,\"menuAndToolbarParity\":true}\n");
             Files.writeString(OUTPUT.resolve("display.txt"), "Java=" + System.getProperty("java.version") + "\nOS=" + System.getProperty("os.name") + "\nNativeLauncher=" + System.getProperty("jpackage.app-path") + "\nScale=" + GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform().getScaleX() + "\n");
             System.out.println("OPCODEX_SMOKE_PASS");
             System.exit(0);

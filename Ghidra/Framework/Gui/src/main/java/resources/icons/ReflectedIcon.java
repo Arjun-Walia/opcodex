@@ -16,6 +16,8 @@
 package resources.icons;
 
 import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.Component;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
@@ -30,6 +32,21 @@ import javax.swing.ImageIcon;
 public class ReflectedIcon extends DerivedImageIcon {
 
 	private boolean leftToRight;
+
+	// OPCODEX: reflect live geometry at the device scale; retain legacy image behavior otherwise.
+	@Override public synchronized void paintIcon(Component c, Graphics graphics, int x, int y) {
+		Icon source = getSourceIcon();
+		if (!generic.theme.builtin.OpcodexUi.isVector(source)) {
+			super.paintIcon(c, graphics, x, y); return;
+		}
+		Graphics2D g = (Graphics2D) graphics.create();
+		try {
+			g.translate(x + (leftToRight ? source.getIconWidth() : 0),
+				y + (leftToRight ? 0 : source.getIconHeight()));
+			g.scale(leftToRight ? -1 : 1, leftToRight ? 1 : -1);
+			source.paintIcon(c, g, 0, 0);
+		} finally { g.dispose(); }
+	}
 
 	/**
 	 * Construct a icon that is reflected either left to right or upside down.

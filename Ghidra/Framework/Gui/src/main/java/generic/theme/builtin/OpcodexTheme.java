@@ -47,6 +47,31 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 			"Menu.background", "MenuItem.background", "PopupMenu.background",
 			"TitlePane.background", "TitlePane.inactiveBackground", "TableHeader.background");
 		refs("system.color.bg.view", "ScrollBar.track", "ScrollBar.trackColor");
+		refs("system.color.bg.view", "TextArea.background", "TextPane.background",
+			"EditorPane.background", "TextField.background", "FormattedTextField.background",
+			"PasswordField.background");
+		refs("system.color.bg.view", "TextArea.inactiveBackground", "TextPane.inactiveBackground",
+			"EditorPane.inactiveBackground");
+		refs("system.color.bg.view", "ComboBox.background", "Spinner.background",
+			"List.background", "Tree.background", "Table.background");
+		refs("system.color.bg.control", "ComboBox.buttonBackground", "ComboBox.buttonEditableBackground",
+			"Spinner.buttonBackground", "Button.disabledBackground", "ToggleButton.background",
+			"ToggleButton.disabledBackground", "CheckBox.icon.background");
+		refs("system.color.bg.selected.view", "ComboBox.buttonHoverBackground",
+			"ComboBox.buttonPressedBackground", "Spinner.buttonHoverBackground",
+			"Spinner.buttonPressedBackground", "CheckBox.icon.selectedBackground");
+		refs("system.color.fg.disabled", "ComboBox.buttonArrowColor", "ComboBox.buttonDisabledArrowColor",
+			"Spinner.buttonArrowColor", "Spinner.buttonDisabledArrowColor");
+		refs("system.color.bg.border", "CheckBox.icon.borderColor");
+		refs("color.border.button.focused", "CheckBox.icon.checkmarkColor");
+		for (String id : new String[] {"color.bg.interpreterconsole", "color.bg.visualgraph",
+				"color.bg.plugin.functiongraph", "color.bg.visualgraph.drop.shadow.dark",
+				"color.bg.visualgraph.drop.shadow.light"}) color(id, canvas);
+		color("color.bg.highlight.visualgraph", dark ? "#17393c" : "#d7edf0");
+		color("color.bg.plugin.functiongraph.vertex.entry", dark ? "#183327" : "#dfefe3");
+		color("color.bg.plugin.functiongraph.vertex.exit", dark ? "#3b2024" : "#f5e2e3");
+		color("color.bg.plugin.functiongraph.vertex.group", dark ? "#26312b" : "#e8efdf");
+		color("color.bg.plugin.functiongraph.vertex.picked", dark ? "#23474a" : "#d1e9eb");
 		refs("system.color.bg.border", "ScrollBar.thumb", "ScrollBar.thumbColor");
 		refs("system.color.bg.selected.view", "ScrollBar.hoverThumbColor",
 			"ScrollBar.pressedThumbColor", "TitlePane.buttonHoverBackground",

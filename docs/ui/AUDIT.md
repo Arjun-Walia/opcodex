@@ -6,11 +6,11 @@ Updated 2026-10-20 (Asia/Calcutta). The owner selected the stable Ghidra 12.1.4 
 
 The earlier 12.3 DEV audit is preserved on the `codex/ui-audit` branch. It is historical, superseded evidence for the old baseline. These CSVs refresh the tracked stable source after the branding implementation at `e3463a7054347ba142457af28f3872fce642b8fc`.
 
-## Modern interface pilot
+## Current interface coverage
 
-This inventory is the recorded initial stable snapshot, not a fresh count of the alpha.2 resources. The modern pilot maps 165 existing IDs to 67 original outline glyphs and uses direct vector painting, keeps multi-resolution compatibility exports, and introduces, product themes and compatibility artwork. See [design system](DESIGN_SYSTEM.md), [catalog](ICON_CATALOG.md) and [interface changes](UX_CHANGES.md) for the current delta.
+This inventory is the recorded initial stable snapshot, not a fresh count of the alpha.2 resources. The modern family uses 121 original outline glyphs and paired bindings for all 878 declared IDs. It paints vectors directly, retains multi-resolution compatibility images, and supplies the product themes and startup artwork. See [design system](DESIGN_SYSTEM.md), [catalog](ICON_CATALOG.md) and [interface changes](UX_CHANGES.md) for the current delta.
 
-The current conservative coverage check reports 257 of 878 theme IDs covered, including plain aliases; 621 remain outside this alpha pass. Run `python opcodex/check_ui_coverage.py` for the strict completeness check, or add `--allow-incomplete` for an alpha progress report. Invalid original asset dimensions/transparency fail in either mode. See [coverage](coverage.json). Matching light/dark color/font/icon roles are checked against the real theme objects in `OpcodexThemeTest`.
+The strict coverage check now reports 878 of 878 declared theme IDs covered with no asset errors. Composed aliases preserve their overlays and dimensions; empty layout placeholders intentionally remain empty. Run `python opcodex/check_ui_coverage.py` for the strict completeness check, or add `--allow-incomplete` for an alpha progress report. Invalid original asset dimensions/transparency fail in either mode. See [coverage](coverage.json). Matching light/dark color/font/icon roles are checked against the real theme objects in `OpcodexThemeTest`.
 
 ## Measured scope
 
@@ -25,7 +25,7 @@ The current conservative coverage check reports 257 of 878 theme IDs covered, in
 | Inventory rows including aliases/dependencies | 1003 |
 | Color candidates requiring contextual review | 210 |
 
-These are distinct populations: aliases reuse drawings, generated/native icons have no source bitmap, and runtime candidates include strips/illustrations. This pass introduces original product identity; it does not replace every action icon.
+These are distinct populations: aliases reuse drawings, generated/native icons have no source bitmap, and runtime candidates include strips/illustrations. At the initial audit, only the product identity was replaced; current declared-icon coverage is recorded above.
 
 ## Inventories
 

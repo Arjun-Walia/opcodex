@@ -80,6 +80,60 @@ final class OpcodexVectorPaths {
 		case "grid" -> glyph64();
 		case "book" -> glyph65();
 		case "array" -> glyph66();
+		case "cpu" -> glyph67();
+		case "memory" -> glyph68();
+		case "pause" -> glyph69();
+		case "step-into" -> glyph70();
+		case "step-over" -> glyph71();
+		case "step-out" -> glyph72();
+		case "step-back" -> glyph73();
+		case "rewind" -> glyph74();
+		case "fast-forward" -> glyph75();
+		case "record" -> glyph76();
+		case "breakpoint" -> glyph77();
+		case "breakpoint-disabled" -> glyph78();
+		case "breakpoint-mixed" -> glyph79();
+		case "breakpoint-pending" -> glyph80();
+		case "connect" -> glyph81();
+		case "disconnect" -> glyph82();
+		case "split" -> glyph83();
+		case "merge" -> glyph84();
+		case "compare" -> glyph85();
+		case "branch" -> glyph86();
+		case "clock" -> glyph87();
+		case "image" -> glyph88();
+		case "monitor" -> glyph89();
+		case "phone" -> glyph90();
+		case "volume" -> glyph91();
+		case "archive" -> glyph92();
+		case "binary" -> glyph93();
+		case "hex" -> glyph94();
+		case "text" -> glyph95();
+		case "regex" -> glyph96();
+		case "key" -> glyph97();
+		case "star" -> glyph98();
+		case "user" -> glyph99();
+		case "users" -> glyph100();
+		case "target" -> glyph101();
+		case "eye" -> glyph102();
+		case "move" -> glyph103();
+		case "pointer" -> glyph104();
+		case "list" -> glyph105();
+		case "lightbulb" -> glyph106();
+		case "wave" -> glyph107();
+		case "asterisk" -> glyph108();
+		case "circle" -> glyph109();
+		case "circle-check" -> glyph110();
+		case "circle-minus" -> glyph111();
+		case "tree" -> glyph112();
+		case "swap" -> glyph113();
+		case "rss" -> glyph114();
+		case "usb" -> glyph115();
+		case "fit" -> glyph116();
+		case "chevron-down" -> glyph117();
+		case "arrow-up-left" -> glyph118();
+		case "arrow-down-right" -> glyph119();
+		case "palette" -> glyph120();
 		default -> throw new IllegalArgumentException("Unknown glyph: " + name);
 	}; }
 	private static Part[] glyph0() {
@@ -976,5 +1030,734 @@ final class OpcodexVectorPaths {
 		p0.moveTo(10.0, 15.0);
 		p0.lineTo(14.0, 15.0);
 		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph67() {
+		Shape p0 = new RoundRectangle2D.Double(6.0, 6.0, 12.0, 12.0, 4.0, 4.0);
+		Shape p1 = new RoundRectangle2D.Double(9.0, 9.0, 6.0, 6.0, 2.0, 2.0);
+		Path2D.Double p2 = new Path2D.Double();
+		p2.moveTo(9.0, 2.0);
+		p2.lineTo(9.0, 6.0);
+		p2.moveTo(15.0, 2.0);
+		p2.lineTo(15.0, 6.0);
+		p2.moveTo(9.0, 18.0);
+		p2.lineTo(9.0, 22.0);
+		p2.moveTo(15.0, 18.0);
+		p2.lineTo(15.0, 22.0);
+		p2.moveTo(2.0, 9.0);
+		p2.lineTo(6.0, 9.0);
+		p2.moveTo(2.0, 15.0);
+		p2.lineTo(6.0, 15.0);
+		p2.moveTo(18.0, 9.0);
+		p2.lineTo(22.0, 9.0);
+		p2.moveTo(18.0, 15.0);
+		p2.lineTo(22.0, 15.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null), new Part(p2, false, true, null)};
+	}
+	private static Part[] glyph68() {
+		Shape p0 = new RoundRectangle2D.Double(3.0, 5.0, 18.0, 14.0, 4.0, 4.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(7.0, 9.0);
+		p1.lineTo(7.0, 15.0);
+		p1.moveTo(11.0, 9.0);
+		p1.lineTo(11.0, 15.0);
+		p1.moveTo(15.0, 9.0);
+		p1.lineTo(15.0, 15.0);
+		p1.moveTo(3.0, 12.0);
+		p1.lineTo(1.0, 12.0);
+		p1.moveTo(23.0, 12.0);
+		p1.lineTo(21.0, 12.0);
+		p1.moveTo(7.0, 19.0);
+		p1.lineTo(7.0, 22.0);
+		p1.moveTo(12.0, 19.0);
+		p1.lineTo(12.0, 22.0);
+		p1.moveTo(17.0, 19.0);
+		p1.lineTo(17.0, 22.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph69() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(7.0, 4.0);
+		p0.lineTo(10.0, 4.0);
+		p0.lineTo(10.0, 20.0);
+		p0.lineTo(7.0, 20.0);
+		p0.lineTo(7.0, 4.0);
+		p0.closePath();
+		p0.moveTo(14.0, 4.0);
+		p0.lineTo(17.0, 4.0);
+		p0.lineTo(17.0, 20.0);
+		p0.lineTo(14.0, 20.0);
+		p0.lineTo(14.0, 4.0);
+		p0.closePath();
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph70() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(12.0, 3.0);
+		p0.lineTo(12.0, 15.0);
+		p0.moveTo(7.0, 10.0);
+		p0.lineTo(12.0, 15.0);
+		p0.lineTo(17.0, 10.0);
+		p0.moveTo(5.0, 21.0);
+		p0.lineTo(19.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph71() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(3.0, 15.0);
+		p0.curveTo(2.723858, 10.581722, 6.081722, 6.776142, 10.5, 6.5);
+		p0.curveTo(14.918278, 6.223858, 18.723858, 9.581722, 19.0, 14.0);
+		p0.moveTo(15.0, 10.0);
+		p0.lineTo(19.0, 14.0);
+		p0.lineTo(22.0, 10.0);
+		p0.moveTo(8.0, 21.0);
+		p0.lineTo(16.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph72() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(12.0, 17.0);
+		p0.lineTo(12.0, 5.0);
+		p0.moveTo(7.0, 10.0);
+		p0.lineTo(12.0, 5.0);
+		p0.lineTo(17.0, 10.0);
+		p0.moveTo(5.0, 21.0);
+		p0.lineTo(19.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph73() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(20.0, 6.0);
+		p0.lineTo(8.0, 6.0);
+		p0.lineTo(8.0, 18.0);
+		p0.moveTo(3.0, 13.0);
+		p0.lineTo(8.0, 18.0);
+		p0.lineTo(13.0, 13.0);
+		p0.moveTo(3.0, 22.0);
+		p0.lineTo(13.0, 22.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph74() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(12.0, 4.0);
+		p0.lineTo(3.0, 12.0);
+		p0.lineTo(12.0, 20.0);
+		p0.lineTo(12.0, 4.0);
+		p0.closePath();
+		p0.moveTo(21.0, 4.0);
+		p0.lineTo(12.0, 12.0);
+		p0.lineTo(21.0, 20.0);
+		p0.lineTo(21.0, 4.0);
+		p0.closePath();
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph75() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(3.0, 4.0);
+		p0.lineTo(12.0, 12.0);
+		p0.lineTo(3.0, 20.0);
+		p0.lineTo(3.0, 4.0);
+		p0.closePath();
+		p0.moveTo(12.0, 4.0);
+		p0.lineTo(21.0, 12.0);
+		p0.lineTo(12.0, 20.0);
+		p0.lineTo(12.0, 4.0);
+		p0.closePath();
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph76() {
+		Shape p0 = new Ellipse2D.Double(4.0, 4.0, 16.0, 16.0);
+		Shape p1 = new Ellipse2D.Double(8.0, 8.0, 8.0, 8.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, true, true, null)};
+	}
+	private static Part[] glyph77() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(8.0, 3.0);
+		p0.lineTo(16.0, 3.0);
+		p0.lineTo(21.0, 8.0);
+		p0.lineTo(21.0, 16.0);
+		p0.lineTo(16.0, 21.0);
+		p0.lineTo(8.0, 21.0);
+		p0.lineTo(3.0, 16.0);
+		p0.lineTo(3.0, 8.0);
+		p0.lineTo(8.0, 3.0);
+		p0.closePath();
+		Shape p1 = new Ellipse2D.Double(9.0, 9.0, 6.0, 6.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, true, true, null)};
+	}
+	private static Part[] glyph78() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(8.0, 3.0);
+		p0.lineTo(16.0, 3.0);
+		p0.lineTo(21.0, 8.0);
+		p0.lineTo(21.0, 16.0);
+		p0.lineTo(16.0, 21.0);
+		p0.lineTo(8.0, 21.0);
+		p0.lineTo(3.0, 16.0);
+		p0.lineTo(3.0, 8.0);
+		p0.lineTo(8.0, 3.0);
+		p0.closePath();
+		p0.moveTo(7.0, 17.0);
+		p0.lineTo(17.0, 7.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph79() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(8.0, 3.0);
+		p0.lineTo(16.0, 3.0);
+		p0.lineTo(21.0, 8.0);
+		p0.lineTo(21.0, 16.0);
+		p0.lineTo(16.0, 21.0);
+		p0.lineTo(8.0, 21.0);
+		p0.lineTo(3.0, 16.0);
+		p0.lineTo(3.0, 8.0);
+		p0.lineTo(8.0, 3.0);
+		p0.closePath();
+		p0.moveTo(12.0, 4.0);
+		p0.lineTo(12.0, 20.0);
+		p0.moveTo(12.0, 8.0);
+		p0.lineTo(18.0, 8.0);
+		p0.moveTo(12.0, 12.0);
+		p0.lineTo(20.0, 12.0);
+		p0.moveTo(12.0, 16.0);
+		p0.lineTo(18.0, 16.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph80() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(8.0, 3.0);
+		p0.lineTo(16.0, 3.0);
+		p0.lineTo(21.0, 8.0);
+		p0.lineTo(21.0, 16.0);
+		p0.lineTo(16.0, 21.0);
+		p0.lineTo(8.0, 21.0);
+		p0.lineTo(3.0, 16.0);
+		p0.lineTo(3.0, 8.0);
+		p0.lineTo(8.0, 3.0);
+		p0.closePath();
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(12.0, 8.0);
+		p1.lineTo(12.0, 13.0);
+		p1.moveTo(12.0, 17.0);
+		p1.lineTo(12.01, 17.0);
+		return new Part[]{new Part(p0, false, true, new float[]{2.0f,3.0f}), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph81() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(8.0, 3.0);
+		p0.lineTo(8.0, 7.0);
+		p0.moveTo(16.0, 3.0);
+		p0.lineTo(16.0, 7.0);
+		p0.moveTo(6.0, 7.0);
+		p0.lineTo(18.0, 7.0);
+		p0.lineTo(18.0, 12.0);
+		p0.curveTo(18.0, 15.313708, 15.313708, 18.0, 12.0, 18.0);
+		p0.curveTo(8.686292, 18.0, 6.0, 15.313708, 6.0, 12.0);
+		p0.lineTo(6.0, 7.0);
+		p0.closePath();
+		p0.moveTo(12.0, 18.0);
+		p0.lineTo(12.0, 22.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph82() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(3.0, 3.0);
+		p0.lineTo(21.0, 21.0);
+		p0.moveTo(8.0, 3.0);
+		p0.lineTo(8.0, 7.0);
+		p0.moveTo(16.0, 3.0);
+		p0.lineTo(16.0, 7.0);
+		p0.moveTo(6.0, 7.0);
+		p0.lineTo(18.0, 7.0);
+		p0.lineTo(18.0, 12.0);
+		p0.moveTo(6.0, 12.0);
+		p0.curveTo(6.174065, 14.281097, 7.63016, 16.2647, 9.754263, 17.114342);
+		p0.curveTo(11.878366, 17.963983, 14.300782, 17.531784, 16.0, 16.0);
+		p0.moveTo(12.0, 18.0);
+		p0.lineTo(12.0, 22.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph83() {
+		Shape p0 = new RoundRectangle2D.Double(3.0, 3.0, 18.0, 18.0, 4.0, 4.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(12.0, 3.0);
+		p1.lineTo(12.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph84() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(5.0, 3.0);
+		p0.lineTo(5.0, 7.0);
+		p0.curveTo(5.0, 12.0, 12.0, 10.0, 12.0, 15.0);
+		p0.lineTo(12.0, 21.0);
+		p0.moveTo(19.0, 3.0);
+		p0.lineTo(19.0, 7.0);
+		p0.curveTo(19.0, 12.0, 12.0, 10.0, 12.0, 15.0);
+		p0.moveTo(8.0, 17.0);
+		p0.lineTo(12.0, 21.0);
+		p0.lineTo(16.0, 17.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph85() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(5.0, 3.0);
+		p0.lineTo(5.0, 21.0);
+		p0.moveTo(19.0, 3.0);
+		p0.lineTo(19.0, 21.0);
+		p0.moveTo(8.0, 8.0);
+		p0.lineTo(16.0, 8.0);
+		p0.moveTo(13.0, 5.0);
+		p0.lineTo(16.0, 8.0);
+		p0.lineTo(13.0, 11.0);
+		p0.moveTo(16.0, 16.0);
+		p0.lineTo(8.0, 16.0);
+		p0.moveTo(11.0, 13.0);
+		p0.lineTo(8.0, 16.0);
+		p0.lineTo(11.0, 19.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph86() {
+		Shape p0 = new Ellipse2D.Double(4.0, 2.0, 4.0, 4.0);
+		Shape p1 = new Ellipse2D.Double(16.0, 2.0, 4.0, 4.0);
+		Shape p2 = new Ellipse2D.Double(4.0, 18.0, 4.0, 4.0);
+		Path2D.Double p3 = new Path2D.Double();
+		p3.moveTo(6.0, 6.0);
+		p3.lineTo(6.0, 18.0);
+		p3.moveTo(18.0, 6.0);
+		p3.lineTo(18.0, 9.0);
+		p3.curveTo(18.0, 13.0, 6.0, 10.0, 6.0, 15.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null), new Part(p2, false, true, null), new Part(p3, false, true, null)};
+	}
+	private static Part[] glyph87() {
+		Shape p0 = new Ellipse2D.Double(3.0, 3.0, 18.0, 18.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(12.0, 6.0);
+		p1.lineTo(12.0, 12.0);
+		p1.lineTo(16.0, 15.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph88() {
+		Shape p0 = new RoundRectangle2D.Double(3.0, 3.0, 18.0, 18.0, 4.0, 4.0);
+		Shape p1 = new Ellipse2D.Double(6.0, 6.0, 4.0, 4.0);
+		Path2D.Double p2 = new Path2D.Double();
+		p2.moveTo(3.0, 17.0);
+		p2.lineTo(8.0, 12.0);
+		p2.lineTo(12.0, 16.0);
+		p2.lineTo(16.0, 10.0);
+		p2.lineTo(21.0, 17.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null), new Part(p2, false, true, null)};
+	}
+	private static Part[] glyph89() {
+		Shape p0 = new RoundRectangle2D.Double(2.0, 3.0, 20.0, 14.0, 4.0, 4.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(8.0, 21.0);
+		p1.lineTo(16.0, 21.0);
+		p1.moveTo(12.0, 17.0);
+		p1.lineTo(12.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph90() {
+		Shape p0 = new RoundRectangle2D.Double(6.0, 2.0, 12.0, 20.0, 4.0, 4.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(10.0, 5.0);
+		p1.lineTo(14.0, 5.0);
+		p1.moveTo(11.0, 19.0);
+		p1.lineTo(13.0, 19.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph91() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(3.0, 9.0);
+		p0.lineTo(7.0, 9.0);
+		p0.lineTo(13.0, 4.0);
+		p0.lineTo(13.0, 20.0);
+		p0.lineTo(7.0, 15.0);
+		p0.lineTo(3.0, 15.0);
+		p0.lineTo(3.0, 9.0);
+		p0.closePath();
+		p0.moveTo(17.0, 8.0);
+		p0.curveTo(19.037152, 10.277605, 19.037152, 13.722395, 17.0, 16.0);
+		p0.moveTo(20.0, 5.0);
+		p0.curveTo(23.811429, 8.888435, 23.811429, 15.111565, 20.0, 19.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph92() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(3.0, 3.0);
+		p0.lineTo(21.0, 3.0);
+		p0.lineTo(21.0, 8.0);
+		p0.lineTo(3.0, 8.0);
+		p0.lineTo(3.0, 3.0);
+		p0.closePath();
+		p0.moveTo(5.0, 8.0);
+		p0.lineTo(5.0, 21.0);
+		p0.lineTo(19.0, 21.0);
+		p0.lineTo(19.0, 8.0);
+		p0.moveTo(10.0, 12.0);
+		p0.lineTo(14.0, 12.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph93() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(4.0, 4.0);
+		p0.lineTo(9.0, 4.0);
+		p0.lineTo(9.0, 11.0);
+		p0.lineTo(4.0, 11.0);
+		p0.lineTo(4.0, 4.0);
+		p0.closePath();
+		p0.moveTo(15.0, 4.0);
+		p0.lineTo(18.0, 4.0);
+		p0.lineTo(18.0, 11.0);
+		p0.moveTo(4.0, 15.0);
+		p0.lineTo(7.0, 15.0);
+		p0.lineTo(7.0, 22.0);
+		p0.moveTo(14.0, 15.0);
+		p0.lineTo(19.0, 15.0);
+		p0.lineTo(19.0, 22.0);
+		p0.lineTo(14.0, 22.0);
+		p0.lineTo(14.0, 15.0);
+		p0.closePath();
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph94() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(3.0, 5.0);
+		p0.lineTo(3.0, 19.0);
+		p0.moveTo(10.0, 5.0);
+		p0.lineTo(10.0, 19.0);
+		p0.moveTo(3.0, 12.0);
+		p0.lineTo(10.0, 12.0);
+		p0.moveTo(16.0, 5.0);
+		p0.lineTo(21.0, 5.0);
+		p0.moveTo(16.0, 5.0);
+		p0.lineTo(16.0, 19.0);
+		p0.lineTo(21.0, 19.0);
+		p0.moveTo(16.0, 12.0);
+		p0.lineTo(20.0, 12.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph95() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(3.0, 4.0);
+		p0.lineTo(21.0, 4.0);
+		p0.moveTo(12.0, 4.0);
+		p0.lineTo(12.0, 21.0);
+		p0.moveTo(8.0, 21.0);
+		p0.lineTo(16.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph96() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(6.0, 16.0);
+		p0.lineTo(6.01, 16.0);
+		p0.moveTo(16.0, 3.0);
+		p0.lineTo(16.0, 15.0);
+		p0.moveTo(10.0, 6.0);
+		p0.lineTo(22.0, 12.0);
+		p0.moveTo(10.0, 12.0);
+		p0.lineTo(22.0, 6.0);
+		Shape p1 = new Ellipse2D.Double(5.0, 16.0, 2.0, 2.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, true, true, null)};
+	}
+	private static Part[] glyph97() {
+		Shape p0 = new Ellipse2D.Double(3.0, 3.0, 10.0, 10.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(12.0, 12.0);
+		p1.lineTo(21.0, 21.0);
+		p1.moveTo(18.0, 18.0);
+		p1.lineTo(21.0, 15.0);
+		p1.moveTo(15.0, 15.0);
+		p1.lineTo(18.0, 12.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph98() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(12.0, 3.0);
+		p0.lineTo(15.0, 9.0);
+		p0.lineTo(22.0, 10.0);
+		p0.lineTo(17.0, 15.0);
+		p0.lineTo(18.0, 22.0);
+		p0.lineTo(12.0, 18.0);
+		p0.lineTo(6.0, 22.0);
+		p0.lineTo(7.0, 15.0);
+		p0.lineTo(2.0, 10.0);
+		p0.lineTo(9.0, 9.0);
+		p0.lineTo(12.0, 3.0);
+		p0.closePath();
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph99() {
+		Shape p0 = new Ellipse2D.Double(8.0, 3.0, 8.0, 8.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(4.0, 21.0);
+		p1.lineTo(4.0, 18.0);
+		p1.curveTo(4.0, 13.581722, 7.581722, 10.0, 12.0, 10.0);
+		p1.curveTo(16.418278, 10.0, 20.0, 13.581722, 20.0, 18.0);
+		p1.lineTo(20.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph100() {
+		Shape p0 = new Ellipse2D.Double(6.0, 4.0, 6.0, 6.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(3.0, 21.0);
+		p1.lineTo(3.0, 17.0);
+		p1.curveTo(3.0, 13.686292, 5.686292, 11.0, 9.0, 11.0);
+		p1.curveTo(12.313708, 11.0, 15.0, 13.686292, 15.0, 17.0);
+		p1.lineTo(15.0, 21.0);
+		p1.moveTo(17.0, 4.0);
+		p1.curveTo(18.656854, 4.0, 20.0, 5.343146, 20.0, 7.0);
+		p1.curveTo(20.0, 8.656854, 18.656854, 10.0, 17.0, 10.0);
+		p1.moveTo(18.0, 14.0);
+		p1.curveTo(20.365616, 14.482368, 22.048679, 16.586196, 22.0, 19.0);
+		p1.lineTo(22.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph101() {
+		Shape p0 = new Ellipse2D.Double(3.0, 3.0, 18.0, 18.0);
+		Shape p1 = new Ellipse2D.Double(7.0, 7.0, 10.0, 10.0);
+		Path2D.Double p2 = new Path2D.Double();
+		p2.moveTo(12.0, 2.0);
+		p2.lineTo(12.0, 6.0);
+		p2.moveTo(12.0, 18.0);
+		p2.lineTo(12.0, 22.0);
+		p2.moveTo(2.0, 12.0);
+		p2.lineTo(6.0, 12.0);
+		p2.moveTo(18.0, 12.0);
+		p2.lineTo(22.0, 12.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null), new Part(p2, false, true, null)};
+	}
+	private static Part[] glyph102() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(2.0, 12.0);
+		p0.curveTo(7.0, 2.0, 17.0, 2.0, 22.0, 12.0);
+		p0.curveTo(17.0, 22.0, 7.0, 22.0, 2.0, 12.0);
+		p0.closePath();
+		Shape p1 = new Ellipse2D.Double(9.0, 9.0, 6.0, 6.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph103() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(12.0, 2.0);
+		p0.lineTo(12.0, 22.0);
+		p0.moveTo(2.0, 12.0);
+		p0.lineTo(22.0, 12.0);
+		p0.moveTo(8.0, 6.0);
+		p0.lineTo(12.0, 2.0);
+		p0.lineTo(16.0, 6.0);
+		p0.moveTo(8.0, 18.0);
+		p0.lineTo(12.0, 22.0);
+		p0.lineTo(16.0, 18.0);
+		p0.moveTo(6.0, 8.0);
+		p0.lineTo(2.0, 12.0);
+		p0.lineTo(6.0, 16.0);
+		p0.moveTo(18.0, 8.0);
+		p0.lineTo(22.0, 12.0);
+		p0.lineTo(18.0, 16.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph104() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(4.0, 3.0);
+		p0.lineTo(8.0, 20.0);
+		p0.lineTo(12.0, 14.0);
+		p0.lineTo(19.0, 11.0);
+		p0.lineTo(4.0, 3.0);
+		p0.closePath();
+		p0.moveTo(12.0, 14.0);
+		p0.lineTo(18.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph105() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(8.0, 5.0);
+		p0.lineTo(21.0, 5.0);
+		p0.moveTo(8.0, 12.0);
+		p0.lineTo(21.0, 12.0);
+		p0.moveTo(8.0, 19.0);
+		p0.lineTo(21.0, 19.0);
+		p0.moveTo(3.0, 5.0);
+		p0.lineTo(3.01, 5.0);
+		p0.moveTo(3.0, 12.0);
+		p0.lineTo(3.01, 12.0);
+		p0.moveTo(3.0, 19.0);
+		p0.lineTo(3.01, 19.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph106() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(8.0, 17.0);
+		p0.curveTo(8.0, 14.0, 4.0, 14.0, 4.0, 9.0);
+		p0.curveTo(4.0, 4.581722, 7.581722, 1.0, 12.0, 1.0);
+		p0.curveTo(16.418278, 1.0, 20.0, 4.581722, 20.0, 9.0);
+		p0.curveTo(20.0, 14.0, 16.0, 14.0, 16.0, 17.0);
+		p0.lineTo(8.0, 17.0);
+		p0.closePath();
+		p0.moveTo(9.0, 21.0);
+		p0.lineTo(15.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph107() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(2.0, 12.0);
+		p0.lineTo(5.0, 12.0);
+		p0.lineTo(8.0, 4.0);
+		p0.lineTo(13.0, 20.0);
+		p0.lineTo(16.0, 12.0);
+		p0.lineTo(22.0, 12.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph108() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(12.0, 3.0);
+		p0.lineTo(12.0, 21.0);
+		p0.moveTo(4.0, 7.0);
+		p0.lineTo(20.0, 17.0);
+		p0.moveTo(4.0, 17.0);
+		p0.lineTo(20.0, 7.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph109() {
+		Shape p0 = new Ellipse2D.Double(4.0, 4.0, 16.0, 16.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph110() {
+		Shape p0 = new Ellipse2D.Double(3.0, 3.0, 18.0, 18.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(7.0, 12.0);
+		p1.lineTo(10.0, 15.0);
+		p1.lineTo(17.0, 8.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph111() {
+		Shape p0 = new Ellipse2D.Double(3.0, 3.0, 18.0, 18.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(7.0, 12.0);
+		p1.lineTo(17.0, 12.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph112() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(5.0, 3.0);
+		p0.lineTo(5.0, 17.0);
+		p0.lineTo(20.0, 17.0);
+		p0.moveTo(5.0, 8.0);
+		p0.lineTo(20.0, 8.0);
+		p0.moveTo(12.0, 8.0);
+		p0.lineTo(12.0, 17.0);
+		Shape p1 = new RoundRectangle2D.Double(17.0, 5.0, 5.0, 5.0, 2.0, 2.0);
+		Shape p2 = new RoundRectangle2D.Double(17.0, 14.0, 5.0, 5.0, 2.0, 2.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null), new Part(p2, false, true, null)};
+	}
+	private static Part[] glyph113() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(3.0, 7.0);
+		p0.lineTo(21.0, 7.0);
+		p0.moveTo(17.0, 3.0);
+		p0.lineTo(21.0, 7.0);
+		p0.lineTo(17.0, 11.0);
+		p0.moveTo(21.0, 17.0);
+		p0.lineTo(3.0, 17.0);
+		p0.moveTo(7.0, 13.0);
+		p0.lineTo(3.0, 17.0);
+		p0.lineTo(7.0, 21.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph114() {
+		Shape p0 = new Ellipse2D.Double(4.0, 18.0, 2.0, 2.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(4.0, 11.0);
+		p1.curveTo(8.970563, 11.0, 13.0, 15.029437, 13.0, 20.0);
+		p1.moveTo(4.0, 3.0);
+		p1.curveTo(13.388841, 3.0, 21.0, 10.611159, 21.0, 20.0);
+		return new Part[]{new Part(p0, true, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph115() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(12.0, 20.0);
+		p0.lineTo(12.0, 3.0);
+		p0.moveTo(9.0, 6.0);
+		p0.lineTo(12.0, 3.0);
+		p0.lineTo(15.0, 6.0);
+		p0.moveTo(12.0, 15.0);
+		p0.curveTo(6.0, 15.0, 6.0, 12.0, 6.0, 9.0);
+		p0.moveTo(12.0, 12.0);
+		p0.curveTo(18.0, 12.0, 18.0, 9.0, 18.0, 7.0);
+		Shape p1 = new Ellipse2D.Double(10.0, 18.0, 4.0, 4.0);
+		Shape p2 = new Ellipse2D.Double(5.0, 7.0, 2.0, 2.0);
+		Path2D.Double p3 = new Path2D.Double();
+		p3.moveTo(17.0, 4.0);
+		p3.lineTo(19.0, 4.0);
+		p3.lineTo(19.0, 6.0);
+		p3.lineTo(17.0, 6.0);
+		p3.lineTo(17.0, 4.0);
+		p3.closePath();
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null), new Part(p2, false, true, null), new Part(p3, false, true, null)};
+	}
+	private static Part[] glyph116() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(3.0, 9.0);
+		p0.lineTo(3.0, 3.0);
+		p0.lineTo(9.0, 3.0);
+		p0.moveTo(15.0, 3.0);
+		p0.lineTo(21.0, 3.0);
+		p0.lineTo(21.0, 9.0);
+		p0.moveTo(21.0, 15.0);
+		p0.lineTo(21.0, 21.0);
+		p0.lineTo(15.0, 21.0);
+		p0.moveTo(9.0, 21.0);
+		p0.lineTo(3.0, 21.0);
+		p0.lineTo(3.0, 15.0);
+		p0.moveTo(8.0, 8.0);
+		p0.lineTo(16.0, 8.0);
+		p0.lineTo(16.0, 16.0);
+		p0.lineTo(8.0, 16.0);
+		p0.lineTo(8.0, 8.0);
+		p0.closePath();
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph117() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(5.0, 9.0);
+		p0.lineTo(12.0, 16.0);
+		p0.lineTo(19.0, 9.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph118() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(5.0, 17.0);
+		p0.lineTo(5.0, 5.0);
+		p0.lineTo(17.0, 5.0);
+		p0.moveTo(5.0, 5.0);
+		p0.lineTo(19.0, 19.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph119() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(19.0, 7.0);
+		p0.lineTo(19.0, 19.0);
+		p0.lineTo(7.0, 19.0);
+		p0.moveTo(19.0, 19.0);
+		p0.lineTo(5.0, 5.0);
+		return new Part[]{new Part(p0, false, true, null)};
+	}
+	private static Part[] glyph120() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(12.0, 3.0);
+		p0.curveTo(7.029437, 3.0, 3.0, 7.029437, 3.0, 12.0);
+		p0.curveTo(3.0, 16.970563, 7.029437, 21.0, 12.0, 21.0);
+		p0.lineTo(13.0, 21.0);
+		p0.curveTo(14.104569, 21.0, 15.0, 20.104569, 15.0, 19.0);
+		p0.curveTo(15.0, 17.895431, 14.104569, 17.0, 13.0, 17.0);
+		p0.lineTo(12.0, 17.0);
+		p0.curveTo(10.895431, 17.0, 10.0, 16.104569, 10.0, 15.0);
+		p0.curveTo(10.0, 13.895431, 10.895431, 13.0, 12.0, 13.0);
+		p0.lineTo(16.0, 13.0);
+		p0.curveTo(18.761424, 13.0, 21.0, 10.761424, 21.0, 8.0);
+		p0.curveTo(21.0, 5.238576, 18.761424, 3.0, 16.0, 3.0);
+		p0.lineTo(12.0, 3.0);
+		p0.closePath();
+		Shape p1 = new Ellipse2D.Double(6.0, 10.0, 2.0, 2.0);
+		Shape p2 = new Ellipse2D.Double(9.0, 6.0, 2.0, 2.0);
+		Shape p3 = new Ellipse2D.Double(14.0, 6.0, 2.0, 2.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null), new Part(p2, false, true, null), new Part(p3, false, true, null)};
 	}
 }
