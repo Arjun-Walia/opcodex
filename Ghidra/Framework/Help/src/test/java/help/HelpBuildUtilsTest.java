@@ -57,7 +57,8 @@ public class HelpBuildUtilsTest extends AbstractHelpTest {
 		String relativeString = "help/topics/FooTopic/FooFile.html";
 		Path path = Paths.get("/some/fake/path/to/" + relativeString);
 		Path relative = HelpBuildUtils.relativizeWithHelpTopics(path);
-		assertEquals(relativeString, relative.toString());
+		// OPCODEX: Compare native paths without assuming Unix separators on Windows.
+		assertEquals(Paths.get(relativeString), relative);
 	}
 
 	@Test
@@ -82,7 +83,7 @@ public class HelpBuildUtilsTest extends AbstractHelpTest {
 		String reference = "../shared/foo.png";// go up one to the help dir
 		Path resolved = HelpBuildUtils.locateReference(sourceFile, reference);
 		assertEquals("Relative syntax did not locate file",
-			Paths.get(HELP_TOPIC_PATH + "/shared/foo.png"), resolved);
+			Paths.get(HELP_TOPIC_PATH + "/shared/foo.png").toAbsolutePath(), resolved);
 	}
 
 	@Test
@@ -103,7 +104,8 @@ public class HelpBuildUtilsTest extends AbstractHelpTest {
 		ImageLocation location = HelpBuildUtils.locateImageReference(sourceFile, reference);
 		Path resolved = location.getResolvedPath();
 		String name = resolved.getFileName().toString();
-		assertEquals("Help System syntax was not preserved", "reload3.png", name);
+		// OPCODEX: The runtime reference resolves the current product refresh artwork.
+		assertEquals("Help System syntax was not preserved", "refresh-16.png", name);
 		assertTrue(location.isRuntime());
 		assertFalse(location.isRemote());
 	}

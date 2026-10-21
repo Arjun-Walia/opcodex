@@ -8,7 +8,7 @@ The earlier 12.3 DEV audit is preserved on the `codex/ui-audit` branch. It is hi
 
 ## Modern interface pilot
 
-This inventory is the recorded initial stable snapshot, not a fresh count of the alpha.2 resources. The modern pilot maps 163 existing IDs to 67 original outline glyphs and uses direct vector painting, keeps multi-resolution compatibility exports, and introduces, product themes and compatibility artwork. See [design system](DESIGN_SYSTEM.md), [catalog](ICON_CATALOG.md) and [interface changes](UX_CHANGES.md) for the current delta.
+This inventory is the recorded initial stable snapshot, not a fresh count of the alpha.2 resources. The modern pilot maps 165 existing IDs to 67 original outline glyphs and uses direct vector painting, keeps multi-resolution compatibility exports, and introduces, product themes and compatibility artwork. See [design system](DESIGN_SYSTEM.md), [catalog](ICON_CATALOG.md) and [interface changes](UX_CHANGES.md) for the current delta.
 
 The current conservative coverage check reports 257 of 878 theme IDs covered, including plain aliases; 621 remain outside this alpha pass. Run `python opcodex/check_ui_coverage.py` for the strict completeness check, or add `--allow-incomplete` for an alpha progress report. Invalid original asset dimensions/transparency fail in either mode. See [coverage](coverage.json). Matching light/dark color/font/icon roles are checked against the real theme objects in `OpcodexThemeTest`.
 

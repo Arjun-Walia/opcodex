@@ -1,8 +1,8 @@
 {
   "uniqueIconIds": 878,
-  "explicitOriginalMappings": 163,
-  "coveredIncludingPlainAliases": 257,
-  "missingCount": 621,
+  "explicitOriginalMappings": 165,
+  "coveredIncludingPlainAliases": 259,
+  "missingCount": 619,
   "missingIconIds": [
     "icon.arrow.down.right",
     "icon.arrow.up.left",
@@ -14,7 +14,6 @@
     "icon.base.application.40",
     "icon.base.application.48",
     "icon.base.application.64",
-    "icon.base.application.home",
     "icon.base.mem.search.panel.options",
     "icon.base.mem.search.panel.scan",
     "icon.base.mem.search.panel.search",
@@ -198,7 +197,6 @@
     "icon.dialog.error.expandable.stack",
     "icon.docking.application.128",
     "icon.docking.application.16",
-    "icon.docking.application.home",
     "icon.dragon.256",
     "icon.empty",
     "icon.empty.20",

@@ -243,6 +243,8 @@
     "icon.plugin.datatypes.archive.program.open": "book",
     "icon.plugin.datatypes.archive.project.closed": "book",
     "icon.plugin.datatypes.archive.project.open": "book",
-    "icon.plugin.scriptmanager.provider": "terminal"
+    "icon.plugin.scriptmanager.provider": "terminal",
+    "icon.base.application.home": "home",
+    "icon.docking.application.home": "home"
   }
 }

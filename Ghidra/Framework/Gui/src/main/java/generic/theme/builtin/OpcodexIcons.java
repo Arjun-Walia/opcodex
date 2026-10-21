@@ -13,6 +13,7 @@ import generic.theme.GTheme;
 final class OpcodexIcons {
 	private static final String[][] ENTRIES = {
 		{"icon.add", "plus"},
+		{"icon.base.application.home", "home"},
 		{"icon.base.edit.bytes", "edit"},
 		{"icon.base.hover.off", "info"},
 		{"icon.base.hover.on", "info"},
@@ -33,6 +34,7 @@ final class OpcodexIcons {
 		{"icon.decompiler.action.provider.readonly", "lock"},
 		{"icon.decompiler.action.provider.unreachable", "filter-off"},
 		{"icon.delete", "trash"},
+		{"icon.docking.application.home", "home"},
 		{"icon.domain.file.uknown", "file"},
 		{"icon.down", "down"},
 		{"icon.drive", "drive"},

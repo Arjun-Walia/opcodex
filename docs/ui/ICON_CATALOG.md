@@ -2,7 +2,7 @@
 
 # Opcodex icon pilot
 
-67 original outline glyphs replace 141 existing semantic IDs. Transparent PNGs are exported at 16/20/24/32/48/64px; product themes use real multi-resolution ImageIcons, with a 16px logical base. Existing raw filename callers retain compatibility fallbacks with original Opcodex artwork.
+67 original outline glyphs replace 165 existing semantic IDs. Transparent PNGs are exported at 16/20/24/32/48/64px; product themes paint Java2D geometry directly at display scale; multi-resolution images support image consumers and export. Existing raw filename callers retain compatibility fallbacks with original Opcodex artwork.
 
 Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-assets/icons/src). Regenerate with `node opcodex/generate-ui-assets.cjs` and `node opcodex/generate-design-preview.cjs` using Sharp as a development-only dependency.
 
@@ -19,6 +19,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | Existing ID | Original glyph |
 |---|---|
 | `icon.add` | `plus` |
+| `icon.base.application.home` | `home` |
 | `icon.base.edit.bytes` | `edit` |
 | `icon.base.hover.off` | `info` |
 | `icon.base.hover.on` | `info` |
@@ -39,6 +40,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.decompiler.action.provider.readonly` | `lock` |
 | `icon.decompiler.action.provider.unreachable` | `filter-off` |
 | `icon.delete` | `trash` |
+| `icon.docking.application.home` | `home` |
 | `icon.domain.file.uknown` | `file` |
 | `icon.down` | `down` |
 | `icon.drive` | `drive` |

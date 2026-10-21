@@ -8,6 +8,8 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 
 | Upstream file | Modification |
 |---|---|
+| `Ghidra/Framework/Docking/src/test/java/docking/widgets/tab/GTabPanelTest.java` | Keep overflow tests deterministic across product fonts by sizing from the tab strip. |
+| `Ghidra/Framework/Help/src/test/java/help/HelpBuildUtilsTest.java` | Assert that runtime help references resolve the current refresh artwork. |
 | `Ghidra/Framework/Docking/build.gradle` | Declare the existing audited JNA version for Windows shell file selection. |
 | `Ghidra/Framework/Docking/Module.manifest` | Retain Apache 2.0 dependency notices for native picker support. |
 | `Ghidra/Framework/Docking/src/main/java/docking/widgets/filechooser/GhidraFileChooser.java` | Use Windows Common Item Dialog for supported local files and folders; preserve virtual models, custom filters and cancellation. |

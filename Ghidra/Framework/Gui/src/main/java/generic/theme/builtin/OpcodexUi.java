@@ -10,12 +10,15 @@ import javax.swing.Icon;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import generic.theme.ThemeManager;
+import generic.theme.ApplicationThemeManager;
 
 /** Product chrome helpers; keep icon painting vector-based even for disabled controls. */
 public final class OpcodexUi {
 	private OpcodexUi() {}
 	public static boolean active() {
-		return ThemeManager.getInstance().getActiveTheme() instanceof OpcodexTheme;
+		// Bootstrap/headless managers deliberately do not implement desktop theme access.
+		return ThemeManager.getInstance() instanceof ApplicationThemeManager manager &&
+			manager.getActiveTheme() instanceof OpcodexTheme;
 	}
 	public static Icon sized(Icon icon, int height) {
 		return icon == null ? null : new PaintedIcon(icon, height, 1f);
