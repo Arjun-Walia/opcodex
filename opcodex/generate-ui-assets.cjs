@@ -71,6 +71,12 @@ async function generate() {
     if (!lines.includes(marker)) lines.unshift(marker);
     await fs.writeFile(file, lines.join('\n').trimEnd()+'\n');
   }
+  // Additional module IDs are overridden by product themes only; keep those modules intact.
+  for (const relative of ['Ghidra/Features/Decompiler/data/decompiler.theme.properties',
+      'Ghidra/Features/FunctionGraph/data/functiongraph.theme.properties']) {
+    const text = await fs.readFile(path.join(root,relative),'utf8');
+    for (const match of text.matchAll(/^(icon\.[\w.]+)\s*=/gm)) resolved.add(match[1]);
+  }
   const missing = Object.keys(catalog.mappings).filter(id=>!resolved.has(id));
   if (missing.length) throw new Error('Unknown theme IDs: '+missing.join(', '));
   const entries = Object.entries(catalog.mappings).sort().map(([id,glyph])=>

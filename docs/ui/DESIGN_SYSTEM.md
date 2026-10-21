@@ -1,6 +1,6 @@
 <!-- Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0 -->
 
-# Opcodex design system — interface pilot
+# Opcodex design system
 
 A quiet, dense workbench for repeated reverse-engineering workflows. The program and analysis views remain the focus. Graphite and neutral light surfaces carry a small teal accent; status colors retain semantic meaning. No new animation or runtime icon dependency is introduced.
 
@@ -8,7 +8,7 @@ A quiet, dense workbench for repeated reverse-engineering workflows. The program
 
 Original **outline** glyphs on a 24×24 grid, 2px rounded strokes and open interiors. Main geometry stays within the icon bounds; arrows and small node glyphs use optical adjustments. Monochrome controls use neutral ink; warning, error and confirmation use semantic colors. Do not use color alone to distinguish an action.
 
-67 glyphs map to 141 existing IDs in this pilot. Sources and the ID mapping live in [catalog.json](../../ui-assets/icons/catalog.json). Exports at 16/20/24/32/48/64px support the sizes actually used in the toolbar and trees. Product themes install `BaseMultiResolutionImage` variants at a 16px logical size, so Java can select real 125%, 150%, 200% and higher-resolution images. Icons load lazily and retain their resource paths when users export custom themes. Merely exporting large PNGs would not establish runtime HiDPI support.
+67 glyphs map to 163 existing IDs. Sources and the ID mapping live in [catalog.json](../../ui-assets/icons/catalog.json). Exports at 16/20/24/32/48/64px support the sizes actually used in the toolbar and trees. Product themes paint original Java2D geometry directly at the current display transform; disabled and sized wrappers preserve that painting. Multi-resolution images remain available for consumers that require images and for theme export. No SVG parser is bundled. Lazy geometry is generated with development-only FontTools (MIT).
 
 Existing semantic IDs and legacy raw filenames remain compatible. Fallback product artwork and the Debugger/Emulator tool icons are replaced by original art. Specialized unconverted action icons remain outside this pilot; this is not a claim to have replaced all 878 IDs in the initial inventory.
 
@@ -38,11 +38,15 @@ Selection is quiet, with readable text; active docking headers and tabs use matc
 
 ## Typography and spacing
 
-UI: platform logical Dialog, 13pt. Monospaced views: logical Monospaced, 13pt. Native fallback fonts remain available, and users can keep their own font/theme preferences.
+UI: Segoe UI when available, with native/logical fallbacks, 13pt. Code: Cascadia Mono, Consolas, Menlo or DejaVu Sans Mono when available, with a logical monospaced fallback, 13pt. Users can keep their own font/theme preferences.
 
-Use 4px increments for layout with 6px optical control padding where needed: 12px workspace inset, 8px group gaps, 12px action gaps, 24px tree/table defaults and 28px minimum regular buttons. Toolbar buttons use 4px inset around 16px glyphs. Corners use an 8px FlatLaf default; focus remains a visible 1px ring. Specialized widgets can retain their own user-configurable sizing.
+Use 4px increments for layout with 6px optical control padding where needed: 12px workspace inset, 8px group gaps, 12px action gaps, 24px tree/table defaults and 28px minimum regular buttons. Toolbar buttons use 20px vector glyphs with at least 32px hit targets. Tab close controls use compact 24px targets and 16px vectors. Corners use an 8px FlatLaf default; focus remains a visible 1px ring. Specialized widgets can retain their own user-configurable sizing.
 
 Theme-specific UI defaults install after FlatLaf loading and before component updates. Switching to another theme clears UI defaults through the existing manager, preventing product spacing from leaking into unrelated themes.
+
+## Workspace
+
+A tabbed navigator occupies 18.5% of the default workspace; the remaining area is split evenly between disassembly and pseudocode. The console opens on demand. The main toolbar shows saving, history, undo/redo, graph, scripts and Go To. More groups secondary actions by their existing menu, preserves original dispatch/context and offers the complete toolbar. Existing layouts are respected; More > Restore focused workspace applies the new default and retains the previous layout for reversal within that tool session. Panel headers are flat with a small focus indicator and text-only provider tabs.
 
 ## First-run behavior
 

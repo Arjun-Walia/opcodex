@@ -25,6 +25,7 @@ import docking.DockingWindowManager;
 import docking.action.DockingActionIf;
 import docking.action.ToolBarData;
 import docking.widgets.VariableHeightPanel;
+import generic.theme.builtin.OpcodexUi;
 
 /**
  * Manages the actions to be displayed in the toolbar.  Organizes them by group.
@@ -37,9 +38,16 @@ public class ToolBarManager {
 
 	private volatile JComponent toolBar;
 	private final DockingWindowManager windowManager;
+	// OPCODEX: keep secondary commands in an accessible overflow instead of crowding chrome.
+	private final boolean local;
 
 	public ToolBarManager(DockingWindowManager windowManager) {
+		this(windowManager, false);
+	}
+
+	public ToolBarManager(DockingWindowManager windowManager, boolean local) {
 		this.windowManager = windowManager;
+		this.local = local;
 	}
 
 	public void clearActions() {
@@ -114,6 +122,10 @@ public class ToolBarManager {
 	}
 
 	private JComponent buildToolbar() {
+		if (OpcodexUi.active()) {
+			return OpcodexToolbars.create(groupToItemsMap.values().stream()
+				.flatMap(Collection::stream).toList(), windowManager, local);
+		}
 		JComponent newToolBar = new VariableHeightPanel(true, 0, 0);
 		newToolBar.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 

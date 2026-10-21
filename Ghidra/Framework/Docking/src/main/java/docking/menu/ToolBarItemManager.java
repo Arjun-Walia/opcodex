@@ -24,6 +24,7 @@ import javax.swing.JButton;
 import docking.DockingActionPerformer;
 import docking.DockingWindowManager;
 import docking.action.*;
+import generic.theme.builtin.OpcodexUi;
 
 /**
  * Class to manager toolbar buttons.
@@ -63,6 +64,11 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
 
 	public JButton createButton(final DockingActionIf action) {
 		JButton button = action.createButton();
+		// OPCODEX: paint vectors at a consistent logical size, including HiDPI displays.
+		if (OpcodexUi.active()) {
+			ToolBarData data = action.getToolBarData();
+			button.setIcon(OpcodexUi.sized(data == null ? button.getIcon() : data.getIcon(), 20));
+		}
 		button.addActionListener(this);
 		button.addMouseListener(this);
 		button.setName(action.getName());
@@ -100,7 +106,8 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
 		}
 		else if (name.equals(DockingActionIf.TOOLBAR_DATA_PROPERTY)) {
 			ToolBarData toolBarData = (ToolBarData) e.getNewValue();
-			toolBarButton.setIcon(toolBarData == null ? null : toolBarData.getIcon());
+			javax.swing.Icon icon = toolBarData == null ? null : toolBarData.getIcon();
+			toolBarButton.setIcon(OpcodexUi.active() ? OpcodexUi.sized(icon, 20) : icon);
 		}
 		else if (name.equals(ToggleDockingActionIf.SELECTED_STATE_PROPERTY)) {
 			toolBarButton.setSelected((Boolean) e.getNewValue());

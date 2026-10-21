@@ -8,12 +8,22 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 
 | Upstream file | Modification |
 |---|---|
+| `Ghidra/Framework/Docking/src/main/java/docking/ComponentNode.java` | Flat pane boundaries in product themes; retain original borders in other themes. |
+| `Ghidra/Framework/Docking/src/main/java/docking/StatusBar.java` | Quiet status strip with readable spacing instead of sunken boxes. |
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/tabbedpane/DockingTabRenderer.java` | Compact vector close controls and text-only provider tabs for product themes. |
+| `Ghidra/Framework/Docking/src/main/java/docking/ComponentPlaceholder.java` | Short navigator tab labels; preserve technical provider names and persisted identity. |
+| `Ghidra/Framework/Docking/src/main/java/docking/menu/MultipleActionDockingToolbarButton.java` | Preserve dropdown actions with flat chrome and vector disabled icons. |
+| `Ghidra/Framework/Docking/src/main/java/docking/menu/ToolBarManager.java` | Focused toolbars, vector action sizing and flat panel chrome; preserve command dispatch and docking identities. |
+| `Ghidra/Framework/Docking/src/main/java/docking/menu/ToolBarItemManager.java` | Focused toolbars, vector action sizing and flat panel chrome; preserve command dispatch and docking identities. |
+| `Ghidra/Framework/Docking/src/main/java/docking/DockableToolBarManager.java` | Focused toolbars, vector action sizing and flat panel chrome; preserve command dispatch and docking identities. |
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/EmptyBorderButton.java` | Focused toolbars, vector action sizing and flat panel chrome; preserve command dispatch and docking identities. |
+| `Ghidra/Framework/Docking/src/main/java/docking/GenericHeader.java` | Focused toolbars, vector action sizing and flat panel chrome; preserve command dispatch and docking identities. |
 | `.github/ISSUE_TEMPLATE/bug_report.md` | Provide Opcodex contribution and issue guidance with this repository as the destination. |
 | `.github/ISSUE_TEMPLATE/feature_request.md` | Provide Opcodex contribution and issue guidance with this repository as the destination. |
 | `.github/ISSUE_TEMPLATE/question.md` | Provide Opcodex contribution and issue guidance with this repository as the destination. |
 | `CONTRIBUTING.md` | Provide Opcodex contribution and issue guidance with this repository as the destination. |
 | `Ghidra/Configurations/Public_Release/src/main/resources/UserAgreement.html` | Product document title; preserve upstream agreement and usage terms. |
-| `Ghidra/Configurations/Public_Release/src/main/resources/defaultTools/CodeBrowser.tool` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
+| `Ghidra/Configurations/Public_Release/src/main/resources/defaultTools/CodeBrowser.tool` | Product-facing identity and focused default workspace; retain technical classes, help anchors and data formats. |
 | `Ghidra/Configurations/Public_Release/src/main/resources/splash.txt` | Use a concise product-only About summary; complete original terms and attribution remain in the included LICENSE, NOTICE and third-party notices. |
 | `Ghidra/Debug/Debugger/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
 | `Ghidra/Debug/Debugger/src/main/resources/images/debugger32.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |

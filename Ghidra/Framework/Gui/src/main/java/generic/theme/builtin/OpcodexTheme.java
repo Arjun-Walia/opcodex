@@ -120,15 +120,25 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		color("color.fg.listing.function.param.auto", comment);
 		color("color.fg.listing.constant", constant);
 		color("color.fg.listing.bytes", secondary);
-		Font ui = new Font(Font.DIALOG, Font.PLAIN, 13);
+		Font ui = preferredFont("Segoe UI", ".AppleSystemUIFont", Font.DIALOG);
 		for (String id : new String[] {"system.font.control", "system.font.view",
 				"system.font.menu"}) {
 			setFont(id, ui);
 		}
-		setFont("font.monospaced", new Font(Font.MONOSPACED, Font.PLAIN, 13));
+		setFont("font.monospaced", preferredFont("Cascadia Mono", "Consolas", "Menlo",
+			"DejaVu Sans Mono", Font.MONOSPACED));
 		addProperty(new BooleanPropertyValue("laf.property.Table.showHorizontalLines", false));
 		addProperty(new BooleanPropertyValue("laf.property.Table.showVerticalLines", false));
 		OpcodexIcons.install(this, dark);
+	}
+
+	private static Font preferredFont(String... families) {
+		var available = java.util.Set.of(java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment()
+			.getAvailableFontFamilyNames());
+		for (String family : families) {
+			if (available.contains(family)) return new Font(family, Font.PLAIN, 13);
+		}
+		return new Font(families[families.length - 1], Font.PLAIN, 13);
 	}
 
 	private void color(String id, String hex) {

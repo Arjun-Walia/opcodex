@@ -18,6 +18,47 @@ import generic.theme.laf.*;
 /** Contracts for the real theme objects rather than a duplicate palette fixture. */
 public class OpcodexThemeTest {
 	@Test
+	public void sizedAndDisabledIconsKeepLiveVectorPaintingAtDisplayScale() {
+		final double[] observed = new double[2];
+		javax.swing.Icon vector = new javax.swing.Icon() {
+			public int getIconWidth() { return 16; }
+			public int getIconHeight() { return 16; }
+			public void paintIcon(java.awt.Component c, java.awt.Graphics g, int x, int y) {
+				java.awt.Graphics2D canvas = (java.awt.Graphics2D) g;
+				observed[0] = canvas.getTransform().getScaleX();
+				observed[1] = ((java.awt.AlphaComposite) canvas.getComposite()).getAlpha();
+			}
+		};
+		for (double scale : new double[] {1, 1.25, 1.5, 2}) {
+			java.awt.Graphics2D g = new java.awt.image.BufferedImage(64, 64,
+				java.awt.image.BufferedImage.TYPE_INT_ARGB).createGraphics();
+			try {
+				g.scale(scale, scale);
+				OpcodexUi.disabled(OpcodexUi.sized(vector, 20)).paintIcon(null, g, 0, 0);
+				assertEquals(scale * 20 / 16, observed[0], .00001);
+				assertEquals(.38, observed[1], .00001);
+			} finally { g.dispose(); }
+		}
+	}
+
+	@Test
+	public void everyOriginalGlyphPaintsDirectlyAtFractionalScale() {
+		for (IconValue entry : new OpcodexDarkTheme().getIcons()) {
+			java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(40, 40,
+				java.awt.image.BufferedImage.TYPE_INT_ARGB);
+			java.awt.Graphics2D g = image.createGraphics();
+			try {
+				g.scale(1.5, 1.5);
+				entry.getRawValue().paintIcon(null, g, 0, 0);
+			} finally { g.dispose(); }
+			boolean painted = false;
+			for (int x = 0; x < 40; x++) for (int y = 0; y < 40; y++) {
+				painted |= (image.getRGB(x, y) >>> 24) != 0;
+			}
+			assertTrue("Empty glyph: " + entry.getId(), painted);
+		}
+	}
+	@Test
 	public void chromeUsesItsSurfaceTokenThroughRealFlatLafNormalization() throws Exception {
 		for (GTheme theme : new GTheme[] {new OpcodexDarkTheme(), new OpcodexLightTheme()}) {
 			String laf = theme.useDarkDefaults() ? "FlatDarkLaf" : "FlatLightLaf";

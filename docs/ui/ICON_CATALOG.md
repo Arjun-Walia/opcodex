@@ -19,6 +19,9 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | Existing ID | Original glyph |
 |---|---|
 | `icon.add` | `plus` |
+| `icon.base.edit.bytes` | `edit` |
+| `icon.base.hover.off` | `info` |
+| `icon.base.hover.on` | `info` |
 | `icon.base.lock` | `lock` |
 | `icon.base.pinned` | `pin` |
 | `icon.base.search.marker` | `search` |
@@ -31,6 +34,10 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.console` | `terminal` |
 | `icon.copy` | `copy` |
 | `icon.cut` | `cut` |
+| `icon.decompiler.action.export` | `export` |
+| `icon.decompiler.action.provider` | `code` |
+| `icon.decompiler.action.provider.readonly` | `lock` |
+| `icon.decompiler.action.provider.unreachable` | `filter-off` |
 | `icon.delete` | `trash` |
 | `icon.domain.file.uknown` | `file` |
 | `icon.down` | `down` |
@@ -38,6 +45,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.error` | `error` |
 | `icon.expand.all` | `expand` |
 | `icon.extension.configure` | `settings` |
+| `icon.filter.options.contains` | `filter` |
 | `icon.flag` | `flag` |
 | `icon.folder.closed` | `folder` |
 | `icon.folder.new` | `folder-add` |
@@ -48,6 +56,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.left` | `left` |
 | `icon.left.alt` | `left` |
 | `icon.lock` | `lock` |
+| `icon.logviewer.toolbar.scroll.lock` | `lock` |
 | `icon.make.selection` | `selection` |
 | `icon.navigate.in` | `import` |
 | `icon.navigate.out` | `export` |
@@ -59,9 +68,20 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.calltree.node.external` | `export` |
 | `icon.plugin.codebrowser.cursor.location` | `right` |
 | `icon.plugin.codebrowser.cursor.marker` | `search` |
+| `icon.plugin.codebrowser.format.collapse` | `up` |
+| `icon.plugin.codebrowser.format.expand` | `down` |
 | `icon.plugin.codebrowser.provider` | `code` |
 | `icon.plugin.console.clear` | `close` |
 | `icon.plugin.console.provider` | `terminal` |
+| `icon.plugin.console.scroll.lock` | `lock` |
+| `icon.plugin.datatypes.archive.built.in.closed` | `book` |
+| `icon.plugin.datatypes.archive.built.in.open` | `book` |
+| `icon.plugin.datatypes.archive.file.closed` | `book` |
+| `icon.plugin.datatypes.archive.file.open` | `book` |
+| `icon.plugin.datatypes.archive.program.closed` | `book` |
+| `icon.plugin.datatypes.archive.program.open` | `book` |
+| `icon.plugin.datatypes.archive.project.closed` | `book` |
+| `icon.plugin.datatypes.archive.project.open` | `book` |
 | `icon.plugin.datatypes.built.in` | `cube` |
 | `icon.plugin.datatypes.enum` | `table` |
 | `icon.plugin.datatypes.function` | `function` |
@@ -74,6 +94,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.datatypes.util.root` | `library` |
 | `icon.plugin.fsbrowser.import` | `import` |
 | `icon.plugin.fsbrowser.library` | `library` |
+| `icon.plugin.functiongraph.action.provider` | `graph` |
 | `icon.plugin.functionwindow.provider` | `function` |
 | `icon.plugin.manager.default` | `grid` |
 | `icon.plugin.navigation.bookmark` | `bookmark` |
@@ -100,6 +121,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.programtree.fragment.viewed.empty` | `file` |
 | `icon.plugin.programtree.new.tree` | `folder-add` |
 | `icon.plugin.programtree.open.folder` | `folder-open` |
+| `icon.plugin.scriptmanager.provider` | `terminal` |
 | `icon.plugin.symboltree.node.category.classes.closed` | `folder` |
 | `icon.plugin.symboltree.node.category.classes.open` | `folder-open` |
 | `icon.plugin.symboltree.node.category.exports.closed` | `folder` |

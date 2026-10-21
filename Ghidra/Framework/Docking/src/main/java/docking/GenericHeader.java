@@ -30,6 +30,7 @@ import docking.util.AnimationUtils;
 import docking.widgets.VariableHeightPanel;
 import docking.widgets.label.GDLabel;
 import generic.theme.GColor;
+import generic.theme.builtin.OpcodexUi;
 import generic.theme.GThemeDefaults.Colors;
 import generic.theme.GThemeDefaults.Colors.Palette;
 
@@ -148,6 +149,9 @@ public class GenericHeader extends JPanel {
 		if (toolBarMgr == null) {
 			return; // initializing
 		}
+		// OPCODEX: flat, quiet panel chrome; preserve provider identity and docking behavior.
+		setBorder(OpcodexUi.active() ? BorderFactory.createMatteBorder(0, 0, 1, 0,
+			new GColor("system.color.bg.border")) : BorderFactory.createLineBorder(Palette.GRAY));
 
 		resetComponents();
 		updateLayout();
@@ -343,6 +347,7 @@ public class GenericHeader extends JPanel {
 		private PopupMouseListener popupMouseListener;
 		private JLabel titleLabel;
 		private boolean isSelected = false;
+		private String originalTitle = "";
 
 		/**
 		 * Constructs a new titlePanel.
@@ -370,6 +375,15 @@ public class GenericHeader extends JPanel {
 		public void paintComponent(Graphics g) {
 
 			super.paintComponent(g);
+			if (OpcodexUi.active()) {
+				g.setColor(new GColor("system.color.bg.control"));
+				g.fillRect(0, 0, getWidth(), getHeight());
+				if (isSelected) {
+					g.setColor(new GColor("color.border.button.focused"));
+					g.fillRect(0, 8, 2, Math.max(0, getHeight() - 16));
+				}
+				return;
+			}
 
 			Graphics2D g2d = (Graphics2D) g;
 			Rectangle r = getBounds();
@@ -396,15 +410,30 @@ public class GenericHeader extends JPanel {
 		 * @param s the title to be displayed.
 		 */
 		void setTitle(String s) {
-			titleLabel.setText(s);
+			originalTitle = s;
+			String display = s;
+			if (OpcodexUi.active() && s != null) {
+				display = s.startsWith("Listing:") ? "Disassembly" :
+					s.startsWith("Decompile:") ? "Pseudocode" :
+					s.equals("Symbol Tree") ? "Symbols" :
+					s.equals("Program Trees") ? "Sections" :
+					s.equals("Data Type Manager") ? "Types" :
+					s.equals("Decompile") ? "Pseudocode" : s;
+			}
+			titleLabel.setText(display);
 			titleLabel.setToolTipText(s);
 		}
 
 		String getTitle() {
-			return titleLabel.getText();
+			return originalTitle;
 		}
 
 		void setIcon(Icon icon) {
+			if (OpcodexUi.active()) {
+				titleLabel.setIcon(null);
+				titleLabel.setBorder(BorderFactory.createEmptyBorder(7, 10, 7, 8));
+				return;
+			}
 
 			icon = DockingUtils.scaleIconAsNeeded(icon);
 			if (icon != null) {
