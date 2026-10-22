@@ -39,10 +39,8 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 | `Ghidra/Configurations/Public_Release/src/main/resources/defaultTools/CodeBrowser.tool` | Product-facing identity and focused default workspace; retain technical classes, help anchors and data formats. |
 | `Ghidra/Configurations/Public_Release/src/main/resources/splash.txt` | Use a concise product-only About summary; complete original terms and attribution remain in the included LICENSE, NOTICE and third-party notices. |
 | `Ghidra/Debug/Debugger/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
-| `Ghidra/Debug/Debugger/src/main/resources/images/debugger32.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Debug/Debugger/src/main/resources/images/emulator32.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
 | `Ghidra/Features/Base/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
-| `Ghidra/Features/Base/data/base.icons.theme.properties` | Map common action/tree IDs to original transparent light/dark icons; preserve semantic IDs and aliases. |
+| `Ghidra/Features/Base/data/base.icons.theme.properties` | OPCODEX: retain stable classic artwork mappings without affecting modern theme overrides. |
 | `Ghidra/Features/Base/src/main/help/help/TOC_Source.xml` | Rebrand visible help tree labels; preserve all technical IDs, anchor targets and links. |
 | `Ghidra/Features/Base/src/main/help/help/topics/Misc/Welcome_to_Ghidra_Help.htm` | Use product-facing help-home text and original identity while retaining existing anchors. |
 | `Ghidra/Features/Base/src/main/java/ghidra/GhidraRun.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
@@ -52,28 +50,14 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 | `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/runtimeinfo/VersionInfoPanel.java` | Show product version and technical engine compatibility without an engine-brand headline. |
 | `Ghidra/Features/Base/src/main/java/ghidra/framework/main/GhidraApplicationInformationDisplayFactory.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Features/Base/src/main/java/ghidra/framework/main/InfoPanel.java` | Use original themed identity and product-only version presentation; retain complete legal files. |
-| `Ghidra/Features/Base/src/main/resources/defaultTools/images/greenDragon24.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Features/Base/src/main/resources/defaultTools/images/red-dragon.gif` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Features/Base/src/main/resources/images/GHIDRA_1.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Features/Base/src/main/resources/images/GHIDRA_2.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Features/Base/src/main/resources/images/GHIDRA_3.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Features/Base/src/main/resources/images/GHIDRA_Splash.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
 | `Ghidra/Framework/Docking/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
-| `Ghidra/Framework/Docking/data/docking.theme.properties` | Map common action/tree IDs to original transparent light/dark icons; preserve semantic IDs and aliases. |
+| `Ghidra/Framework/Docking/data/docking.theme.properties` | OPCODEX: preserve the original classic icon mappings; modern theme bindings remain isolated. |
 | `Ghidra/Framework/Docking/src/main/java/docking/help/HelpManager.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Gui/certification.manifest` | Register original Apache-2.0 artwork and theme assets in the distribution license audit. |
-| `Ghidra/Framework/Gui/data/gui.theme.properties` | Map common action/tree IDs to original transparent light/dark icons; preserve semantic IDs and aliases. |
+| `Ghidra/Framework/Gui/data/gui.theme.properties` | OPCODEX: restore the original stable theme defaults for Classic; modern themes explicitly bind their own icons and colors. |
 | `Ghidra/Framework/Gui/src/main/java/generic/theme/ThemeManager.java` | Use Opcodex Dark for new profiles; saved theme preferences retain precedence. |
 | `Ghidra/Framework/Gui/src/main/java/generic/theme/laf/FlatLookAndFeelManager.java` | Install product-theme sizing after FlatLaf loading and before component refresh. |
-| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon128.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon16.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon24.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon256.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon32.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon40.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon48.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Framework/Gui/src/main/resources/images/GhidraIcon64.png` | Replace inherited product/tool artwork with original Opcodex exports; retain legacy filenames for callers and embed modification metadata. |
-| `Ghidra/Framework/Project/data/project.theme.properties` | Map common action/tree IDs to original transparent light/dark icons; preserve semantic IDs and aliases. |
+| `Ghidra/Framework/Project/data/project.theme.properties` | OPCODEX: preserve original Classic resource mappings alongside independent modern bindings. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/AcceptUrlContentTask.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/EditPluginPathDialog.java` | Product-facing desktop/menu/dialog identity; retain technical classes, help anchors and data formats. |
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/FileActionManager.java` | Product-facing identity and New/Open/Save Project toolbar access using the existing commands; retain technical classes, help anchors and data formats. |
@@ -97,6 +81,62 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 | `Ghidra/Framework/Gui/src/main/java/resources/ResourceManager.java` | OPCODEX: adapt explicitly registered built-in filenames to live vectors while preserving URL identity, dimensions, user images and other themes; preserve vector scaling and disabled opacity through ImageIcon APIs. |
 | `Ghidra/Framework/Gui/src/main/java/resources/icons/ReflectedIcon.java` | OPCODEX: paint reflected original vectors at device scale, retaining legacy reflection behavior for other images. |
 | `Ghidra/Features/FunctionGraph/src/main/java/ghidra/app/plugin/core/functiongraph/graph/vertex/SetVertexMostRecentColorAction.java` | OPCODEX: replace the raised color swatch with an outline palette and current-color underline, keeping every color action. |
+
+| `Ghidra/Configurations/Public_Release/certification.manifest` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/help/help/topics/GhidraScriptMgrPlugin/GhidraScriptMgrPlugin.htm` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/console/ConsoleComponentProvider.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/navigation/ProviderNavigationPlugin.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/progmgr/AbstractUndoRedoAction.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/references/ExternalReferencesProvider.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/scalartable/ScalarSearchDialog.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/strings/DefinedStringsProvider.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/totd/TipOfTheDayDialog.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/plugins/importer/tasks/ImportBatchTask.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/Base/src/main/resources/ghidra/app/plugin/core/totd/tips.txt` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/DecompilerDependent/src/main/help/help/topics/DecompilerTaint/DecompilerTaint.html` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/PyGhidra/src/main/java/ghidra/pyghidra/PyGhidraScriptProvider.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Features/PyGhidra/src/main/java/ghidra/pyghidra/interpreter/PyGhidraInterpreter.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/DetachedWindowNode.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/DockingWindowManager.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/RootNode.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/theme/gui/ThemeValueEditor.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/filter/FilterTextField.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/table/GTableFilterPanel.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/tree/GTree.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/FileSystem/src/main/java/ghidra/framework/store/local/LocalFileSystem.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Gui/src/main/java/generic/theme/ApplicationThemeManager.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Gui/src/main/java/generic/theme/ThemePreferences.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/data/DefaultProjectData.java` | OPCODEX: address release-test findings in presentation and interaction while retaining original APIs, feature registration and license headers. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/filter/FilterOptions.java` | OPCODEX: distinguish tree/category filter controls from table filter controls; preserve match mode and inversion badges. |
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/tree/DefaultGTreeFilterProvider.java` | OPCODEX: distinguish tree/category filter controls from table filter controls; preserve match mode and inversion badges. |
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/tree/GTreeFilterFactory.java` | OPCODEX: distinguish tree/category filter controls from table filter controls; preserve match mode and inversion badges. |
+
+| `Ghidra/Framework/Gui/src/main/java/generic/util/image/ImageUtils.java` | OPCODEX: keep themed/vector sources live through transparent icon transforms; preserve opacity and original bitmap behavior. |
 
 ## Verification and release evidence
 

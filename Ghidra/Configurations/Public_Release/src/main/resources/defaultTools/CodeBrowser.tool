@@ -3,7 +3,7 @@
 <TOOL_CONFIG CONFIG_NAME="NO_LONGER_USED">
     <SUPPORTED_DATA_TYPE CLASS_NAME="ghidra.program.model.listing.Program" />
     <SUPPORTED_DATA_TYPE CLASS_NAME="ghidra.program.model.listing.DataTypeArchive" />
-    <ICON LOCATION="images/opcodex/tool-24.png" />
+    <ICON LOCATION="defaultTools/images/greenDragon24.png" />
     <TOOL TOOL_NAME="CodeBrowser" INSTANCE_NAME="">
         <OPTIONS />
         <PACKAGE NAME="Ghidra Core">
@@ -83,7 +83,7 @@
                     <COMPONENT_INFO NAME="Checksum Generator" OWNER="ComputeChecksumsPlugin" TITLE="Checksum Generator" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772880" />
                 </COMPONENT_NODE>
             </WINDOW_NODE>
-            <WINDOW_NODE X_POS="-1" Y_POS="-1" WIDTH="0" HEIGHT="0">
+            <WINDOW_NODE X_POS="-1" Y_POS="-1" WIDTH="860" HEIGHT="420">
                 <COMPONENT_NODE TOP_INFO="0">
                     <COMPONENT_INFO NAME="Function Tags" OWNER="FunctionTagPlugin" TITLE="Function Tags" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772878" />
                 </COMPONENT_NODE>
@@ -416,8 +416,8 @@
                     <Table_State>
                         <COLUMN NAME="ghidra.app.plugin.core.functionwindow.FunctionTableModel$NameTableColumn.Name" WIDTH="180" VISIBLE="true" />
                         <COLUMN NAME="ghidra.util.table.field.AddressTableColumn.Location" WIDTH="110" VISIBLE="true" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionSignatureTableColumn.Function Signature" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionBodySizeTableColumn.Function Size" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionSignatureTableColumn.Function Signature" WIDTH="160" VISIBLE="true" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionBodySizeTableColumn.Function Size" WIDTH="160" VISIBLE="true" />
                         <COLUMN NAME="ghidra.util.table.field.FunctionTagTableColumn.Tags" WIDTH="75" VISIBLE="false" />
                         <COLUMN NAME="ghidra.util.table.field.IsFunctionInlineTableColumn.Inline" WIDTH="75" VISIBLE="false" />
                         <COLUMN NAME="ghidra.util.table.field.IsFunctionNonReturningTableColumn.Non-returning" WIDTH="75" VISIBLE="false" />

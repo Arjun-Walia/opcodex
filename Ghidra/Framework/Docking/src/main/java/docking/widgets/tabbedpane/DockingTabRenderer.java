@@ -37,6 +37,7 @@ public class DockingTabRenderer extends JPanel {
 
 	private JLabel titleLabel;
 	private JLabel iconLabel;
+    private Icon originalIcon;
 	private JButton closeButton;
 
 	private HierarchyListener hierarchyListener;
@@ -137,7 +138,13 @@ public class DockingTabRenderer extends JPanel {
 		this.popupMenu = popupMenu;
 	}
 
-	public void setIcon(Icon icon) {
+    @Override public void updateUI() {
+        super.updateUI();
+        if (iconLabel != null) iconLabel.setIcon(OpcodexUi.active() ? null : originalIcon);
+    }
+
+    public void setIcon(Icon icon) {
+        originalIcon = icon;
 		iconLabel.setIcon(OpcodexUi.active() ? null : icon);
 	}
 

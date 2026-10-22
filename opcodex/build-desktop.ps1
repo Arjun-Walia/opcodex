@@ -61,6 +61,14 @@ if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'Opcodex.exe'))) {
     New-Item -ItemType Directory -Path $opcodexInput -Force | Out-Null
     [System.IO.Compression.ZipFile]::ExtractToDirectory($opcodexArchive,$opcodexInput,$true)
     $opcodexPayload = Join-Path $opcodexInput $opcodexRoots[0]
+    # Preserve the runtime's available features, including Java scripting/debugging tools.
+    # Hosted Temurin 25 images cannot re-link the build-only jdk.jlink/jdk.jpackage modules.
+    $opcodexJava = Join-Path (Split-Path -Parent $opcodexJpackagePath) 'java.exe'
+    $opcodexModules = @(& $opcodexJava --list-modules | ForEach-Object { ($_ -split '@')[0] } |
+        Where-Object { $_ -notin @('jdk.jlink', 'jdk.jpackage') })
+    if ($LASTEXITCODE -ne 0 -or 'java.desktop' -notin $opcodexModules -or 'jdk.compiler' -notin $opcodexModules) {
+        throw 'Unable to enumerate required desktop and scripting runtime modules.'
+    }
     $opcodexArguments = @(
         '--type','app-image','--name','Opcodex',
         '--app-version',($opcodexManifest.version -split '-')[0],
@@ -69,7 +77,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'Opcodex.exe'))) {
         '--input',$opcodexPayload,'--dest',$opcodexBuildRoot,
         '--main-jar','Ghidra/Framework/Utility/lib/Utility.jar',
         '--main-class','ghidra.Ghidra','--arguments','ghidra.GhidraRun',
-        '--add-modules','ALL-MODULE-PATH',
+        '--add-modules',($opcodexModules -join ','),
         '--icon',(Join-Path $opcodexRepository 'opcodex/branding/opcodex.ico')
     )
     foreach ($opcodexLine in Get-Content -LiteralPath (Join-Path $opcodexPayload 'support/launch.properties')) {

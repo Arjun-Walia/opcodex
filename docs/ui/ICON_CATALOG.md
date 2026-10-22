@@ -2,7 +2,7 @@
 
 # Opcodex icon catalog
 
-121 original outline glyphs replace 878 existing theme IDs. Transparent PNGs are exported at 16/20/24/32/48/64px; product themes paint Java2D geometry directly at display scale; multi-resolution images support image consumers and export. Registered built-in raw filename callers use live vector adapters, including startup tools. Composed aliases retain status overlays, dimensions and translations; intentional empty placeholders stay empty.
+144 original outline glyphs replace 882 declared theme IDs. Transparent PNGs are exported at 16/20/24/32/48/64px; product themes paint Java2D geometry directly at display scale; multi-resolution images support image consumers and export. Registered built-in raw filename callers use live vector adapters, including startup tools. Composed aliases retain status overlays, dimensions and translations; intentional empty placeholders stay empty.
 
 Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-assets/icons/src). Regenerate with `node opcodex/generate-ui-assets.cjs` and `node opcodex/generate-design-preview.cjs` using Sharp as a development-only dependency.
 
@@ -233,7 +233,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.debugger.unique.ref.write` | `icon.opcodex.glyph.pointer` |
 | `icon.debugger.visibility` | `icon.opcodex.glyph.text` |
 | `icon.decompiler.action.export` | `icon.opcodex.glyph.export` |
-| `icon.decompiler.action.provider` | `icon.opcodex.glyph.code` |
+| `icon.decompiler.action.provider` | `icon.opcodex.glyph.decompile` |
 | `icon.decompiler.action.provider.clone` | `icon.provider.clone` |
 | `icon.decompiler.action.provider.readonly` | `icon.opcodex.glyph.lock` |
 | `icon.decompiler.action.provider.unreachable` | `icon.opcodex.glyph.filter-off` |
@@ -268,6 +268,10 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.filter.options.not` | `icon.opcodex.glyph.circle-minus` |
 | `icon.filter.options.regex` | `icon.opcodex.glyph.regex` |
 | `icon.filter.options.starts.with` | `icon.opcodex.glyph.selection` |
+| `icon.filter.tree.contains` | `icon.opcodex.glyph.filter-tree-contains` |
+| `icon.filter.tree.exact` | `icon.opcodex.glyph.filter-tree-exact` |
+| `icon.filter.tree.regex` | `icon.opcodex.glyph.filter-tree-regex` |
+| `icon.filter.tree.starts` | `icon.opcodex.glyph.filter-tree-starts` |
 | `icon.flag` | `icon.opcodex.glyph.flag` |
 | `icon.folder.closed` | `icon.opcodex.glyph.folder` |
 | `icon.folder.new` | `icon.opcodex.glyph.folder-add` |
@@ -402,7 +406,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.codebrowser.hover.on` | `icon.base.hover.on` |
 | `icon.plugin.codebrowser.mark.and.select.armed` | `icon.opcodex.glyph.selection {icon.opcodex.glyph.play[size(12,12)][move(4,4)]}` |
 | `icon.plugin.codebrowser.mark.and.select.unarmed` | `icon.opcodex.glyph.selection {icon.opcodex.glyph.stop[size(12,12)][move(4,4)]}` |
-| `icon.plugin.codebrowser.provider` | `icon.opcodex.glyph.code` |
+| `icon.plugin.codebrowser.provider` | `icon.opcodex.glyph.listing` |
 | `icon.plugin.composite.editor.apply` | `icon.opcodex.glyph.save` |
 | `icon.plugin.composite.editor.array` | `icon.opcodex.glyph.array` |
 | `icon.plugin.composite.editor.bit.field.dialog.add` | `icon.base.plus` |
@@ -425,7 +429,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.composite.editor.search.previous` | `icon.opcodex.glyph.up [size(16,16)]` |
 | `icon.plugin.composite.editor.show.type` | `icon.home` |
 | `icon.plugin.composite.editor.unpackage` | `icon.opcodex.glyph.archive` |
-| `icon.plugin.console.clear` | `icon.opcodex.glyph.close` |
+| `icon.plugin.console.clear` | `icon.opcodex.glyph.clear-console` |
 | `icon.plugin.console.provider` | `icon.opcodex.glyph.terminal` |
 | `icon.plugin.console.scroll.lock` | `icon.opcodex.glyph.lock` |
 | `icon.plugin.datagraph.action.viewer.reset` | `icon.refresh` |
@@ -551,12 +555,12 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.functiongraph.action.vertex.regroup` | `icon.opcodex.glyph.layers` |
 | `icon.plugin.functiongraph.action.vertex.ungroup` | `icon.opcodex.glyph.expand` |
 | `icon.plugin.functiongraph.action.vertex.xrefs` | `icon.opcodex.glyph.link` |
-| `icon.plugin.functiongraph.action.viewer.clone` | `icon.opcodex.glyph.copy` |
+| `icon.plugin.functiongraph.action.viewer.clone` | `icon.opcodex.glyph.graph-snapshot` |
 | `icon.plugin.functiongraph.action.viewer.home` | `icon.opcodex.glyph.home` |
 | `icon.plugin.functiongraph.action.viewer.layout` | `icon.opcodex.glyph.settings` |
 | `icon.plugin.functiongraph.action.viewer.reset` | `icon.opcodex.glyph.refresh` |
 | `icon.plugin.functiongraph.action.viewer.vertex.hover.cycles` | `icon.opcodex.glyph.refresh` |
-| `icon.plugin.functiongraph.action.viewer.vertex.hover.cycles.all` | `icon.opcodex.glyph.refresh` |
+| `icon.plugin.functiongraph.action.viewer.vertex.hover.cycles.all` | `icon.opcodex.glyph.graph-cycle` |
 | `icon.plugin.functiongraph.action.viewer.vertex.hover.off` | `icon.opcodex.glyph.filter-off` |
 | `icon.plugin.functiongraph.action.viewer.vertex.hover.paths.all` | `icon.opcodex.glyph.graph` |
 | `icon.plugin.functiongraph.action.viewer.vertex.hover.paths.from.to.vertex` | `icon.opcodex.glyph.link` |
@@ -602,7 +606,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.merge.status.pending` | `icon.opcodex.glyph.circle-check` |
 | `icon.plugin.myprogramchanges.checkin` | `icon.opcodex.glyph.export` |
 | `icon.plugin.myprogramchanges.merge` | `icon.opcodex.glyph.merge` |
-| `icon.plugin.navigation.bookmark` | `icon.opcodex.glyph.bookmark` |
+| `icon.plugin.navigation.bookmark` | `icon.opcodex.glyph.next-bookmark` |
 | `icon.plugin.navigation.bookmark.analysis` | `icon.opcodex.glyph.wand` |
 | `icon.plugin.navigation.bookmark.error` | `icon.error` |
 | `icon.plugin.navigation.bookmark.info` | `icon.information` |
@@ -610,16 +614,16 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.navigation.bookmark.unknown` | `icon.opcodex.glyph.help` |
 | `icon.plugin.navigation.bookmark.warning` | `icon.warning` |
 | `icon.plugin.navigation.bytes` | `icon.opcodex.glyph.grid` |
-| `icon.plugin.navigation.data` | `icon.opcodex.glyph.table` |
+| `icon.plugin.navigation.data` | `icon.opcodex.glyph.next-data` |
 | `icon.plugin.navigation.function` | `icon.opcodex.glyph.function` |
-| `icon.plugin.navigation.highlight.range.next` | `icon.opcodex.glyph.down` |
-| `icon.plugin.navigation.highlight.range.previous` | `icon.opcodex.glyph.up` |
-| `icon.plugin.navigation.instruction` | `icon.opcodex.glyph.code` |
+| `icon.plugin.navigation.highlight.range.next` | `icon.opcodex.glyph.highlight-next` |
+| `icon.plugin.navigation.highlight.range.previous` | `icon.opcodex.glyph.highlight-previous` |
+| `icon.plugin.navigation.instruction` | `icon.opcodex.glyph.instruction` |
 | `icon.plugin.navigation.label` | `icon.opcodex.glyph.tag` |
 | `icon.plugin.navigation.location.next` | `icon.right` |
 | `icon.plugin.navigation.location.previous` | `icon.left` |
-| `icon.plugin.navigation.selection.range.next` | `icon.opcodex.glyph.down` |
-| `icon.plugin.navigation.selection.range.previous` | `icon.opcodex.glyph.up` |
+| `icon.plugin.navigation.selection.range.next` | `icon.opcodex.glyph.selection-next` |
+| `icon.plugin.navigation.selection.range.previous` | `icon.opcodex.glyph.selection-previous` |
 | `icon.plugin.navigation.undefined` | `icon.opcodex.glyph.help` |
 | `icon.plugin.overview.provider` | `icon.opcodex.glyph.text` |
 | `icon.plugin.programdiff.apply` | `icon.opcodex.glyph.edit` |
@@ -654,20 +658,20 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.reachability.provider` | `icon.opcodex.glyph.graph [rotate(90)]` |
 | `icon.plugin.register` | `icon.opcodex.glyph.memory` |
 | `icon.plugin.register.group` | `icon.opcodex.glyph.memory` |
-| `icon.plugin.register.provider` | `icon.plugin.register.group` |
+| `icon.plugin.register.provider` | `icon.opcodex.glyph.register-bank` |
 | `icon.plugin.scalartable.provider` | `icon.opcodex.glyph.table` |
-| `icon.plugin.scriptmanager.api` | `icon.opcodex.glyph.close` |
+| `icon.plugin.scriptmanager.api` | `icon.opcodex.glyph.api-reference` |
 | `icon.plugin.scriptmanager.delete` | `icon.delete` |
 | `icon.plugin.scriptmanager.edit` | `icon.opcodex.glyph.edit` |
-| `icon.plugin.scriptmanager.edit.eclipse` | `icon.opcodex.glyph.code` |
-| `icon.plugin.scriptmanager.edit.vscode` | `icon.opcodex.glyph.code` |
+| `icon.plugin.scriptmanager.edit.eclipse` | `icon.opcodex.glyph.editor-ide` |
+| `icon.plugin.scriptmanager.edit.vscode` | `icon.opcodex.glyph.editor-external` |
 | `icon.plugin.scriptmanager.keybinding` | `icon.opcodex.glyph.key` |
 | `icon.plugin.scriptmanager.manage` | `icon.opcodex.glyph.list` |
 | `icon.plugin.scriptmanager.new` | `icon.opcodex.glyph.plus` |
 | `icon.plugin.scriptmanager.provider` | `icon.opcodex.glyph.terminal` |
-| `icon.plugin.scriptmanager.rename` | `icon.rename` |
+| `icon.plugin.scriptmanager.rename` | `icon.opcodex.glyph.rename` |
 | `icon.plugin.scriptmanager.run` | `icon.run` |
-| `icon.plugin.scriptmanager.run.again` | `icon.opcodex.glyph.refresh` |
+| `icon.plugin.scriptmanager.run.again` | `icon.opcodex.glyph.run-again` |
 | `icon.plugin.stringtable.conflicts` | `icon.opcodex.glyph.error` |
 | `icon.plugin.stringtable.defined` | `icon.opcodex.glyph.text` |
 | `icon.plugin.stringtable.defined.partial` | `icon.opcodex.glyph.warning` |
@@ -708,7 +712,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.plugin.symboltree.node.organization.open` | `icon.opcodex.glyph.folder-open` |
 | `icon.plugin.symboltree.node.parameter` | `icon.opcodex.glyph.parameter` |
 | `icon.plugin.symboltree.node.root` | `icon.opcodex.glyph.graph` |
-| `icon.plugin.symboltree.provider` | `icon.opcodex.glyph.graph` |
+| `icon.plugin.symboltree.provider` | `icon.opcodex.glyph.tree` |
 | `icon.plugin.symboltree.set.external` | `icon.base.edit.bytes` |
 | `icon.plugin.table.service` | `icon.search` |
 | `icon.plugin.table.service.marker` | `icon.base.search.marker` |
@@ -782,7 +786,7 @@ Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-asset
 | `icon.task.progress.hourglass.7` | `icon.opcodex.glyph.clock` |
 | `icon.task.progress.hourglass.8` | `icon.opcodex.glyph.clock` |
 | `icon.task.progress.hourglass.9` | `icon.opcodex.glyph.clock` |
-| `icon.text.field.clear` | `icon.delete[size(12,12)]` |
+| `icon.text.field.clear` | `icon.opcodex.glyph.filter-clear[size(12,12)]` |
 | `icon.theme.export` | `icon.opcodex.glyph.export` |
 | `icon.theme.font.decrement` | `icon.opcodex.glyph.text{icon.opcodex.glyph.minus[size(8,8)][move(8,8)]}` |
 | `icon.theme.font.increment` | `icon.opcodex.glyph.text{icon.opcodex.glyph.plus[size(8,8)][move(8,8)]}` |

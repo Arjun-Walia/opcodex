@@ -18,6 +18,25 @@ import generic.theme.laf.*;
 /** Contracts for the real theme objects rather than a duplicate palette fixture. */
 public class OpcodexThemeTest {
 	@Test
+	public void transparentIconsRetainTheirLiveSourceAndOpacity() {
+		javax.swing.Icon source = new OpcodexImageIcon("error", true);
+		javax.swing.Icon transparent = generic.util.image.ImageUtils.makeTransparent(source, .6f);
+		assertTrue(transparent instanceof resources.icons.DerivedImageIcon);
+		assertSame(source, ((resources.icons.DerivedImageIcon) transparent).getSourceIcon());
+		java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(32, 32,
+			java.awt.image.BufferedImage.TYPE_INT_ARGB);
+		java.awt.Graphics2D canvas = image.createGraphics();
+		try {
+			canvas.scale(2, 2);
+			transparent.paintIcon(null, canvas, 0, 0);
+		} finally { canvas.dispose(); }
+		int maximum = 0;
+		for (int x = 0; x < 32; x++) for (int y = 0; y < 32; y++)
+			maximum = Math.max(maximum, image.getRGB(x, y) >>> 24);
+		assertEquals(153, maximum);
+	}
+
+	@Test
 	public void darkCanvasIsBlackAndBothThemesDefineTheSameRoles() {
 		GTheme dark = new OpcodexDarkTheme();
 		GTheme light = new OpcodexLightTheme();
@@ -116,6 +135,32 @@ public class OpcodexThemeTest {
 			}
 		}
 	}
+
+    @Test public void selectionsStayReadableThroughRealFlatLafNormalization() throws Exception {
+        for (GTheme theme : new GTheme[] {new OpcodexDarkTheme(), new OpcodexLightTheme()}) {
+            LookAndFeel laf = (LookAndFeel) Class.forName("com.formdev.flatlaf." +
+                (theme.useDarkDefaults() ? "FlatDarkLaf" : "FlatLightLaf")).getConstructor().newInstance();
+            UIDefaults defaults = laf.getDefaults();
+            GThemeValueMap values = (theme.useDarkDefaults() ? new DarkMapper(defaults) : new LightMapper(defaults)).getNormalizedJavaDefaults();
+            values.load(theme);
+            for (String key : new String[] {"List", "Table", "Tree", "TextField", "TextArea", "TextPane",
+                "EditorPane", "ComboBox", "Menu", "MenuItem", "CheckBoxMenuItem", "RadioButtonMenuItem", "MenuBar"}) {
+                Color fg = values.getResolvedColor("laf.color." + key + ".selectionForeground");
+                Color bg = values.getResolvedColor("laf.color." + key + ".selectionBackground");
+                assertNotNull(key, fg); assertNotNull(key, bg);
+                assertTrue(theme.getName() + " " + key + " contrast", contrast(fg, bg) >= 4.5);
+            }
+        }
+    }
+    private static double contrast(Color first, Color second) {
+        double a = selectionLuminance(first), b = selectionLuminance(second);
+        return (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+    }
+    private static double selectionLuminance(Color color) {
+        double[] parts = {color.getRed()/255d, color.getGreen()/255d, color.getBlue()/255d};
+        for (int i = 0; i < 3; i++) parts[i] = parts[i] <= .04045 ? parts[i]/12.92 : Math.pow((parts[i]+.055)/1.055, 2.4);
+        return .2126*parts[0] + .7152*parts[1] + .0722*parts[2];
+    }
 
 	private static class DarkMapper extends FlatDarkUiDefaultsMapper {
 		DarkMapper(UIDefaults defaults) { super(defaults); }

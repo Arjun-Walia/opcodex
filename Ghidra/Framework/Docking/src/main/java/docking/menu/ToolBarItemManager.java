@@ -84,7 +84,14 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
 		return toolBarAction;
 	}
 
-	void dispose() {
+    // OPCODEX: always derive from the action's original icon, never resize an already scaled icon.
+    void refreshTheme() {
+        if (toolBarButton == null) return;
+        ToolBarData data = toolBarAction.getToolBarData();
+        if (data != null) toolBarButton.setIcon(OpcodexUi.active() ? OpcodexUi.sized(data.getIcon(), 20) : data.getIcon());
+    }
+
+    void dispose() {
 		toolBarAction.removePropertyChangeListener(this);
 		if (toolBarButton != null) {
 			toolBarButton.removeActionListener(this);

@@ -943,7 +943,9 @@ public class GTableFilterPanel<ROW_OBJECT> extends JPanel {
 				WrappingTableModel tableModelWrapper = (WrappingTableModel) rowObjectFilterModel;
 				tableModelWrapper.wrappedModelChangedFromTableChangedEvent();
 			}
-			filterField.alert();
+            // OPCODEX: don't rely on a transient flash to communicate an empty filtered table.
+            filterField.setNoMatches(!filterField.getText().isBlank() && rowObjectFilterModel.getRowCount() == 0);
+            filterField.alert();
 			isUpdatingModel = false;
 		}
 	}

@@ -17,7 +17,7 @@ import docking.test.AbstractDockingTest;
 import resources.ResourceManager;
 
 public class OpcodexToolbarsTest extends AbstractDockingTest {
-	@Test public void ordinaryWindowProxiesDoNotBecomeSplitControls() {
+	@Test public void ordinaryWindowProxiesRemainVisibleByDefault() {
 		runSwing(() -> {
 			DockingAction action = new DockingAction("Secondary command", "Test") {
 				@Override public void actionPerformed(ActionContext context) {}
@@ -26,8 +26,8 @@ public class OpcodexToolbarsTest extends AbstractDockingTest {
 			ToolBarItemManager item = new ToolBarItemManager(new DockingActionProxy(action), null);
 			try {
 				JComponent toolbar = OpcodexToolbars.create(List.of(item), null, false);
-				assertNull(item.getButton().getParent());
-				assertEquals("More workspace actions", toolbar.getComponent(0).getName());
+				assertSame(toolbar, item.getButton().getParent());
+                assertEquals("More workspace actions", toolbar.getComponent(1).getName());
 			}
 			finally { item.dispose(); }
 		});

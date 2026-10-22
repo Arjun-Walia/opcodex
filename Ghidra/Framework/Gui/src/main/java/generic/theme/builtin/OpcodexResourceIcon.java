@@ -16,6 +16,8 @@ final class OpcodexResourceIcon extends UrlImageIcon {
 	private final String glyph;
 	private Object cachedTheme;
 	private Image cachedImage;
+    private Icon cachedPainter;
+    private Object painterTheme;
 	OpcodexResourceIcon(UrlImageIcon legacy, String glyph) {
 		super(legacy.getOriginalPath(), legacy.getUrl());
 		this.legacy = legacy; this.glyph = glyph;
@@ -26,9 +28,18 @@ final class OpcodexResourceIcon extends UrlImageIcon {
 	@Override public int getImageLoadStatus() { return legacy.getImageLoadStatus(); }
 	@Override public synchronized void paintIcon(Component c, Graphics graphics, int x, int y) {
 		if (!OpcodexUi.active()) { legacy.paintIcon(c, graphics, x, y); return; }
-		boolean dark = ThemeManager.getInstance().getActiveTheme().useDarkDefaults();
-		OpcodexUi.imageIcon(new OpcodexImageIcon(glyph, dark), getIconWidth(), getIconHeight(), 1)
-			.paintIcon(c, graphics, x, y);
+		Object theme = ThemeManager.getInstance().getActiveTheme();
+        if (theme != painterTheme) {
+            boolean dark = ThemeManager.getInstance().getActiveTheme().useDarkDefaults();
+            cachedPainter = OpcodexUi.sized(new OpcodexImageIcon(glyph, dark), getIconHeight());
+            painterTheme = theme;
+        }
+        Graphics2D canvas = (Graphics2D) graphics.create();
+        try {
+            canvas.translate(x, y);
+            canvas.scale(getIconWidth() / (double) cachedPainter.getIconWidth(), 1);
+            cachedPainter.paintIcon(c, canvas, 0, 0);
+        } finally { canvas.dispose(); }
 	}
 	@Override public synchronized Image getImage() {
 		if (!OpcodexUi.active()) return legacy.getImage();

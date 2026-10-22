@@ -388,15 +388,7 @@ public class ComponentPlaceholder {
 	 * @return The text for display on the tab of a tabbed component.
 	 */
 	public String getTabText() {
-		// OPCODEX: short navigator labels; stable provider names and saved identity stay intact.
-		if (generic.theme.builtin.OpcodexUi.active()) {
-			return switch (name) {
-				case "Symbol Tree" -> "Symbols";
-				case "Program Tree" -> "Sections";
-				case "DataTypes Provider" -> "Types";
-				default -> tabText;
-			};
-		}
+		// OPCODEX: use the same provider labels in tabs and Window menus.
 		return tabText;
 	}
 

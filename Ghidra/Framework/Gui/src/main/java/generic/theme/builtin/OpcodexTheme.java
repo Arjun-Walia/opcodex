@@ -26,7 +26,7 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		String secondary = dark ? "#a3a3a3" : "#5d6672";
 		String border = dark ? "#242424" : "#d5d9de";
 		String accent = dark ? "#75d9de" : "#087582";
-		String selection = dark ? "#122225" : "#d7edf0";
+		String selection = dark ? "#21464b" : "#d7edf0";
 		color("system.color.bg.control", surface);
 		color("system.color.bg.view", canvas);
 		color("system.color.bg.tooltip", surface);
@@ -36,7 +36,21 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 				"system.color.fg.tooltip", "system.color.fg.selected.view"}) {
 			color(id, text);
 		}
-		color("system.color.fg.disabled", secondary);
+
+        refs("system.color.bg.selected.view", "List.selectionBackground", "Table.selectionBackground",
+            "Tree.selectionBackground", "TextField.selectionBackground", "FormattedTextField.selectionBackground",
+            "PasswordField.selectionBackground", "TextArea.selectionBackground", "TextPane.selectionBackground",
+            "EditorPane.selectionBackground", "ComboBox.selectionBackground", "Menu.selectionBackground",
+            "MenuItem.selectionBackground", "CheckBoxMenuItem.selectionBackground", "RadioButtonMenuItem.selectionBackground",
+            "MenuBar.selectionBackground", "MenuItem.underlineSelectionBackground");
+        refs("system.color.fg.selected.view", "List.selectionForeground", "Table.selectionForeground",
+            "Tree.selectionForeground", "TextField.selectionForeground", "FormattedTextField.selectionForeground",
+            "PasswordField.selectionForeground", "TextArea.selectionForeground", "TextPane.selectionForeground",
+            "EditorPane.selectionForeground", "ComboBox.selectionForeground", "Menu.selectionForeground",
+            "MenuItem.selectionForeground", "CheckBoxMenuItem.selectionForeground", "RadioButtonMenuItem.selectionForeground",
+            "MenuBar.selectionForeground", "MenuItem.underlineSelectionForeground");
+        refs("system.color.fg.view", "Table.selectionInactiveForeground", "Tree.selectionInactiveForeground");
+        color("system.color.fg.disabled", secondary);
 		color("color.fg.disabled", secondary);
 		color("color.fg.messages.hint", secondary);
 		// FlatLaf's normalized palette can associate a panel with the border group when
@@ -109,7 +123,7 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		color("color.fg.button", text);
 		color("color.fg.error", dark ? "#f18b91" : "#b64248");
 		color("color.fg.messages.warning", dark ? "#edbd6c" : "#8a5a0c");
-		color("color.bg.filterfield", dark ? "#3b3527" : "#fff0d5");
+		color("color.bg.filterfield", dark ? "#594321" : "#fff0b3");
 		color("color.fg.filterfield", text);
 		color("color.bg.find.highlight", dark ? "#574b28" : "#ffedb3");
 		color("color.bg.find.highlight.active", dark ? "#75602a" : "#ffd775");
@@ -187,6 +201,10 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 	public static void installComponentDefaults() {
 		// FlatLaf 3.5.4 otherwise paints the unified title area using its parent's cached border color.
 		UIManager.put("TitlePane.unifiedBackground", false);
+        // FlatLaf leaves these optional menu-bar colors absent in some builds, so the
+        // normalized-color mapper cannot install them. Bind them explicitly as live tokens.
+        UIManager.put("MenuBar.selectionForeground", new GColor("system.color.fg.selected.view"));
+        UIManager.put("MenuBar.selectionBackground", new GColor("system.color.bg.selected.view"));
 		UIManager.put("ScrollPane.border", BorderFactory.createEmptyBorder());
 		UIManager.put("Component.arc", 8);
 		UIManager.put("Button.arc", 8);

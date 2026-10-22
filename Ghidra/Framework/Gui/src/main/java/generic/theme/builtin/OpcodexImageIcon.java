@@ -14,6 +14,8 @@ import resources.icons.UrlImageIcon;
 final class OpcodexImageIcon extends UrlImageIcon {
 	private final String glyph;
 	private final boolean dark;
+    private Color ink;
+    private static final BasicStroke SOLID = new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
 	OpcodexImageIcon(String glyph, boolean dark) {
 		super(path(glyph, dark, 16), ResourceManager.getResource(path(glyph, dark, 16)));
@@ -21,19 +23,22 @@ final class OpcodexImageIcon extends UrlImageIcon {
 		this.dark = dark;
 	}
 
-	@Override
-	public synchronized void paintIcon(Component component, Graphics graphics, int x, int y) {
+    // Geometry has a fixed logical size. Measuring a toolbar must not decode six PNG variants.
+    @Override public int getIconWidth() { return 16; }
+    @Override public int getIconHeight() { return 16; }
+
+    @Override
+    public synchronized void paintIcon(Component component, Graphics graphics, int x, int y) {
 		Graphics2D canvas = (Graphics2D) graphics.create();
 		try {
 			canvas.translate(x, y);
 			canvas.scale(16d / 24d, 16d / 24d);
 			canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			canvas.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-			String ink = OpcodexIcons.ink(glyph, dark);
-			canvas.setColor(Color.decode(ink));
+			if (ink == null) ink = Color.decode(OpcodexIcons.ink(glyph, dark));
+            canvas.setColor(ink);
 			for (OpcodexVectorPaths.Part part : OpcodexVectorPaths.get(glyph)) {
-				canvas.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
-					10, part.dash(), 0));
+				canvas.setStroke(part.dash() == null ? SOLID : new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, part.dash(), 0));
 				if (part.fill()) canvas.fill(part.shape());
 				if (part.stroke()) canvas.draw(part.shape());
 			}

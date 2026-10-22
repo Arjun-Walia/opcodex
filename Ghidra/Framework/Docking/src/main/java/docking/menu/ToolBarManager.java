@@ -40,6 +40,22 @@ public class ToolBarManager {
 	private final DockingWindowManager windowManager;
 	// OPCODEX: keep secondary commands in an accessible overflow instead of crowding chrome.
 	private final boolean local;
+    // OPCODEX: adapt both geometry and icons live when moving to/from Classic.
+    private final generic.theme.ThemeListener themeListener = event -> {
+        if (!event.isLookAndFeelChanged()) return;
+        ghidra.util.Swing.runLater(() -> {
+            JComponent old = toolBar;
+            if (old == null) return;
+            for (var group : groupToItemsMap.values()) for (var item : group) item.refreshTheme();
+            JComponent fresh = buildToolbar();
+            old.removeAll();
+            if (old instanceof VariableHeightPanel target && fresh instanceof VariableHeightPanel source) {
+                for (var child : source.getComponents()) target.add(child);
+                target.setBorder(source.getBorder());
+            }
+            old.revalidate(); old.repaint();
+        });
+    };
 
 	public ToolBarManager(DockingWindowManager windowManager) {
 		this(windowManager, false);
@@ -48,6 +64,7 @@ public class ToolBarManager {
 	public ToolBarManager(DockingWindowManager windowManager, boolean local) {
 		this.windowManager = windowManager;
 		this.local = local;
+        generic.theme.Gui.addThemeListener(themeListener);
 	}
 
 	public void clearActions() {
@@ -91,6 +108,7 @@ public class ToolBarManager {
 	 * Releases all resources.  Makes this object unusable.
 	 */
 	public void dispose() {
+        generic.theme.Gui.removeThemeListener(themeListener);
 		Set<Entry<String, List<ToolBarItemManager>>> entrySet = groupToItemsMap.entrySet();
 		for (Entry<String, List<ToolBarItemManager>> entry : entrySet) {
 			List<ToolBarItemManager> items = entry.getValue();

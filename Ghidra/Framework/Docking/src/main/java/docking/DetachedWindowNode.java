@@ -383,6 +383,8 @@ class DetachedWindowNode extends WindowNode {
 		Rectangle bounds = getNewBounds(window);
 		window.setBounds(bounds);
 		window.setVisible(true);
+        // OPCODEX: keep detached provider windows within the available display.
+        WindowUtilities.ensureEntirelyOnScreen(window);
 	}
 
 	private Rectangle getNewBounds(Window newWindow) {

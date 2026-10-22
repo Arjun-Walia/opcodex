@@ -85,11 +85,12 @@ public class OpcodexPanelProbe {
     public static void verify(Object tool,Window window,Path output,String theme,Shot shot)throws Exception {
         SortedSet<String> before=edt(()->actions(tool));
         JPopupMenu menu=overflow(window);
-        edt(()->{item(menu,"Show complete toolbar").doClick(0);MenuSelectionManager.defaultManager().clearSelectedPath();return null;});
+        edt(()->{if(!((JCheckBoxMenuItem)item(menu,"Show complete toolbar")).isSelected()) item(menu,"Show complete toolbar").doClick(0);MenuSelectionManager.defaultManager().clearSelectedPath();return null;});
         Thread.sleep(250);
         if(!before.equals(edt(()->actions(tool))))throw new AssertionError("Complete toolbar changed command registry");
         if(edt(()->named(window,"Symbol Tree"))==null)throw new AssertionError("Complete toolbar did not restore secondary controls");
         shot.take(window,theme+"/panels/complete-toolbar.png");
+        Files.writeString(output.resolve(theme+"-icons-Complete-Toolbar.tsv"),edt(()->iconInventory(window)));
         final JPopupMenu compact=overflow(window);
         edt(()->{item(compact,"Show complete toolbar").doClick(0);MenuSelectionManager.defaultManager().clearSelectedPath();return null;});
         if(!before.equals(edt(()->actions(tool))))throw new AssertionError("Focused toolbar changed command registry");
@@ -118,6 +119,9 @@ public class OpcodexPanelProbe {
             if(!edt(component::isShowing))throw new AssertionError("Panel did not open: "+name);
             Window pane=edt(()->SwingUtilities.getWindowAncestor(component));
             shot.take(pane,theme+"/panels/"+name.toLowerCase(Locale.ROOT).replace(' ','-')+".png");
+            final Window iconPane = pane;
+            Files.writeString(output.resolve(theme + "-icons-" + name.replace(' ', '-') + ".tsv"),
+                edt(() -> iconInventory(iconPane)));
             if(name.equals("Console"))resizeCount=verifyResize(window,theme,shot);
             edt(()->{providerType.getMethod("setVisible",boolean.class).invoke(provider,wasVisible);return null;});
             tested.add(name);
@@ -125,6 +129,67 @@ public class OpcodexPanelProbe {
         Class<?> workspaces=type("docking.menu.OpcodexWorkspaces");Method focus=workspaces.getDeclaredMethod("focus",managerType);focus.setAccessible(true);
         edt(()->{focus.invoke(null,manager);return null;});
         Files.writeString(output.resolve(theme+"-panel-result.txt"),"Menus="+headings+"\nCommands="+before.size()+"\nToolbar registry unchanged=true\nPanels="+tested+"\nResizable dividers="+resizeCount+"\n");
+    }
+    private static String cell(String text) { return text == null ? "" : text.replace('\t',' ').replace('\n',' '); }
+    private static String glyphs(Icon icon, Set<String> ids) throws Exception {
+        if (icon == null) return "none";
+        String kind = icon.getClass().getName();
+        if (kind.endsWith("MultipleActionDockingToolbarButton$IconWithDropDownArrow")) {
+            Field field=icon.getClass().getDeclaredField("baseIcon");field.setAccessible(true);
+            return glyphs((Icon)field.get(icon),ids);
+        }
+        if (kind.equals("generic.theme.GIcon")) {
+            ids.add((String) type("generic.theme.GIcon").getMethod("getId").invoke(icon));
+            return glyphs((Icon)type("generic.theme.GIcon").getMethod("getDelegate").invoke(icon), ids);
+        }
+        if (kind.equals("generic.theme.builtin.OpcodexResourceIcon")) {
+            Field field=icon.getClass().getDeclaredField("glyph");field.setAccessible(true);return field.get(icon).toString();
+        }
+        if (kind.equals("generic.theme.builtin.OpcodexUi$PaintedIcon")) {
+            Method method=icon.getClass().getDeclaredMethod("source");method.setAccessible(true);return glyphs((Icon)method.invoke(icon), ids);
+        }
+        if (type("resources.icons.DerivedImageIcon").isInstance(icon))
+            return glyphs((Icon)type("resources.icons.DerivedImageIcon").getMethod("getSourceIcon").invoke(icon), ids);
+        if (type("resources.MultiIcon").isInstance(icon)) {
+            java.util.List<String> parts=new ArrayList<>();
+            for (Icon part:(Icon[])type("resources.MultiIcon").getMethod("getIcons").invoke(icon))parts.add(glyphs(part,ids));
+            return String.join("+",parts);
+        }
+        if (type("resources.icons.TranslateIcon").isInstance(icon))
+            return "move:"+glyphs((Icon)type("resources.icons.TranslateIcon").getMethod("getBaseIcon").invoke(icon),ids);
+        if (type("resources.icons.RotateIcon").isInstance(icon))
+            return "rotate:"+glyphs((Icon)type("resources.icons.RotateIcon").getMethod("getSourceIcon").invoke(icon),ids);
+        if (type("resources.icons.UrlImageIcon").isInstance(icon)) {
+            String path=(String)type("resources.icons.UrlImageIcon").getMethod("getOriginalPath").invoke(icon);
+            return path.replaceAll("^.*images/opcodex/ui/(?:light|dark)/", "").replaceAll("-[0-9]+[.]png$", "");
+        }
+        return kind;
+    }
+    private static String panel(Component component) throws Exception {
+        for (Container parent=component.getParent();parent!=null;parent=parent.getParent()) {
+            if (type("docking.DockableComponent").isInstance(parent)) {
+                Method method=type("docking.DockableComponent").getDeclaredMethod("getComponentWindowingPlaceholder");
+                method.setAccessible(true);Object placeholder=method.invoke(parent);
+                return (String)type("docking.ComponentPlaceholder").getMethod("getName").invoke(placeholder);
+            }
+        }
+        return "Main toolbar";
+    }
+    private static void inventory(Component component, StringBuilder rows) throws Exception {
+        Icon icon=null;String name=null;
+        if (component instanceof AbstractButton button && button.isShowing()) {icon=button.getIcon();name=button.getName();}
+        if (component instanceof JLabel label && label.isShowing() && component.getClass().getSimpleName().equals("ClearFilterLabel")) {
+            icon=label.getIcon();name="Clear filter";
+        }
+        if (icon!=null && name!=null) {
+            Set<String> ids=new TreeSet<>();String glyph=glyphs(icon,ids);
+            rows.append(cell(panel(component))).append('\t').append(cell(name)).append('\t')
+                .append(String.join(",",ids)).append('\t').append(glyph).append('\n');
+        }
+        if (component instanceof Container parent)for (Component child:parent.getComponents())inventory(child,rows);
+    }
+    private static String iconInventory(Window window) throws Exception {
+        StringBuilder rows=new StringBuilder("panel\tbutton\tids\tglyph\n");inventory(window,rows);return rows.toString();
     }
     private static void populateGraph(Object tool,Object provider,Class<?> providerType)throws Exception {
         Class<?> pmType=type("ghidra.app.services.ProgramManager"),programType=type("ghidra.program.model.listing.Program");

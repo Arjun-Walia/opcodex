@@ -132,7 +132,30 @@
     "chevron-down": "<path d=\"m5 9 7 7 7-7\"/>",
     "arrow-up-left": "<path d=\"M5 17V5h12M5 5l14 14\"/>",
     "arrow-down-right": "<path d=\"M19 7v12H7M19 19 5 5\"/>",
-    "palette": "<path d=\"M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 0-4h-1a2 2 0 0 1 0-4h4a5 5 0 0 0 0-10z\"/><circle cx=\"7\" cy=\"11\" r=\"1\"/><circle cx=\"10\" cy=\"7\" r=\"1\"/><circle cx=\"15\" cy=\"7\" r=\"1\"/>"
+    "palette": "<path d=\"M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 0-4h-1a2 2 0 0 1 0-4h4a5 5 0 0 0 0-10z\"/><circle cx=\"7\" cy=\"11\" r=\"1\"/><circle cx=\"10\" cy=\"7\" r=\"1\"/><circle cx=\"15\" cy=\"7\" r=\"1\"/>",
+    "clear-console": "<path d=\"m14 3 4 4-8 8-4-4zM6 11l-3 7 3 3 7-3-3-3M5 16l3 3M16 14h5M17 18h4\"/>",
+    "graph-snapshot": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M12 7v4M7 15l5-4 5 4\"/><circle cx=\"12\" cy=\"7\" r=\"1\"/><circle cx=\"7\" cy=\"16\" r=\"2\"/><circle cx=\"17\" cy=\"16\" r=\"2\"/>",
+    "listing": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M8 3v18M12 7h5M12 12h5M12 17h3\"/>",
+    "decompile": "<path d=\"M7 4H5v6l-2 2 2 2v6h2M17 4h2v6l2 2-2 2v6h-2M9 12h6m-3-3 3 3-3 3\"/>",
+    "instruction": "<path d=\"m3 7 5 5-5 5M12 5h9M12 10h6M12 15h9M12 20h6\"/>",
+    "selection-next": "<rect x=\"3\" y=\"4\" width=\"9\" height=\"16\" rx=\"1\" stroke-dasharray=\"3 3\"/><path d=\"M18 4v16m-3-3 3 3 3-3\"/>",
+    "selection-previous": "<rect x=\"3\" y=\"4\" width=\"9\" height=\"16\" rx=\"1\" stroke-dasharray=\"3 3\"/><path d=\"M18 20V4m-3 3 3-3 3 3\"/>",
+    "highlight-next": "<path d=\"m3 13 6-9 5 4-6 9H3zM3 21h8M19 4v16m-3-3 3 3 3-3\"/>",
+    "highlight-previous": "<path d=\"m3 13 6-9 5 4-6 9H3zM3 21h8M19 20V4m-3 3 3-3 3 3\"/>",
+    "register-bank": "<rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"/><path d=\"M4 9h16M4 15h16M8 6h1M8 12h1M8 18h1M14 6h2M14 12h2M14 18h2\"/>",
+    "next-data": "<path d=\"M3 4h10M3 9h10M3 14h6M3 19h6M18 8v12m-4-4 4 4 4-4\"/>",
+    "api-reference": "<path d=\"M12 5C9 3 5 3 2 4v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1zM12 5v15M7 8l-2 3 2 3M17 8l2 3-2 3\"/>",
+    "editor-ide": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M3 8h18M8 8v13M12 12l-2 2 2 2M17 12l2 2-2 2\"/>",
+    "editor-external": "<path d=\"M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M15 3h6v6M21 3l-9 9M7 13l3 3-3 3M12 18h4\"/>",
+    "rename": "<path d=\"M11 3h6M14 3v18M11 21h6M10 7H3v10h7M18 7h3v10h-3\"/>",
+    "run-again": "<path d=\"m10 8 6 4-6 4zM20 7a9 9 0 1 1-8-4M16 3h5v5\"/>",
+    "filter-clear": "<path d=\"M3 4h18l-7 8v3M10 12v7l4 2M17 17l5 5M17 22l5-5\"/>",
+    "filter-tree-contains": "<path d=\"M3 3v13h5M3 8h5M11 4h10l-3 5v9l-4 3V9z\"/>",
+    "filter-tree-exact": "<path d=\"M3 3v13h5M3 8h5M12 8h9M12 14h9\"/>",
+    "filter-tree-starts": "<path d=\"M3 3v13h5M3 8h5M12 5v14M16 9h5M16 15h3\"/>",
+    "filter-tree-regex": "<path d=\"M3 3v13h5M3 8h5M16 5v10M12 8l8 4M20 8l-8 4\"/><circle cx=\"20\" cy=\"19\" r=\"1\"/>",
+    "next-bookmark": "<path d=\"M13 4H4v17l5-4 4 4zM19 4v16m-3-3 3 3 3-3\"/>",
+    "graph-cycle": "<circle cx=\"5\" cy=\"6\" r=\"2\"/><circle cx=\"18\" cy=\"6\" r=\"2\"/><circle cx=\"12\" cy=\"19\" r=\"2\"/><path d=\"M8 6h6m-2-2 2 2-2 2M17 9l-3 6m3-1-3 1-1-3M9 18l-4-8m-1 3 1-3 3 1\"/>"
   },
   "mappings": {
     "icon.flag": "flag",
@@ -202,25 +225,25 @@
     "icon.base.unlock": "unlock",
     "icon.base.search.marker": "search",
     "icon.provider.clone": "camera",
-    "icon.plugin.codebrowser.provider": "code",
+    "icon.plugin.codebrowser.provider": "listing",
     "icon.plugin.codebrowser.cursor.location": "right",
     "icon.plugin.codebrowser.cursor.marker": "search",
     "icon.plugin.functionwindow.provider": "function",
     "icon.plugin.bookmark.type.note": "bookmark",
     "icon.plugin.bookmark.type.analysis": "wand",
-    "icon.plugin.navigation.bookmark": "bookmark",
+    "icon.plugin.navigation.bookmark": "next-bookmark",
     "icon.plugin.navigation.bookmark.analysis": "wand",
     "icon.plugin.navigation.bookmark.note": "bookmark",
     "icon.plugin.navigation.bytes": "grid",
-    "icon.plugin.navigation.data": "table",
+    "icon.plugin.navigation.data": "next-data",
     "icon.plugin.navigation.function": "function",
-    "icon.plugin.navigation.instruction": "code",
+    "icon.plugin.navigation.instruction": "instruction",
     "icon.plugin.navigation.label": "tag",
     "icon.plugin.navigation.undefined": "help",
-    "icon.plugin.navigation.highlight.range.next": "down",
-    "icon.plugin.navigation.highlight.range.previous": "up",
-    "icon.plugin.navigation.selection.range.next": "down",
-    "icon.plugin.navigation.selection.range.previous": "up",
+    "icon.plugin.navigation.highlight.range.next": "highlight-next",
+    "icon.plugin.navigation.highlight.range.previous": "highlight-previous",
+    "icon.plugin.navigation.selection.range.next": "selection-next",
+    "icon.plugin.navigation.selection.range.previous": "selection-previous",
     "icon.plugin.programtree.docs": "book",
     "icon.plugin.programtree.fragment": "code",
     "icon.plugin.programtree.fragment.empty": "file",
@@ -232,7 +255,7 @@
     "icon.plugin.programtree.closed.folder": "folder",
     "icon.plugin.programtree.open.folder": "folder-open",
     "icon.plugin.programtree.new.tree": "folder-add",
-    "icon.plugin.symboltree.provider": "graph",
+    "icon.plugin.symboltree.provider": "tree",
     "icon.plugin.symboltree.node.root": "graph",
     "icon.plugin.symboltree.node.class": "cube",
     "icon.plugin.symboltree.node.code": "tag",
@@ -255,7 +278,7 @@
     "icon.plugin.datatypes.util.root": "library",
     "icon.plugin.datatypes.util.open.root": "library",
     "icon.plugin.console.provider": "terminal",
-    "icon.plugin.console.clear": "close",
+    "icon.plugin.console.clear": "clear-console",
     "icon.plugin.fsbrowser.import": "import",
     "icon.plugin.fsbrowser.library": "library",
     "icon.plugin.calltree.function": "function",
@@ -284,7 +307,7 @@
     "icon.plugin.console.scroll.lock": "lock",
     "icon.logviewer.toolbar.scroll.lock": "lock",
     "icon.filter.options.contains": "filter",
-    "icon.decompiler.action.provider": "code",
+    "icon.decompiler.action.provider": "decompile",
     "icon.decompiler.action.provider.unreachable": "filter-off",
     "icon.decompiler.action.provider.readonly": "lock",
     "icon.decompiler.action.export": "export",
@@ -315,14 +338,14 @@
     "icon.plugin.functiongraph.action.vertex.edit.label": "tag",
     "icon.plugin.functiongraph.action.vertex.full.screen": "expand",
     "icon.plugin.functiongraph.action.vertex.edit.format": "table",
-    "icon.plugin.functiongraph.action.viewer.clone": "copy",
+    "icon.plugin.functiongraph.action.viewer.clone": "graph-snapshot",
     "icon.plugin.functiongraph.action.viewer.layout": "settings",
     "icon.plugin.functiongraph.action.viewer.vertex.hover.paths.to.vertex": "left",
     "icon.plugin.functiongraph.action.viewer.vertex.hover.paths.from.vertex": "right",
     "icon.plugin.functiongraph.action.viewer.vertex.hover.paths.from.to.vertex": "link",
     "icon.plugin.functiongraph.action.viewer.vertex.hover.paths.all": "graph",
     "icon.plugin.functiongraph.action.viewer.vertex.hover.cycles": "refresh",
-    "icon.plugin.functiongraph.action.viewer.vertex.hover.cycles.all": "refresh",
+    "icon.plugin.functiongraph.action.viewer.vertex.hover.cycles.all": "graph-cycle",
     "icon.plugin.functiongraph.action.viewer.vertex.hover.scoped.flow.forward": "right",
     "icon.plugin.functiongraph.action.viewer.vertex.hover.scoped.flow.reverse": "left",
     "icon.plugin.functiongraph.action.viewer.vertex.hover.off": "filter-off",
@@ -1192,8 +1215,8 @@
       "dark": "icon.opcodex.glyph.export"
     },
     "icon.decompiler.action.provider": {
-      "light": "icon.opcodex.glyph.code",
-      "dark": "icon.opcodex.glyph.code"
+      "light": "icon.opcodex.glyph.decompile",
+      "dark": "icon.opcodex.glyph.decompile"
     },
     "icon.decompiler.action.provider.clone": {
       "light": "icon.provider.clone",
@@ -1868,8 +1891,8 @@
       "dark": "icon.opcodex.glyph.selection {icon.opcodex.glyph.stop[size(12,12)][move(4,4)]}"
     },
     "icon.plugin.codebrowser.provider": {
-      "light": "icon.opcodex.glyph.code",
-      "dark": "icon.opcodex.glyph.code"
+      "light": "icon.opcodex.glyph.listing",
+      "dark": "icon.opcodex.glyph.listing"
     },
     "icon.plugin.composite.editor.apply": {
       "light": "icon.opcodex.glyph.save",
@@ -1960,8 +1983,8 @@
       "dark": "icon.opcodex.glyph.archive"
     },
     "icon.plugin.console.clear": {
-      "light": "icon.opcodex.glyph.close",
-      "dark": "icon.opcodex.glyph.close"
+      "light": "icon.opcodex.glyph.clear-console",
+      "dark": "icon.opcodex.glyph.clear-console"
     },
     "icon.plugin.console.provider": {
       "light": "icon.opcodex.glyph.terminal",
@@ -2464,8 +2487,8 @@
       "dark": "icon.opcodex.glyph.link"
     },
     "icon.plugin.functiongraph.action.viewer.clone": {
-      "light": "icon.opcodex.glyph.copy",
-      "dark": "icon.opcodex.glyph.copy"
+      "light": "icon.opcodex.glyph.graph-snapshot",
+      "dark": "icon.opcodex.glyph.graph-snapshot"
     },
     "icon.plugin.functiongraph.action.viewer.home": {
       "light": "icon.opcodex.glyph.home",
@@ -2484,8 +2507,8 @@
       "dark": "icon.opcodex.glyph.refresh"
     },
     "icon.plugin.functiongraph.action.viewer.vertex.hover.cycles.all": {
-      "light": "icon.opcodex.glyph.refresh",
-      "dark": "icon.opcodex.glyph.refresh"
+      "light": "icon.opcodex.glyph.graph-cycle",
+      "dark": "icon.opcodex.glyph.graph-cycle"
     },
     "icon.plugin.functiongraph.action.viewer.vertex.hover.off": {
       "light": "icon.opcodex.glyph.filter-off",
@@ -2668,8 +2691,8 @@
       "dark": "icon.opcodex.glyph.merge"
     },
     "icon.plugin.navigation.bookmark": {
-      "light": "icon.opcodex.glyph.bookmark",
-      "dark": "icon.opcodex.glyph.bookmark"
+      "light": "icon.opcodex.glyph.next-bookmark",
+      "dark": "icon.opcodex.glyph.next-bookmark"
     },
     "icon.plugin.navigation.bookmark.analysis": {
       "light": "icon.opcodex.glyph.wand",
@@ -2700,24 +2723,24 @@
       "dark": "icon.opcodex.glyph.grid"
     },
     "icon.plugin.navigation.data": {
-      "light": "icon.opcodex.glyph.table",
-      "dark": "icon.opcodex.glyph.table"
+      "light": "icon.opcodex.glyph.next-data",
+      "dark": "icon.opcodex.glyph.next-data"
     },
     "icon.plugin.navigation.function": {
       "light": "icon.opcodex.glyph.function",
       "dark": "icon.opcodex.glyph.function"
     },
     "icon.plugin.navigation.highlight.range.next": {
-      "light": "icon.opcodex.glyph.down",
-      "dark": "icon.opcodex.glyph.down"
+      "light": "icon.opcodex.glyph.highlight-next",
+      "dark": "icon.opcodex.glyph.highlight-next"
     },
     "icon.plugin.navigation.highlight.range.previous": {
-      "light": "icon.opcodex.glyph.up",
-      "dark": "icon.opcodex.glyph.up"
+      "light": "icon.opcodex.glyph.highlight-previous",
+      "dark": "icon.opcodex.glyph.highlight-previous"
     },
     "icon.plugin.navigation.instruction": {
-      "light": "icon.opcodex.glyph.code",
-      "dark": "icon.opcodex.glyph.code"
+      "light": "icon.opcodex.glyph.instruction",
+      "dark": "icon.opcodex.glyph.instruction"
     },
     "icon.plugin.navigation.label": {
       "light": "icon.opcodex.glyph.tag",
@@ -2732,12 +2755,12 @@
       "dark": "icon.left"
     },
     "icon.plugin.navigation.selection.range.next": {
-      "light": "icon.opcodex.glyph.down",
-      "dark": "icon.opcodex.glyph.down"
+      "light": "icon.opcodex.glyph.selection-next",
+      "dark": "icon.opcodex.glyph.selection-next"
     },
     "icon.plugin.navigation.selection.range.previous": {
-      "light": "icon.opcodex.glyph.up",
-      "dark": "icon.opcodex.glyph.up"
+      "light": "icon.opcodex.glyph.selection-previous",
+      "dark": "icon.opcodex.glyph.selection-previous"
     },
     "icon.plugin.navigation.undefined": {
       "light": "icon.opcodex.glyph.help",
@@ -2876,16 +2899,16 @@
       "dark": "icon.opcodex.glyph.memory"
     },
     "icon.plugin.register.provider": {
-      "light": "icon.plugin.register.group",
-      "dark": "icon.plugin.register.group"
+      "light": "icon.opcodex.glyph.register-bank",
+      "dark": "icon.opcodex.glyph.register-bank"
     },
     "icon.plugin.scalartable.provider": {
       "light": "icon.opcodex.glyph.table",
       "dark": "icon.opcodex.glyph.table"
     },
     "icon.plugin.scriptmanager.api": {
-      "light": "icon.opcodex.glyph.close",
-      "dark": "icon.opcodex.glyph.close"
+      "light": "icon.opcodex.glyph.api-reference",
+      "dark": "icon.opcodex.glyph.api-reference"
     },
     "icon.plugin.scriptmanager.delete": {
       "light": "icon.delete",
@@ -2896,12 +2919,12 @@
       "dark": "icon.opcodex.glyph.edit"
     },
     "icon.plugin.scriptmanager.edit.eclipse": {
-      "light": "icon.opcodex.glyph.code",
-      "dark": "icon.opcodex.glyph.code"
+      "light": "icon.opcodex.glyph.editor-ide",
+      "dark": "icon.opcodex.glyph.editor-ide"
     },
     "icon.plugin.scriptmanager.edit.vscode": {
-      "light": "icon.opcodex.glyph.code",
-      "dark": "icon.opcodex.glyph.code"
+      "light": "icon.opcodex.glyph.editor-external",
+      "dark": "icon.opcodex.glyph.editor-external"
     },
     "icon.plugin.scriptmanager.keybinding": {
       "light": "icon.opcodex.glyph.key",
@@ -2920,16 +2943,16 @@
       "dark": "icon.opcodex.glyph.terminal"
     },
     "icon.plugin.scriptmanager.rename": {
-      "light": "icon.rename",
-      "dark": "icon.rename"
+      "light": "icon.opcodex.glyph.rename",
+      "dark": "icon.opcodex.glyph.rename"
     },
     "icon.plugin.scriptmanager.run": {
       "light": "icon.run",
       "dark": "icon.run"
     },
     "icon.plugin.scriptmanager.run.again": {
-      "light": "icon.opcodex.glyph.refresh",
-      "dark": "icon.opcodex.glyph.refresh"
+      "light": "icon.opcodex.glyph.run-again",
+      "dark": "icon.opcodex.glyph.run-again"
     },
     "icon.plugin.stringtable.conflicts": {
       "light": "icon.opcodex.glyph.error",
@@ -3092,8 +3115,8 @@
       "dark": "icon.opcodex.glyph.graph"
     },
     "icon.plugin.symboltree.provider": {
-      "light": "icon.opcodex.glyph.graph",
-      "dark": "icon.opcodex.glyph.graph"
+      "light": "icon.opcodex.glyph.tree",
+      "dark": "icon.opcodex.glyph.tree"
     },
     "icon.plugin.symboltree.set.external": {
       "light": "icon.base.edit.bytes",
@@ -3388,8 +3411,8 @@
       "dark": "icon.opcodex.glyph.clock"
     },
     "icon.text.field.clear": {
-      "light": "icon.delete[size(12,12)]",
-      "dark": "icon.delete[size(12,12)]"
+      "light": "icon.opcodex.glyph.filter-clear[size(12,12)]",
+      "dark": "icon.opcodex.glyph.filter-clear[size(12,12)]"
     },
     "icon.theme.export": {
       "light": "icon.opcodex.glyph.export",
@@ -3842,6 +3865,22 @@
     "icon.zoom.out": {
       "light": "icon.opcodex.glyph.zoom-out",
       "dark": "icon.opcodex.glyph.zoom-out"
+    },
+    "icon.filter.tree.contains": {
+      "light": "icon.opcodex.glyph.filter-tree-contains",
+      "dark": "icon.opcodex.glyph.filter-tree-contains"
+    },
+    "icon.filter.tree.exact": {
+      "light": "icon.opcodex.glyph.filter-tree-exact",
+      "dark": "icon.opcodex.glyph.filter-tree-exact"
+    },
+    "icon.filter.tree.starts": {
+      "light": "icon.opcodex.glyph.filter-tree-starts",
+      "dark": "icon.opcodex.glyph.filter-tree-starts"
+    },
+    "icon.filter.tree.regex": {
+      "light": "icon.opcodex.glyph.filter-tree-regex",
+      "dark": "icon.opcodex.glyph.filter-tree-regex"
     }
   },
   "compatibilityResources": {

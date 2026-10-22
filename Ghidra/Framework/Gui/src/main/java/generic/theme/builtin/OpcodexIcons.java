@@ -31,7 +31,7 @@ final class OpcodexIcons {
 		{"icon.copy", "copy"},
 		{"icon.cut", "cut"},
 		{"icon.decompiler.action.export", "export"},
-		{"icon.decompiler.action.provider", "code"},
+		{"icon.decompiler.action.provider", "decompile"},
 		{"icon.decompiler.action.provider.readonly", "lock"},
 		{"icon.decompiler.action.provider.unreachable", "filter-off"},
 		{"icon.delete", "trash"},
@@ -67,8 +67,8 @@ final class OpcodexIcons {
 		{"icon.plugin.codebrowser.cursor.marker", "search"},
 		{"icon.plugin.codebrowser.format.collapse", "up"},
 		{"icon.plugin.codebrowser.format.expand", "down"},
-		{"icon.plugin.codebrowser.provider", "code"},
-		{"icon.plugin.console.clear", "close"},
+		{"icon.plugin.codebrowser.provider", "listing"},
+		{"icon.plugin.console.clear", "clear-console"},
 		{"icon.plugin.console.provider", "terminal"},
 		{"icon.plugin.console.scroll.lock", "lock"},
 		{"icon.plugin.datatypes.archive.built.in.closed", "book"},
@@ -105,12 +105,12 @@ final class OpcodexIcons {
 		{"icon.plugin.functiongraph.action.vertex.regroup", "layers"},
 		{"icon.plugin.functiongraph.action.vertex.ungroup", "expand"},
 		{"icon.plugin.functiongraph.action.vertex.xrefs", "link"},
-		{"icon.plugin.functiongraph.action.viewer.clone", "copy"},
+		{"icon.plugin.functiongraph.action.viewer.clone", "graph-snapshot"},
 		{"icon.plugin.functiongraph.action.viewer.home", "home"},
 		{"icon.plugin.functiongraph.action.viewer.layout", "settings"},
 		{"icon.plugin.functiongraph.action.viewer.reset", "refresh"},
 		{"icon.plugin.functiongraph.action.viewer.vertex.hover.cycles", "refresh"},
-		{"icon.plugin.functiongraph.action.viewer.vertex.hover.cycles.all", "refresh"},
+		{"icon.plugin.functiongraph.action.viewer.vertex.hover.cycles.all", "graph-cycle"},
 		{"icon.plugin.functiongraph.action.viewer.vertex.hover.off", "filter-off"},
 		{"icon.plugin.functiongraph.action.viewer.vertex.hover.paths.all", "graph"},
 		{"icon.plugin.functiongraph.action.viewer.vertex.hover.paths.from.to.vertex", "link"},
@@ -123,18 +123,18 @@ final class OpcodexIcons {
 		{"icon.plugin.functiongraph.layout.flowchart.left", "graph"},
 		{"icon.plugin.functionwindow.provider", "function"},
 		{"icon.plugin.manager.default", "grid"},
-		{"icon.plugin.navigation.bookmark", "bookmark"},
+		{"icon.plugin.navigation.bookmark", "next-bookmark"},
 		{"icon.plugin.navigation.bookmark.analysis", "wand"},
 		{"icon.plugin.navigation.bookmark.note", "bookmark"},
 		{"icon.plugin.navigation.bytes", "grid"},
-		{"icon.plugin.navigation.data", "table"},
+		{"icon.plugin.navigation.data", "next-data"},
 		{"icon.plugin.navigation.function", "function"},
-		{"icon.plugin.navigation.highlight.range.next", "down"},
-		{"icon.plugin.navigation.highlight.range.previous", "up"},
-		{"icon.plugin.navigation.instruction", "code"},
+		{"icon.plugin.navigation.highlight.range.next", "highlight-next"},
+		{"icon.plugin.navigation.highlight.range.previous", "highlight-previous"},
+		{"icon.plugin.navigation.instruction", "instruction"},
 		{"icon.plugin.navigation.label", "tag"},
-		{"icon.plugin.navigation.selection.range.next", "down"},
-		{"icon.plugin.navigation.selection.range.previous", "up"},
+		{"icon.plugin.navigation.selection.range.next", "selection-next"},
+		{"icon.plugin.navigation.selection.range.previous", "selection-previous"},
 		{"icon.plugin.navigation.undefined", "help"},
 		{"icon.plugin.programtree.closed.folder", "folder"},
 		{"icon.plugin.programtree.docs", "book"},
@@ -175,7 +175,7 @@ final class OpcodexIcons {
 		{"icon.plugin.symboltree.node.organization.open", "folder-open"},
 		{"icon.plugin.symboltree.node.parameter", "parameter"},
 		{"icon.plugin.symboltree.node.root", "graph"},
-		{"icon.plugin.symboltree.provider", "graph"},
+		{"icon.plugin.symboltree.provider", "tree"},
 		{"icon.projectdata.delete", "trash"},
 		{"icon.projectdata.rename", "edit"},
 		{"icon.properties", "settings"},
@@ -331,6 +331,29 @@ final class OpcodexIcons {
 		theme.setIcon("icon.opcodex.glyph.arrow-up-left", load("arrow-up-left", dark));
 		theme.setIcon("icon.opcodex.glyph.arrow-down-right", load("arrow-down-right", dark));
 		theme.setIcon("icon.opcodex.glyph.palette", load("palette", dark));
+		theme.setIcon("icon.opcodex.glyph.clear-console", load("clear-console", dark));
+		theme.setIcon("icon.opcodex.glyph.graph-snapshot", load("graph-snapshot", dark));
+		theme.setIcon("icon.opcodex.glyph.listing", load("listing", dark));
+		theme.setIcon("icon.opcodex.glyph.decompile", load("decompile", dark));
+		theme.setIcon("icon.opcodex.glyph.instruction", load("instruction", dark));
+		theme.setIcon("icon.opcodex.glyph.selection-next", load("selection-next", dark));
+		theme.setIcon("icon.opcodex.glyph.selection-previous", load("selection-previous", dark));
+		theme.setIcon("icon.opcodex.glyph.highlight-next", load("highlight-next", dark));
+		theme.setIcon("icon.opcodex.glyph.highlight-previous", load("highlight-previous", dark));
+		theme.setIcon("icon.opcodex.glyph.register-bank", load("register-bank", dark));
+		theme.setIcon("icon.opcodex.glyph.next-data", load("next-data", dark));
+		theme.setIcon("icon.opcodex.glyph.api-reference", load("api-reference", dark));
+		theme.setIcon("icon.opcodex.glyph.editor-ide", load("editor-ide", dark));
+		theme.setIcon("icon.opcodex.glyph.editor-external", load("editor-external", dark));
+		theme.setIcon("icon.opcodex.glyph.rename", load("rename", dark));
+		theme.setIcon("icon.opcodex.glyph.run-again", load("run-again", dark));
+		theme.setIcon("icon.opcodex.glyph.filter-clear", load("filter-clear", dark));
+		theme.setIcon("icon.opcodex.glyph.filter-tree-contains", load("filter-tree-contains", dark));
+		theme.setIcon("icon.opcodex.glyph.filter-tree-exact", load("filter-tree-exact", dark));
+		theme.setIcon("icon.opcodex.glyph.filter-tree-starts", load("filter-tree-starts", dark));
+		theme.setIcon("icon.opcodex.glyph.filter-tree-regex", load("filter-tree-regex", dark));
+		theme.setIcon("icon.opcodex.glyph.next-bookmark", load("next-bookmark", dark));
+		theme.setIcon("icon.opcodex.glyph.graph-cycle", load("graph-cycle", dark));
 		for (String[] entry : ENTRIES) {
 			Icon icon = icons.computeIfAbsent(entry[1], glyph -> load(glyph, dark));
 			theme.setIcon(entry[0], icon);
@@ -551,7 +574,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.debugger.unique.ref.write", "icon.opcodex.glyph.pointer"));
 			theme.addIcon(IconValue.parse("icon.debugger.visibility", "icon.opcodex.glyph.text"));
 			theme.addIcon(IconValue.parse("icon.decompiler.action.export", "icon.opcodex.glyph.export"));
-			theme.addIcon(IconValue.parse("icon.decompiler.action.provider", "icon.opcodex.glyph.code"));
+			theme.addIcon(IconValue.parse("icon.decompiler.action.provider", "icon.opcodex.glyph.decompile"));
 			theme.addIcon(IconValue.parse("icon.decompiler.action.provider.clone", "icon.provider.clone"));
 			theme.addIcon(IconValue.parse("icon.decompiler.action.provider.readonly", "icon.opcodex.glyph.lock"));
 			theme.addIcon(IconValue.parse("icon.decompiler.action.provider.unreachable", "icon.opcodex.glyph.filter-off"));
@@ -720,7 +743,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.plugin.codebrowser.hover.on", "icon.base.hover.on"));
 			theme.addIcon(IconValue.parse("icon.plugin.codebrowser.mark.and.select.armed", "icon.opcodex.glyph.selection {icon.opcodex.glyph.play[size(12,12)][move(4,4)]}"));
 			theme.addIcon(IconValue.parse("icon.plugin.codebrowser.mark.and.select.unarmed", "icon.opcodex.glyph.selection {icon.opcodex.glyph.stop[size(12,12)][move(4,4)]}"));
-			theme.addIcon(IconValue.parse("icon.plugin.codebrowser.provider", "icon.opcodex.glyph.code"));
+			theme.addIcon(IconValue.parse("icon.plugin.codebrowser.provider", "icon.opcodex.glyph.listing"));
 			theme.addIcon(IconValue.parse("icon.plugin.composite.editor.apply", "icon.opcodex.glyph.save"));
 			theme.addIcon(IconValue.parse("icon.plugin.composite.editor.array", "icon.opcodex.glyph.array"));
 			theme.addIcon(IconValue.parse("icon.plugin.composite.editor.bit.field.dialog.add", "icon.base.plus"));
@@ -743,7 +766,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.plugin.composite.editor.search.previous", "icon.opcodex.glyph.up [size(16,16)]"));
 			theme.addIcon(IconValue.parse("icon.plugin.composite.editor.show.type", "icon.home"));
 			theme.addIcon(IconValue.parse("icon.plugin.composite.editor.unpackage", "icon.opcodex.glyph.archive"));
-			theme.addIcon(IconValue.parse("icon.plugin.console.clear", "icon.opcodex.glyph.close"));
+			theme.addIcon(IconValue.parse("icon.plugin.console.clear", "icon.opcodex.glyph.clear-console"));
 			theme.addIcon(IconValue.parse("icon.plugin.console.provider", "icon.opcodex.glyph.terminal"));
 			theme.addIcon(IconValue.parse("icon.plugin.console.scroll.lock", "icon.opcodex.glyph.lock"));
 			theme.addIcon(IconValue.parse("icon.plugin.datagraph.action.viewer.reset", "icon.refresh"));
@@ -869,12 +892,12 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.vertex.regroup", "icon.opcodex.glyph.layers"));
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.vertex.ungroup", "icon.opcodex.glyph.expand"));
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.vertex.xrefs", "icon.opcodex.glyph.link"));
-			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.clone", "icon.opcodex.glyph.copy"));
+			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.clone", "icon.opcodex.glyph.graph-snapshot"));
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.home", "icon.opcodex.glyph.home"));
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.layout", "icon.opcodex.glyph.settings"));
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.reset", "icon.opcodex.glyph.refresh"));
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.vertex.hover.cycles", "icon.opcodex.glyph.refresh"));
-			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.vertex.hover.cycles.all", "icon.opcodex.glyph.refresh"));
+			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.vertex.hover.cycles.all", "icon.opcodex.glyph.graph-cycle"));
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.vertex.hover.off", "icon.opcodex.glyph.filter-off"));
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.vertex.hover.paths.all", "icon.opcodex.glyph.graph"));
 			theme.addIcon(IconValue.parse("icon.plugin.functiongraph.action.viewer.vertex.hover.paths.from.to.vertex", "icon.opcodex.glyph.link"));
@@ -920,7 +943,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.plugin.merge.status.pending", "icon.opcodex.glyph.circle-check"));
 			theme.addIcon(IconValue.parse("icon.plugin.myprogramchanges.checkin", "icon.opcodex.glyph.export"));
 			theme.addIcon(IconValue.parse("icon.plugin.myprogramchanges.merge", "icon.opcodex.glyph.merge"));
-			theme.addIcon(IconValue.parse("icon.plugin.navigation.bookmark", "icon.opcodex.glyph.bookmark"));
+			theme.addIcon(IconValue.parse("icon.plugin.navigation.bookmark", "icon.opcodex.glyph.next-bookmark"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.bookmark.analysis", "icon.opcodex.glyph.wand"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.bookmark.error", "icon.error"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.bookmark.info", "icon.information"));
@@ -928,16 +951,16 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.bookmark.unknown", "icon.opcodex.glyph.help"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.bookmark.warning", "icon.warning"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.bytes", "icon.opcodex.glyph.grid"));
-			theme.addIcon(IconValue.parse("icon.plugin.navigation.data", "icon.opcodex.glyph.table"));
+			theme.addIcon(IconValue.parse("icon.plugin.navigation.data", "icon.opcodex.glyph.next-data"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.function", "icon.opcodex.glyph.function"));
-			theme.addIcon(IconValue.parse("icon.plugin.navigation.highlight.range.next", "icon.opcodex.glyph.down"));
-			theme.addIcon(IconValue.parse("icon.plugin.navigation.highlight.range.previous", "icon.opcodex.glyph.up"));
-			theme.addIcon(IconValue.parse("icon.plugin.navigation.instruction", "icon.opcodex.glyph.code"));
+			theme.addIcon(IconValue.parse("icon.plugin.navigation.highlight.range.next", "icon.opcodex.glyph.highlight-next"));
+			theme.addIcon(IconValue.parse("icon.plugin.navigation.highlight.range.previous", "icon.opcodex.glyph.highlight-previous"));
+			theme.addIcon(IconValue.parse("icon.plugin.navigation.instruction", "icon.opcodex.glyph.instruction"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.label", "icon.opcodex.glyph.tag"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.location.next", "icon.right"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.location.previous", "icon.left"));
-			theme.addIcon(IconValue.parse("icon.plugin.navigation.selection.range.next", "icon.opcodex.glyph.down"));
-			theme.addIcon(IconValue.parse("icon.plugin.navigation.selection.range.previous", "icon.opcodex.glyph.up"));
+			theme.addIcon(IconValue.parse("icon.plugin.navigation.selection.range.next", "icon.opcodex.glyph.selection-next"));
+			theme.addIcon(IconValue.parse("icon.plugin.navigation.selection.range.previous", "icon.opcodex.glyph.selection-previous"));
 			theme.addIcon(IconValue.parse("icon.plugin.navigation.undefined", "icon.opcodex.glyph.help"));
 			theme.addIcon(IconValue.parse("icon.plugin.overview.provider", "icon.opcodex.glyph.text"));
 			theme.addIcon(IconValue.parse("icon.plugin.programdiff.apply", "icon.opcodex.glyph.edit"));
@@ -972,20 +995,20 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.plugin.reachability.provider", "icon.opcodex.glyph.graph [rotate(90)]"));
 			theme.addIcon(IconValue.parse("icon.plugin.register", "icon.opcodex.glyph.memory"));
 			theme.addIcon(IconValue.parse("icon.plugin.register.group", "icon.opcodex.glyph.memory"));
-			theme.addIcon(IconValue.parse("icon.plugin.register.provider", "icon.plugin.register.group"));
+			theme.addIcon(IconValue.parse("icon.plugin.register.provider", "icon.opcodex.glyph.register-bank"));
 			theme.addIcon(IconValue.parse("icon.plugin.scalartable.provider", "icon.opcodex.glyph.table"));
-			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.api", "icon.opcodex.glyph.close"));
+			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.api", "icon.opcodex.glyph.api-reference"));
 			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.delete", "icon.delete"));
 			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.edit", "icon.opcodex.glyph.edit"));
-			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.edit.eclipse", "icon.opcodex.glyph.code"));
-			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.edit.vscode", "icon.opcodex.glyph.code"));
+			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.edit.eclipse", "icon.opcodex.glyph.editor-ide"));
+			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.edit.vscode", "icon.opcodex.glyph.editor-external"));
 			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.keybinding", "icon.opcodex.glyph.key"));
 			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.manage", "icon.opcodex.glyph.list"));
 			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.new", "icon.opcodex.glyph.plus"));
 			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.provider", "icon.opcodex.glyph.terminal"));
-			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.rename", "icon.rename"));
+			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.rename", "icon.opcodex.glyph.rename"));
 			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.run", "icon.run"));
-			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.run.again", "icon.opcodex.glyph.refresh"));
+			theme.addIcon(IconValue.parse("icon.plugin.scriptmanager.run.again", "icon.opcodex.glyph.run-again"));
 			theme.addIcon(IconValue.parse("icon.plugin.stringtable.conflicts", "icon.opcodex.glyph.error"));
 			theme.addIcon(IconValue.parse("icon.plugin.stringtable.defined", "icon.opcodex.glyph.text"));
 			theme.addIcon(IconValue.parse("icon.plugin.stringtable.defined.partial", "icon.opcodex.glyph.warning"));
@@ -1026,7 +1049,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.plugin.symboltree.node.organization.open", "icon.opcodex.glyph.folder-open"));
 			theme.addIcon(IconValue.parse("icon.plugin.symboltree.node.parameter", "icon.opcodex.glyph.parameter"));
 			theme.addIcon(IconValue.parse("icon.plugin.symboltree.node.root", "icon.opcodex.glyph.graph"));
-			theme.addIcon(IconValue.parse("icon.plugin.symboltree.provider", "icon.opcodex.glyph.graph"));
+			theme.addIcon(IconValue.parse("icon.plugin.symboltree.provider", "icon.opcodex.glyph.tree"));
 			theme.addIcon(IconValue.parse("icon.plugin.symboltree.set.external", "icon.base.edit.bytes"));
 			theme.addIcon(IconValue.parse("icon.plugin.table.service", "icon.search"));
 			theme.addIcon(IconValue.parse("icon.plugin.table.service.marker", "icon.base.search.marker"));
@@ -1100,7 +1123,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.task.progress.hourglass.7", "icon.opcodex.glyph.clock"));
 			theme.addIcon(IconValue.parse("icon.task.progress.hourglass.8", "icon.opcodex.glyph.clock"));
 			theme.addIcon(IconValue.parse("icon.task.progress.hourglass.9", "icon.opcodex.glyph.clock"));
-			theme.addIcon(IconValue.parse("icon.text.field.clear", "icon.delete[size(12,12)]"));
+			theme.addIcon(IconValue.parse("icon.text.field.clear", "icon.opcodex.glyph.filter-clear[size(12,12)]"));
 			theme.addIcon(IconValue.parse("icon.theme.export", "icon.opcodex.glyph.export"));
 			theme.addIcon(IconValue.parse("icon.theme.font.decrement", "icon.opcodex.glyph.text{icon.opcodex.glyph.minus[size(8,8)][move(8,8)]}"));
 			theme.addIcon(IconValue.parse("icon.theme.font.increment", "icon.opcodex.glyph.text{icon.opcodex.glyph.plus[size(8,8)][move(8,8)]}"));
@@ -1214,6 +1237,10 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.window", "icon.opcodex.glyph.monitor"));
 			theme.addIcon(IconValue.parse("icon.zoom.in", "icon.opcodex.glyph.zoom-in"));
 			theme.addIcon(IconValue.parse("icon.zoom.out", "icon.opcodex.glyph.zoom-out"));
+			theme.addIcon(IconValue.parse("icon.filter.tree.contains", "icon.opcodex.glyph.filter-tree-contains"));
+			theme.addIcon(IconValue.parse("icon.filter.tree.exact", "icon.opcodex.glyph.filter-tree-exact"));
+			theme.addIcon(IconValue.parse("icon.filter.tree.starts", "icon.opcodex.glyph.filter-tree-starts"));
+			theme.addIcon(IconValue.parse("icon.filter.tree.regex", "icon.opcodex.glyph.filter-tree-regex"));
 		} catch (java.text.ParseException error) {
 			throw new IllegalStateException("Invalid generated Opcodex icon binding", error);
 		}

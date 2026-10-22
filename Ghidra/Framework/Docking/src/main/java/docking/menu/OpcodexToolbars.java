@@ -34,7 +34,7 @@ final class OpcodexToolbars {
 		VariableHeightPanel bar = new VariableHeightPanel(true, 2, 0);
 		bar.setBorder(BorderFactory.createEmptyBorder(local ? 0 : 7, local ? 0 : 10,
 			local ? 0 : 7, local ? 0 : 10));
-		populate(bar, items, manager, local, false);
+		populate(bar, items, manager, local, true);
 		return bar;
 	}
 

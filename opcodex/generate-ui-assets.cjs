@@ -74,32 +74,12 @@ async function generate() {
     'Ghidra/Framework/Project/data/project.theme.properties',
     'Ghidra/Features/Base/data/base.icons.theme.properties'
   ];
+  // Classic owns the unmodified stable property mappings. Product themes install
+  // their own complete bindings; generating modern artwork must never rewrite Classic.
   const resolved = new Set();
   for (const relative of propertyFiles) {
-    const file = path.join(root,relative);
-    let lines = (await fs.readFile(file,'utf8')).split(/\r?\n/);
-    let dark = false, inDarkDefaults = false;
-    const mapped = new Set(), darkKeys = new Set();
-    lines = lines.map(line => {
-      if (line.startsWith('[')) {
-        dark = line.toLowerCase().includes('dark');
-        inDarkDefaults = line.trim() === '[Dark Defaults]';
-      }
-      const match = line.match(/^(icon\.[\w.]+)\s*=/);
-      if (!match || !catalog.mappings[match[1]]) return line;
-      const id = match[1];
-      mapped.add(id); resolved.add(id);
-      if (inDarkDefaults) darkKeys.add(id);
-      return id + ' = images/opcodex/ui/' + (dark?'dark':'light') + '/' + catalog.mappings[id] + '-16.png';
-    });
-    const additions = [...mapped].filter(id=>!darkKeys.has(id)).sort().map(id=>
-      id+' = images/opcodex/ui/dark/'+catalog.mappings[id]+'-16.png');
-    const index = lines.indexOf('[Dark Defaults]');
-    if (index < 0) lines.push('', '[Dark Defaults]', ...additions);
-    else lines.splice(index+1, 0, ...additions);
-    const marker = '# OPCODEX: original outline icon family; transparent light/dark exports.';
-    if (!lines.includes(marker)) lines.unshift(marker);
-    await writeChanged(file, lines.join('\n').trimEnd()+'\n');
+    const text = await fs.readFile(path.join(root,relative),'utf8');
+    for (const match of text.matchAll(/^(icon\.[\w.]+)\s*=/gm)) resolved.add(match[1]);
   }
   // Additional module IDs are overridden by product themes only; keep those modules intact.
   for (const relative of ['Ghidra/Features/Decompiler/data/decompiler.theme.properties',
@@ -172,41 +152,9 @@ async function generate() {
   ].join('\n');
   await fs.writeFile(path.join(gui,'src/main/java/generic/theme/builtin/OpcodexIconResources.java'),resources);
 
-  // Replace compatibility artwork by rendering our own source; retain legacy filenames for callers.
+  // Native launchers retain the Opcodex identity. Classic bitmap assets stay untouched.
   const mark = (await fs.readFile(path.join(root,'opcodex/branding/mark-light-surface.svg'),'utf8'))
     .replace(/#[0-9a-f]{6}/gi,'#178697');
-  for (const size of [16,24,32,40,48,64,128,256]) {
-    await sharp(Buffer.from(mark)).resize(size,size).png()
-      .toFile(path.join(gui,'src/main/resources/images/GhidraIcon'+size+'.png'));
-  }
-  const base = path.join(root,'Ghidra/Features/Base');
-  for (const name of ['GHIDRA_1.png','GHIDRA_2.png','GHIDRA_3.png','GHIDRA_Splash.png']) {
-    const file = path.join(base,'src/main/resources/images',name);
-    const metadata = await sharp(file).metadata();
-    await sharp(Buffer.from(mark)).resize(metadata.width,metadata.height,{fit:'contain'})
-      .png().toFile(file);
-  }
-  await sharp(Buffer.from(mark)).resize(24,24).png()
-    .toFile(path.join(base,'src/main/resources/defaultTools/images/greenDragon24.png'));
-  await sharp(Buffer.from(mark)).resize(24,24).gif()
-    .toFile(path.join(base,'src/main/resources/defaultTools/images/red-dragon.gif'));
-  const legacyPngs = [
-    ...[16,24,32,40,48,64,128,256].map(size=>path.join(gui,'src/main/resources/images/GhidraIcon'+size+'.png')),
-    ...['GHIDRA_1.png','GHIDRA_2.png','GHIDRA_3.png','GHIDRA_Splash.png'].map(name=>path.join(base,'src/main/resources/images',name)),
-    path.join(base,'src/main/resources/defaultTools/images/greenDragon24.png')
-  ];
-  const debuggerModule = path.join(root,'Ghidra/Debug/Debugger');
-  for (const [name,glyph] of [['debugger32.png','bug'],['emulator32.png','grid']]) {
-    const bytes = await fs.readFile(path.join(output,'light',glyph+'-32.png'));
-    const file = path.join(debuggerModule,'src/main/resources/images',name);
-    await fs.writeFile(file,bytes);
-    legacyPngs.push(file);
-  }
-  for (const file of legacyPngs) await fs.writeFile(file,markPng(await fs.readFile(file)));
-  const gifFile = path.join(base,'src/main/resources/defaultTools/images/red-dragon.gif');
-  const gif = await fs.readFile(gifFile);
-  const comment = Buffer.from('OPCODEX: original product artwork; Apache-2.0.');
-  await fs.writeFile(gifFile,Buffer.concat([gif.subarray(0,-1),Buffer.from([0x21,0xfe,comment.length]),comment,Buffer.from([0,0x3b])]));
   const icoSizes = [16,24,32,40,48,64,128,256];
   const icoImages = [];
   for (const size of icoSizes) icoImages.push(markPng(await sharp(Buffer.from(mark)).resize(size,size).png().toBuffer()));
@@ -231,14 +179,7 @@ async function generate() {
       ...brandFiles,
       ...Object.keys(catalog.glyphs).flatMap(name=>['light','dark'].flatMap(theme=>
         catalog.sizes.map(size=>'src/main/resources/images/opcodex/ui/'+theme+'/'+name+'-'+size+'.png'))),
-      ...[16,24,32,40,48,64,128,256].map(size=>'src/main/resources/images/GhidraIcon'+size+'.png')
     ]],
-    [base, [
-      ...['GHIDRA_1.png','GHIDRA_2.png','GHIDRA_3.png','GHIDRA_Splash.png'].map(n=>'src/main/resources/images/'+n),
-      'src/main/resources/defaultTools/images/greenDragon24.png',
-      'src/main/resources/defaultTools/images/red-dragon.gif'
-    ]],
-    [debuggerModule, ['src/main/resources/images/debugger32.png','src/main/resources/images/emulator32.png']],
     [path.join(root,'Ghidra/RuntimeScripts'), ['Windows/support/ghidra.ico']]
   ]) {
     const manifest = path.join(module,'certification.manifest');

@@ -83,8 +83,8 @@ class VersionInfoPanel extends JPanel {
 		lines.add("Build Channel: " + props.getApplicationReleaseName());
 		lines.add("Build Date: " + props.getApplicationBuildDate());
 		lines.add("Source Revision: " +
-			props.getProperty(ApplicationProperties.REVISION_PROPERTY_PREFIX + "ghidra", def));
-		lines.add("Ghidra Development Mode: " + SystemUtilities.isInDevelopmentMode());
+			props.getProperty(ApplicationProperties.REVISION_PROPERTY_PREFIX + "src", def));
+		lines.add("Opcodex Development Mode: " + SystemUtilities.isInDevelopmentMode());
 	}
 
 	/**

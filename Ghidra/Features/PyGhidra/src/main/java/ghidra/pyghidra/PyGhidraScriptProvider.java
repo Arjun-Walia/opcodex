@@ -15,6 +15,8 @@
  */
 package ghidra.pyghidra;
 
+// OPCODEX: consistent product wording; retain engine identifiers and integration names.
+
 import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -71,7 +73,7 @@ public final class PyGhidraScriptProvider extends AbstractPythonScriptProvider {
 	public GhidraScript getScriptInstance(ResourceFile sourceFile, PrintWriter writer)
 			throws GhidraScriptLoadException {
 		if (scriptRunner == null) {
-			String msg = "Ghidra was not started with PyGhidra. Python is not available";
+			String msg = "Opcodex was not started with PyGhidra. Launch with the PyGhidra integration to use Python";
 			throw new GhidraScriptLoadException(msg);
 		}
 		GhidraScript script = SystemUtilities.isInHeadlessMode() ? new PyGhidraHeadlessScript()

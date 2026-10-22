@@ -50,7 +50,13 @@ public class ThemePreferences {
 			try {
 				Class<? extends GTheme> forName =
 					ClassSearcher.forNameSafe(className, GTheme.class, getClass().getClassLoader());
-				return forName.getDeclaredConstructor().newInstance();
+				GTheme saved = forName.getDeclaredConstructor().newInstance();
+                // OPCODEX: migrate retired built-ins to the one compatible classic theme.
+                if (saved.getClass().getPackageName().equals("generic.theme.builtin") &&
+                    !(saved instanceof generic.theme.builtin.OpcodexTheme) &&
+                    !(saved instanceof generic.theme.builtin.GhidraClassicTheme))
+                    return new generic.theme.builtin.GhidraClassicTheme();
+                return saved;
 			}
 			catch (Exception e) {
 				Msg.showError(GTheme.class, null, "Can't Load Previous Theme",

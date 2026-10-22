@@ -40,6 +40,7 @@ public class GenericHeader extends JPanel {
 	private static final Color NON_FOCUS_START_COLOR = new GColor("color.bg.header.inactive");
 	private static final Color FOCUS_START_COLOR = new GColor("color.bg.header.active");
 	private static final int MINIMUM_TITLE_SIZE = 80;
+    private static final Color OPCODEX_SURFACE = new GColor("system.color.bg.control");
 
 	private Color nonFocusColor = NON_FOCUS_START_COLOR;
 	private Color focusColor = FOCUS_START_COLOR;
@@ -91,7 +92,13 @@ public class GenericHeader extends JPanel {
 		});
 	}
 
-	public void dispose() {
+    @Override public void updateUI() {
+        super.updateUI();
+        if (titlePanel != null && titlePanel.titleLabel != null) titlePanel.setIcon(titlePanel.originalIcon);
+        if (toolBarMgr != null) update();
+    }
+
+    public void dispose() {
 		toolBarMgr.dispose();
 	}
 
@@ -348,6 +355,7 @@ public class GenericHeader extends JPanel {
 		private JLabel titleLabel;
 		private boolean isSelected = false;
 		private String originalTitle = "";
+        private Icon originalIcon;
 
 		/**
 		 * Constructs a new titlePanel.
@@ -376,7 +384,7 @@ public class GenericHeader extends JPanel {
 
 			super.paintComponent(g);
 			if (OpcodexUi.active()) {
-				g.setColor(new GColor("system.color.bg.control"));
+				g.setColor(OPCODEX_SURFACE);
 				g.fillRect(0, 0, getWidth(), getHeight());
 				if (isSelected) {
 					g.setColor(new GColor("color.border.button.focused"));
@@ -412,14 +420,6 @@ public class GenericHeader extends JPanel {
 		void setTitle(String s) {
 			originalTitle = s;
 			String display = s;
-			if (OpcodexUi.active() && s != null) {
-				display = s.startsWith("Listing:") ? "Disassembly" :
-					s.startsWith("Decompile:") ? "Pseudocode" :
-					s.equals("Symbol Tree") ? "Symbols" :
-					s.equals("Program Trees") ? "Sections" :
-					s.equals("Data Type Manager") ? "Types" :
-					s.equals("Decompile") ? "Pseudocode" : s;
-			}
 			titleLabel.setText(display);
 			titleLabel.setToolTipText(s);
 		}
@@ -429,6 +429,7 @@ public class GenericHeader extends JPanel {
 		}
 
 		void setIcon(Icon icon) {
+            originalIcon = icon;
 			if (OpcodexUi.active()) {
 				titleLabel.setIcon(null);
 				titleLabel.setBorder(BorderFactory.createEmptyBorder(7, 10, 7, 8));

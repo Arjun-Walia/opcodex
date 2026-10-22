@@ -215,7 +215,7 @@ public class OpcodexSmokeAgent {
                 .getMethod("getAllThemes").invoke(themeManager);
             Set<String> names = new HashSet<>();
             for (Object entry : themes) names.add((String) type("generic.theme.GTheme").getMethod("getName").invoke(entry));
-            if (!names.containsAll(Arrays.asList("Opcodex Light", "Opcodex Dark")))
+            if (!names.equals(Set.of("Opcodex Light", "Opcodex Dark", "Ghidra Classic")))
                 throw new AssertionError("Product themes are not discoverable");
             SwingUtilities.invokeLater(() -> button(mainWindow(), "Create Project").doClick());
             Window wizard = waitFor("New Project");
@@ -277,7 +277,17 @@ public class OpcodexSmokeAgent {
             if (overflow == null || edt(() -> menuItem(overflow, "Show complete toolbar")) == null)
                 throw new AssertionError("Complete toolbar access missing");
             capture(browserWindow, "dark/overflow.png");
-            JMenuItem symbols = edt(() -> menuItem(overflow, "Symbol Tree"));
+            if (!edt(() -> ((JCheckBoxMenuItem) menuItem(overflow, "Show complete toolbar")).isSelected()))
+                throw new AssertionError("All original toolbar actions must be visible by default");
+            edt(() -> { menuItem(overflow, "Show complete toolbar").doClick(0); return null; });
+            edt(() -> { named(browserWindow, "More workspace actions").doClick(0); return null; });
+            Thread.sleep(150);
+            JPopupMenu compactMenu = edt(() -> {
+                for (MenuElement element : MenuSelectionManager.defaultManager().getSelectedPath())
+                    if (element instanceof JPopupMenu popup) return popup;
+                return null;
+            });
+            JMenuItem symbols = edt(() -> menuItem(compactMenu, "Symbol Tree"));
             if (symbols == null || !symbols.isEnabled()) throw new AssertionError("Symbol command missing from overflow");
             edt(() -> { symbols.doClick(0); MenuSelectionManager.defaultManager().clearSelectedPath(); return null; });
             Thread.sleep(300);
@@ -391,7 +401,8 @@ public class OpcodexSmokeAgent {
                 edt(() -> { about.getClass().getMethod("close").invoke(about); return null; });
                 OpcodexPanelProbe.verify(browser, browserWindow, OUTPUT, theme, OpcodexSmokeAgent::capture);
             }
-            Files.writeString(OUTPUT.resolve("result.json"), "{\"startup\":true,\"isolatedProfile\":true,\"agreement\":" + accepted + ",\"codeBrowser\":true,\"welcome\":true,\"focusedToolbar\":true,\"workspaceResetAndUndo\":true,\"overflowCommand\":true,\"goTo\":true,\"themeDiscovery\":true,\"themes\":[\"Opcodex Light\",\"Opcodex Dark\"],\"about\":true,\"cleanTaskProgress\":true,\"startupVectorIcons\":true,\"multiplePanels\":true,\"resizableDividers\":true,\"menuAndToolbarParity\":true}\n");
+            OpcodexAuditProbe.verify(browser, browserWindow, main, OUTPUT, OpcodexSmokeAgent::capture);
+            Files.writeString(OUTPUT.resolve("result.json"), "{\"startup\":true,\"isolatedProfile\":true,\"agreement\":" + accepted + ",\"codeBrowser\":true,\"welcome\":true,\"focusedToolbar\":true,\"workspaceResetAndUndo\":true,\"overflowCommand\":true,\"goTo\":true,\"themeDiscovery\":true,\"themes\":[\"Opcodex Light\",\"Opcodex Dark\",\"Ghidra Classic\"],\"about\":true,\"cleanTaskProgress\":true,\"startupVectorIcons\":true,\"multiplePanels\":true,\"resizableDividers\":true,\"menuAndToolbarParity\":true}\n");
             Files.writeString(OUTPUT.resolve("display.txt"), "Java=" + System.getProperty("java.version") + "\nOS=" + System.getProperty("os.name") + "\nNativeLauncher=" + System.getProperty("jpackage.app-path") + "\nScale=" + GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform().getScaleX() + "\n");
             System.out.println("OPCODEX_SMOKE_PASS");
             System.exit(0);
