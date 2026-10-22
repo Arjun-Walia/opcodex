@@ -141,3 +141,13 @@ All paths below are modified upstream files and carry an `OPCODEX:` marker (text
 ## Verification and release evidence
 
 See [docs/releases/VERIFICATION.md](docs/releases/VERIFICATION.md) for exact commands/results and [release notes](docs/releases/1.0.0-alpha.1.md) for scope. Commit identities for this change series are in Git history and the release build manifests. No successful build, platform launch or published release is implied by this inventory.
+
+| `Ghidra/Framework/Docking/src/main/java/docking/framework/ApplicationInformationDisplayFactory.java` | OPCODEX: refresh native window branding and improve command hover labels and pointer affordances. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/menu/DockingToolBarUtils.java` | OPCODEX: refresh native window branding and improve command hover labels and pointer affordances. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/button/GButton.java` | OPCODEX: consistent pointer cursors for enabled welcome and dialog buttons. |
+
+| `Ghidra/Debug/Debugger/src/main/java/ghidra/app/plugin/core/debug/gui/breakpoint/DebuggerBreakpointsProvider.java` | OPCODEX: distinguish location-filter controls while preserving matching and inversion settings. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/help/DockingHelpBroker.java` | OPCODEX: resolve current theme branding for newly opened help windows. |

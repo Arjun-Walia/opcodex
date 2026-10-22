@@ -199,6 +199,8 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 
 	/** Called after FlatLaf installation and before component UIs update. */
 	public static void installComponentDefaults() {
+        ToolTipManager.sharedInstance().setInitialDelay(350);
+        ToolTipManager.sharedInstance().setDismissDelay(12000);
 		// FlatLaf 3.5.4 otherwise paints the unified title area using its parent's cached border color.
 		UIManager.put("TitlePane.unifiedBackground", false);
         // FlatLaf leaves these optional menu-bar colors absent in some builds, so the

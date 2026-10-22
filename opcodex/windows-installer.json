@@ -1,7 +1,7 @@
 {
   "product": "Opcodex",
   "productVersion": "1.0.0-alpha.2",
-  "installerVersion": "0.1.2",
+  "installerVersion": "0.1.3",
   "upgradeUuid": "b87c2709-2f91-4e1a-971f-9acdd49cfe46",
   "note": "Windows Installer requires a numeric version. Alpha installers precede the final 1.0.0 installer. Keep upgradeUuid stable across releases."
 }

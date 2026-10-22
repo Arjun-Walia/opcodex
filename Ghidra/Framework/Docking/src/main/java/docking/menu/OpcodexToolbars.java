@@ -17,7 +17,6 @@ import docking.action.ToggleDockingActionIf;
 import docking.action.MultiActionDockingActionIf;
 import docking.action.DockingActionIf;
 import docking.widgets.EmptyBorderButton;
-import docking.widgets.VariableHeightPanel;
 import generic.theme.GColor;
 import generic.theme.GIcon;
 import generic.theme.builtin.OpcodexUi;
@@ -29,16 +28,24 @@ final class OpcodexToolbars {
 		"Function Graph", "Script Manager", "New Project", "Open Project", "Import File");
 	private static final Set<String> LOCAL = Set.of("Refresh", "Refresh Tree", "Copy");
 
-	static VariableHeightPanel create(List<ToolBarItemManager> items,
+	static JComponent create(List<ToolBarItemManager> items,
 			DockingWindowManager manager, boolean local) {
-		VariableHeightPanel bar = new VariableHeightPanel(true, 2, 0);
-		bar.setBorder(BorderFactory.createEmptyBorder(local ? 0 : 7, local ? 0 : 10,
-			local ? 0 : 7, local ? 0 : 10));
+		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEADING, 2, 0) {
+            @Override public void layoutContainer(Container parent) {
+                int x = 0;
+                int height = preferredLayoutSize(parent).height;
+                for (Component child : parent.getComponents()) {
+                    Dimension size = child.getPreferredSize();
+                    child.setBounds(x, (height - size.height) / 2, size.width, size.height);
+                    x += size.width + 2;
+                }
+            }
+        });
 		populate(bar, items, manager, local, true);
-		return bar;
+		return new OpcodexToolbarStrip(bar, local);
 	}
 
-	private static void populate(VariableHeightPanel bar, List<ToolBarItemManager> items,
+	private static void populate(JPanel bar, List<ToolBarItemManager> items,
 			DockingWindowManager manager, boolean local, boolean expanded) {
 		bar.removeAll();
 		Set<String> visible = local ? LOCAL : PRIMARY;
@@ -53,11 +60,13 @@ final class OpcodexToolbars {
 			manager.getTool().getAllActions().stream()
 				.anyMatch(action -> action.getName().equals("Go To Address/Label"))) {
 			bar.add(Box.createHorizontalStrut(16));
-			JButton navigate = new JButton("Go to symbol or address…", new GIcon("icon.search"));
+			JButton navigate = new JButton(new GIcon("icon.search"));
 			navigate.setName("Opcodex Go To");
-			navigate.setToolTipText("Go to a function, symbol or address (G)");
+			navigate.setToolTipText("<html><b>Go to symbol or address</b><br>Open a function, symbol or address.<br>Shortcut: G</html>");
+			navigate.getAccessibleContext().setAccessibleName("Go to symbol or address");
+			navigate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			navigate.setHorizontalAlignment(SwingConstants.LEFT);
-			navigate.setPreferredSize(new Dimension(270, 32));
+			navigate.setPreferredSize(new Dimension(32, 32));
 			navigate.addActionListener(event -> manager.getTool().getAllActions().stream()
 				.filter(action -> action.getName().equals("Go To Address/Label"))
 				.findFirst().ifPresent(action -> DockingActionPerformer.perform(action,
@@ -67,9 +76,11 @@ final class OpcodexToolbars {
 		if (!hidden.isEmpty() || expanded) {
 			EmptyBorderButton more = new EmptyBorderButton(OpcodexUi.sized(new MoreIcon(), 20));
 			more.setName(local ? "More panel actions" : "More workspace actions");
+			more.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			more.setToolTipText(more.getName() + " · includes complete toolbar option");
 			more.getAccessibleContext().setAccessibleName(more.getName());
 			more.addActionListener(event -> {
+                more.scrollRectToVisible(new Rectangle(0, 0, more.getWidth(), more.getHeight()));
 				JPopupMenu menu = new JPopupMenu();
 				Map<String, JMenu> groups = new LinkedHashMap<>();
 				for (ToolBarItemManager item : hidden) {

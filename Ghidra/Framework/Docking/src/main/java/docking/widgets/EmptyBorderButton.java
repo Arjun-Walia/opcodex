@@ -216,6 +216,13 @@ public class EmptyBorderButton extends JButton {
 		super.setEnabled(b);
 	}
 
+    // OPCODEX: apply the same pointer behavior to panel/header buttons and split controls.
+    @Override public Cursor getCursor() {
+        if (OpcodexUi.active()) return Cursor.getPredefinedCursor(
+            isEnabled() ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR);
+        return super.getCursor();
+    }
+
 	protected void updateBorderBasedOnState() {
 		if (!isEnabled()) {
 			return;

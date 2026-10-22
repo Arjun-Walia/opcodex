@@ -26,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import docking.action.DockingActionIf;
 import ghidra.docking.util.LookAndFeelUtils;
 import ghidra.util.StringUtilities;
+import ghidra.util.HTMLUtilities;
+import generic.theme.builtin.OpcodexUi;
 
 public class DockingToolBarUtils {
 
@@ -40,6 +42,11 @@ public class DockingToolBarUtils {
 	public static void setToolTipText(JButton button, DockingActionIf action) {
 		String text = createToolTipText(button, action);
 		button.setToolTipText(text);
+        // OPCODEX: make enabled command buttons recognizable as clickable controls.
+        button.setCursor(java.awt.Cursor.getPredefinedCursor(OpcodexUi.active() && button.isEnabled()
+            ? java.awt.Cursor.HAND_CURSOR : java.awt.Cursor.DEFAULT_CURSOR));
+        button.getAccessibleContext().setAccessibleName(action.getName());
+        button.getAccessibleContext().setAccessibleDescription(action.getDescription());
 	}
 
 	/**
@@ -52,6 +59,25 @@ public class DockingToolBarUtils {
 	public static String createToolTipText(JButton button, DockingActionIf action) {
 		String toolTipText = getToolTipText(action);
 		String keyBindingText = getKeyBindingAcceleratorText(button, action.getKeyBinding());
+        // OPCODEX: descriptions supplement the command name rather than replacing it.
+        if (OpcodexUi.active()) {
+            String name = HTMLUtilities.escapeHTML(action.getName());
+            String description = action.getDescription();
+            String body = "";
+            if (!StringUtils.isBlank(description) && !description.equals(action.getName())) {
+                body = description.strip();
+                if (StringUtilities.startsWithIgnoreCase(body, "<html>")) {
+                    body = body.substring(6).replaceAll("(?i)</html>\\s*$", "");
+                    body = body.replaceAll("(?i)</?body[^>]*>", "");
+                }
+                else body = HTMLUtilities.escapeHTML(body).replace("\n", "<br>");
+                body = "<br>" + body;
+            }
+            String shortcut = keyBindingText == null ? "" :
+                "<br><br>Shortcut: " + HTMLUtilities.escapeHTML(keyBindingText);
+            if (!button.isEnabled()) body += "<br><br>Unavailable in the current context.";
+            return "<html><div style='width:280px'><b>" + name + "</b>" + body + shortcut + "</div></html>";
+        }
 		if (keyBindingText != null) {
 			return combingToolTipTextWithKeyBinding(toolTipText, keyBindingText);
 		}

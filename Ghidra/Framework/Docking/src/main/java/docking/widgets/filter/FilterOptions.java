@@ -261,6 +261,11 @@ public class FilterOptions {
 			case STARTS_WITH -> TREE_STARTS_ICON;
 			case REGULAR_EXPRESSION -> TREE_REGEX_ICON;
 		} : getIcon(textFilterStrategy);
+        return getFilterStateIcon(icon);
+    }
+
+    /** OPCODEX: retain the inversion indicator when a table supplies a contextual match icon. */
+    public Icon getFilterStateIcon(Icon icon) {
 		if (inverted) {
 			int width = icon.getIconWidth();
 			int height = icon.getIconHeight();

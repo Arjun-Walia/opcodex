@@ -25,8 +25,8 @@ Portable ZIPs use product-only names such as `opcodex_1.0.0-alpha.2_win_x86_64.z
 
 - **Opcodex Dark and Light:** black and neutral-light surfaces, readable syntax, quieter selection and visible focus.
 - **Focused layout:** tabbed functions, symbols and types, balanced disassembly/pseudocode panes, visible resize grips and a console that opens in its own lower pane.
-- **Complete controls:** all original toolbar actions are visible by default. More offers an optional compact arrangement; every original menu remains available.
-- **Consistent icons:** a live vector family covers all 882 declared icon IDs, including startup tools, graphs, debugger controls and data types.
+- **Complete controls:** toolbars stay on one row, with scroll controls when space is tight. All original actions and menus remain available. Hover labels show the command name, description and shortcut.
+- **Consistent icons:** a live vector family covers all 886 declared icon IDs, including startup tools, graphs, debugger controls and data types.
 - **Native file selection:** the Windows system picker handles ordinary files and folders.
 - **Start with a project:** Create/Open actions on the welcome screen, with existing keyboard shortcuts.
 - **Local workflows:** projects, analysis, decompilation, scripting and the existing extension ecosystem.

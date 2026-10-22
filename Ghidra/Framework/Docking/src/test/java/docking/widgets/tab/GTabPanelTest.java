@@ -66,6 +66,9 @@ public class GTabPanelTest extends AbstractDockingTest {
 			parentFrame.setVisible(true);
 			parentFrame.setLocation(1000, 200);
 		});
+        // OPCODEX: settle native resize/validation before testing which tabs fit in the viewport.
+        waitForSwing();
+        runSwing(() -> parentFrame.validate());
 	}
 
 	@After

@@ -205,12 +205,17 @@ public class OpcodexSmokeAgent {
                 throw new AssertionError("Missing welcome project actions");
             }
             verifySurfaceTokens();
-            capture(main, "dark/welcome.png");
             Class<?> themeManagerClass = type("generic.theme.ThemeManager");
             Object themeManager = themeManagerClass.getMethod("getInstance").invoke(null);
             Object active = themeManagerClass.getMethod("getActiveTheme").invoke(themeManager);
-            if (!"Opcodex Dark".equals(type("generic.theme.GTheme").getMethod("getName").invoke(active)))
+            if (!"Opcodex Light".equals(type("generic.theme.GTheme").getMethod("getName").invoke(active)))
                 throw new AssertionError("Unexpected first-run theme");
+            capture(main, "light/first-run.png");
+            Object initialDark = type("generic.theme.builtin.OpcodexDarkTheme").getConstructor().newInstance();
+            edt(() -> { themeManagerClass.getMethod("setTheme", type("generic.theme.GTheme"))
+                .invoke(themeManager, initialDark); return null; });
+            Thread.sleep(600);
+            capture(main, "dark/welcome.png");
             Collection<?> themes = (Collection<?>) type("generic.theme.ApplicationThemeManager")
                 .getMethod("getAllThemes").invoke(themeManager);
             Set<String> names = new HashSet<>();
@@ -223,10 +228,14 @@ public class OpcodexSmokeAgent {
             edt(() -> { button(wizard, "Cancel").doClick(); return null; });
             type("ghidra.framework.GenericRunInfo").getMethod("setProjectsDirPath", String.class)
                 .invoke(null, OUTPUT.toString());
-            SwingUtilities.invokeLater(() -> button(mainWindow(), "Open Project").doClick());
-            OpcodexNativePickerProbe.finish("Open an Opcodex Project", OUTPUT.resolve("dark/open-project.png"), false);
-            Thread.sleep(300);
-            OpcodexNativePickerProbe.verify(mainWindow(), OUTPUT);
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                SwingUtilities.invokeLater(() -> button(mainWindow(), "Open Project").doClick());
+                Class<?> picker = type("OpcodexNativePickerProbe");
+                picker.getMethod("finish",String.class,Path.class,boolean.class).invoke(null,
+                    "Open an Opcodex Project", OUTPUT.resolve("dark/open-project.png"), false);
+                Thread.sleep(300);
+                picker.getMethod("verify",Window.class,Path.class).invoke(null, mainWindow(), OUTPUT);
+            }
             Object front = type("ghidra.framework.main.AppInfo").getMethod("getFrontEndTool").invoke(null);
             Object pm = front.getClass().getMethod("getProjectManager").invoke(front);
             boolean preview = System.getProperty("opcodex.smoke.project") != null;
@@ -401,6 +410,15 @@ public class OpcodexSmokeAgent {
                 edt(() -> { about.getClass().getMethod("close").invoke(about); return null; });
                 OpcodexPanelProbe.verify(browser, browserWindow, OUTPUT, theme, OpcodexSmokeAgent::capture);
             }
+            Object debugger = edt(() -> type("ghidra.framework.model.ToolServices")
+                .getMethod("launchTool",String.class,Collection.class).invoke(services,"Debugger",java.util.List.of()));
+            if(debugger==null) throw new AssertionError("Original Debugger tool did not launch");
+            Window debuggerWindow=(Window)debugger.getClass().getMethod("getToolFrame").invoke(debugger);
+            Thread.sleep(800);
+            OpcodexAuditProbe.verifyToolbarWidths(debuggerWindow);
+            OpcodexPanelProbe.writeIconInventory(debuggerWindow,OUTPUT.resolve("dark-icons-Debugger.tsv"));
+            capture(debuggerWindow,"dark/debugger-toolbar.png");
+            edt(() -> { debuggerWindow.setVisible(false); return null; });
             OpcodexAuditProbe.verify(browser, browserWindow, main, OUTPUT, OpcodexSmokeAgent::capture);
             Files.writeString(OUTPUT.resolve("result.json"), "{\"startup\":true,\"isolatedProfile\":true,\"agreement\":" + accepted + ",\"codeBrowser\":true,\"welcome\":true,\"focusedToolbar\":true,\"workspaceResetAndUndo\":true,\"overflowCommand\":true,\"goTo\":true,\"themeDiscovery\":true,\"themes\":[\"Opcodex Light\",\"Opcodex Dark\",\"Ghidra Classic\"],\"about\":true,\"cleanTaskProgress\":true,\"startupVectorIcons\":true,\"multiplePanels\":true,\"resizableDividers\":true,\"menuAndToolbarParity\":true}\n");
             Files.writeString(OUTPUT.resolve("display.txt"), "Java=" + System.getProperty("java.version") + "\nOS=" + System.getProperty("os.name") + "\nNativeLauncher=" + System.getProperty("jpackage.app-path") + "\nScale=" + GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform().getScaleX() + "\n");

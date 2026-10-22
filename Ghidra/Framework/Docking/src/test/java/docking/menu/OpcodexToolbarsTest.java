@@ -7,6 +7,8 @@ package docking.menu;
 
 import static org.junit.Assert.*;
 import java.util.List;
+import java.util.ArrayList;
+import java.awt.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 import org.junit.Test;
@@ -17,6 +19,13 @@ import docking.test.AbstractDockingTest;
 import resources.ResourceManager;
 
 public class OpcodexToolbarsTest extends AbstractDockingTest {
+    @Test public void providerHeadersAcceptTheStableToolbarHost() {
+        runSwing(() -> {
+            docking.GenericHeader header = new docking.GenericHeader();
+            try { header.setSize(320, 40); header.update(); header.doLayout(); }
+            finally { header.dispose(); }
+        });
+    }
 	@Test public void ordinaryWindowProxiesRemainVisibleByDefault() {
 		runSwing(() -> {
 			DockingAction action = new DockingAction("Secondary command", "Test") {
@@ -26,8 +35,8 @@ public class OpcodexToolbarsTest extends AbstractDockingTest {
 			ToolBarItemManager item = new ToolBarItemManager(new DockingActionProxy(action), null);
 			try {
 				JComponent toolbar = OpcodexToolbars.create(List.of(item), null, false);
-				assertSame(toolbar, item.getButton().getParent());
-                assertEquals("More workspace actions", toolbar.getComponent(1).getName());
+				assertTrue(SwingUtilities.isDescendingFrom(item.getButton(), toolbar));
+                assertNotNull(find(toolbar, "More workspace actions"));
 			}
 			finally { item.dispose(); }
 		});
@@ -46,7 +55,7 @@ public class OpcodexToolbarsTest extends AbstractDockingTest {
 				ToolBarItemManager item = new ToolBarItemManager(new DockingActionProxy(split), null);
 				try {
 					JComponent toolbar = OpcodexToolbars.create(List.of(item), null, local);
-					assertSame(toolbar, item.getButton().getParent());
+					assertTrue(SwingUtilities.isDescendingFrom(item.getButton(), toolbar));
 					var button = (MultipleActionDockingToolbarButton) item.getButton();
 					JPopupMenu options = button.doCreateMenu();
 					assertEquals(1, options.getComponentCount());
@@ -57,4 +66,51 @@ public class OpcodexToolbarsTest extends AbstractDockingTest {
 			assertEquals(2, performed.get());
 		});
 	}
+
+    private static Component find(Container parent, String name) {
+        for (Component child : parent.getComponents()) {
+            if (name.equals(child.getName())) return child;
+            if (child instanceof Container nested) {
+                Component found = find(nested, name);
+                if (found != null) return found;
+            }
+        }
+        return null;
+    }
+
+    @Test public void narrowToolbarsKeepOneRowAndScrollToEveryOriginalButton() {
+        runSwing(() -> {
+            List<ToolBarItemManager> items = new ArrayList<>();
+            JFrame frame = new JFrame();
+            try {
+                for (int i = 0; i < 45; i++) {
+                    DockingAction action = new DockingAction("Command " + i, "Test") {
+                        @Override public void actionPerformed(ActionContext context) {}
+                    };
+                    action.setToolBarData(new ToolBarData(ResourceManager.getDefaultIcon()));
+                    items.add(new ToolBarItemManager(action, null));
+                }
+                JComponent strip = OpcodexToolbars.create(items, null, false);
+                frame.add(strip); frame.setSize(360, 110); frame.setVisible(true); frame.validate();
+                int center = items.get(0).getButton().getY() + items.get(0).getButton().getHeight() / 2;
+                for (var item : items) {
+                    JButton button = item.getButton();
+                    assertEquals(center, button.getY() + button.getHeight() / 2);
+                    assertTrue(SwingUtilities.isDescendingFrom(button, strip));
+                }
+                JButton next = (JButton) find(strip, "Scroll toolbar right");
+                JButton previous = (JButton) find(strip, "Scroll toolbar left");
+                assertTrue(next.isVisible());
+                for (int i = 0; i < 50 && next.isEnabled(); i++) next.doClick(0);
+                assertFalse(next.isEnabled());
+                assertTrue(previous.isEnabled());
+                JButton last = items.get(items.size() - 1).getButton();
+                assertTrue(last.getVisibleRect().width > 0);
+                for (int i = 0; i < 50 && previous.isEnabled(); i++) previous.doClick(0);
+                assertTrue(items.get(0).getButton().getVisibleRect().width > 0);
+            } finally {
+                frame.dispose(); items.forEach(ToolBarItemManager::dispose);
+            }
+        });
+    }
 }

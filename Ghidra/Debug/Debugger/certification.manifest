@@ -190,3 +190,5 @@ src/main/svg/write-disabled.svg||GHIDRA||||END|
 src/main/svg/write-emulator.svg||GHIDRA||||END|
 src/main/svg/write-target.svg||GHIDRA||||END|
 src/main/svg/write-trace.svg||Tango Icons - Public Domain||||END|
+
+data/opcodex.theme.properties||Apache License 2.0||||END|

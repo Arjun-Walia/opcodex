@@ -20,6 +20,22 @@ tasks.register('buildOpcodex', Exec) {
     }
 }
 
+tasks.register('buildOpcodexLinuxInstaller', Exec) {
+    group = 'distribution'
+    description = 'Build a Linux Debian installer with a bundled desktop/compiler/debugger runtime.'
+    dependsOn tasks.named('buildOpcodex')
+    doFirst {
+        if (!System.getProperty('os.name').equals('Linux')) {
+            throw new GradleException('Build the Linux installer on native Linux.')
+        }
+        def product = new Properties()
+        file('Ghidra/application.properties').withInputStream { product.load(it) }
+        commandLine opcodexPython, 'opcodex/build_linux.py', '--package',
+            file("build/releases/opcodex_${product.getProperty('opcodex.version')}_${getCurrentPlatformName()}.zip"),
+            '--java-home', System.getProperty('java.home')
+    }
+}
+
 // Native Windows app image and current-user shortcuts; portable ZIP builds remain unchanged.
 ['buildOpcodexDesktop': false, 'installOpcodexDesktop': true,
  'buildOpcodexInstaller': false].each { taskName, install ->

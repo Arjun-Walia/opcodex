@@ -58,6 +58,7 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
 		if (toolBarButton == null) {
 			toolBarButton = createButton(toolBarAction);
 			toolBarButton.setEnabled(toolBarAction.isEnabled());
+            DockingToolBarUtils.setToolTipText(toolBarButton, toolBarAction);
 		}
 		return toolBarButton;
 	}
@@ -89,6 +90,7 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
         if (toolBarButton == null) return;
         ToolBarData data = toolBarAction.getToolBarData();
         if (data != null) toolBarButton.setIcon(OpcodexUi.active() ? OpcodexUi.sized(data.getIcon(), 20) : data.getIcon());
+        DockingToolBarUtils.setToolTipText(toolBarButton, toolBarAction);
     }
 
     void dispose() {
@@ -107,6 +109,7 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
 		String name = e.getPropertyName();
 		if (name.equals(DockingActionIf.ENABLEMENT_PROPERTY)) {
 			toolBarButton.setEnabled(((Boolean) e.getNewValue()).booleanValue());
+            DockingToolBarUtils.setToolTipText(toolBarButton, toolBarAction);
 		}
 		else if (name.equals(DockingActionIf.DESCRIPTION_PROPERTY)) {
 			DockingToolBarUtils.setToolTipText(toolBarButton, toolBarAction);

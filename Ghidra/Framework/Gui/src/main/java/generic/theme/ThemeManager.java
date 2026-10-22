@@ -633,7 +633,7 @@ public abstract class ThemeManager {
 	 */
 	public static GTheme getDefaultTheme() {
 		// OPCODEX: a consistent first-run workbench; saved theme choices still take precedence.
-		return new OpcodexDarkTheme();
+		return new OpcodexLightTheme();
 	}
 
 	/**

@@ -355,6 +355,10 @@ final class OpcodexIcons {
 		theme.setIcon("icon.opcodex.glyph.next-bookmark", load("next-bookmark", dark));
 		theme.setIcon("icon.opcodex.glyph.graph-cycle", load("graph-cycle", dark));
 		theme.setIcon("icon.opcodex.glyph.function-compare", load("function-compare", dark));
+		theme.setIcon("icon.opcodex.glyph.filter-location-contains", load("filter-location-contains", dark));
+		theme.setIcon("icon.opcodex.glyph.filter-location-exact", load("filter-location-exact", dark));
+		theme.setIcon("icon.opcodex.glyph.filter-location-starts", load("filter-location-starts", dark));
+		theme.setIcon("icon.opcodex.glyph.filter-location-regex", load("filter-location-regex", dark));
 		for (String[] entry : ENTRIES) {
 			Icon icon = icons.computeIfAbsent(entry[1], glyph -> load(glyph, dark));
 			theme.setIcon(entry[0], icon);
@@ -448,7 +452,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.debugger.blank", "EMPTY_ICON"));
 			theme.addIcon(IconValue.parse("icon.debugger.block", "icon.debugger.map.sections"));
 			theme.addIcon(IconValue.parse("icon.debugger.breakpoint.clear", "icon.opcodex.glyph.breakpoint{icon.opcodex.glyph.close[size(8,8)][move(8,8)]}"));
-			theme.addIcon(IconValue.parse("icon.debugger.breakpoint.clear.all", "icon.opcodex.glyph.breakpoint-disabled{icon.opcodex.glyph.layers[size(8,8)][move(8,8)]}"));
+			theme.addIcon(IconValue.parse("icon.debugger.breakpoint.clear.all", "icon.opcodex.glyph.trash"));
 			theme.addIcon(IconValue.parse("icon.debugger.breakpoint.disable", "icon.opcodex.glyph.breakpoint-disabled"));
 			theme.addIcon(IconValue.parse("icon.debugger.breakpoint.disable.all", "icon.opcodex.glyph.breakpoint-disabled{icon.opcodex.glyph.layers[size(8,8)][move(8,8)]}"));
 			theme.addIcon(IconValue.parse("icon.debugger.breakpoint.enable", "icon.opcodex.glyph.breakpoint"));
@@ -499,7 +503,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.debugger.display.xml.filtered", "icon.debugger.display.xml"));
 			theme.addIcon(IconValue.parse("icon.debugger.emulate", "icon.debugger.process"));
 			theme.addIcon(IconValue.parse("icon.debugger.enable.edits", "icon.opcodex.glyph.edit"));
-			theme.addIcon(IconValue.parse("icon.debugger.filter", "icon.opcodex.glyph.filter-off"));
+			theme.addIcon(IconValue.parse("icon.debugger.filter", "icon.opcodex.glyph.selection"));
 			theme.addIcon(IconValue.parse("icon.debugger.import", "icon.opcodex.glyph.import"));
 			theme.addIcon(IconValue.parse("icon.debugger.interrupt", "icon.opcodex.glyph.pause"));
 			theme.addIcon(IconValue.parse("icon.debugger.kill", "icon.opcodex.glyph.stop"));
@@ -515,7 +519,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.debugger.map.sections", "icon.debugger.map.modules"));
 			theme.addIcon(IconValue.parse("icon.debugger.marker.event", "icon.debugger.marker.register"));
 			theme.addIcon(IconValue.parse("icon.debugger.marker.register", "icon.opcodex.glyph.flag"));
-			theme.addIcon(IconValue.parse("icon.debugger.model.table.attributes", "icon.opcodex.glyph.table"));
+			theme.addIcon(IconValue.parse("icon.debugger.model.table.attributes", "icon.opcodex.glyph.list"));
 			theme.addIcon(IconValue.parse("icon.debugger.model.table.elements", "icon.opcodex.glyph.table"));
 			theme.addIcon(IconValue.parse("icon.debugger.model.tree.objects", "icon.opcodex.glyph.graph"));
 			theme.addIcon(IconValue.parse("icon.debugger.modules.table.sections", "icon.opcodex.glyph.table"));
@@ -1242,6 +1246,10 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.filter.tree.exact", "icon.opcodex.glyph.filter-tree-exact"));
 			theme.addIcon(IconValue.parse("icon.filter.tree.starts", "icon.opcodex.glyph.filter-tree-starts"));
 			theme.addIcon(IconValue.parse("icon.filter.tree.regex", "icon.opcodex.glyph.filter-tree-regex"));
+			theme.addIcon(IconValue.parse("icon.debugger.filter.locations.contains", "icon.opcodex.glyph.filter-location-contains"));
+			theme.addIcon(IconValue.parse("icon.debugger.filter.locations.exact", "icon.opcodex.glyph.filter-location-exact"));
+			theme.addIcon(IconValue.parse("icon.debugger.filter.locations.starts", "icon.opcodex.glyph.filter-location-starts"));
+			theme.addIcon(IconValue.parse("icon.debugger.filter.locations.regex", "icon.opcodex.glyph.filter-location-regex"));
 		} catch (java.text.ParseException error) {
 			throw new IllegalStateException("Invalid generated Opcodex icon binding", error);
 		}

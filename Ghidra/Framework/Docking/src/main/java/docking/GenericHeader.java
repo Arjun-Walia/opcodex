@@ -49,7 +49,8 @@ public class GenericHeader extends JPanel {
 
 	protected Component component;
 	protected DockableToolBarManager toolBarMgr;
-	private VariableHeightPanel toolbar;
+	private JComponent toolbar;
+    private boolean modernLine;
 	private JComponent menuCloseToolbar;
 	private int numLines = 0;
 
@@ -147,7 +148,7 @@ public class GenericHeader extends JPanel {
 			return; // initializing
 		}
 
-		toolbar = (VariableHeightPanel) toolBarMgr.getToolBar();
+		toolbar = toolBarMgr.getToolBar();
 		menuCloseToolbar = toolBarMgr.getMenuCloseToolBar();
 		numLines = 0;
 	}
@@ -175,11 +176,12 @@ public class GenericHeader extends JPanel {
 		}
 
 		Dimension mySize = getSize();
-		Dimension toolBarSize = toolbar.getPreferredLayoutSize();
+		Dimension toolBarSize = toolbarContent() instanceof VariableHeightPanel variable ?
+            variable.getPreferredLayoutSize() : toolbar.getPreferredSize();
 		Dimension d = menuCloseToolbar.getPreferredSize();
-		if (mySize.width == 0 || toolBarSize.width + d.width + MINIMUM_TITLE_SIZE < mySize.width ||
+		if (OpcodexUi.active() || mySize.width == 0 || toolBarSize.width + d.width + MINIMUM_TITLE_SIZE < mySize.width ||
 			useSingleLineLayoutOverride) {
-			if (numLines != 1) {
+			if (numLines != 1 || modernLine != OpcodexUi.active()) {
 				constructOneLinePanel();
 			}
 		}
@@ -191,6 +193,25 @@ public class GenericHeader extends JPanel {
 
 	private void constructOneLinePanel() {
 		removeAll();
+        // OPCODEX: keep panel titles, original actions and window controls on one line.
+        modernLine = OpcodexUi.active();
+        if (modernLine && toolbar != null) {
+            JPanel clippedTitle = new JPanel(new BorderLayout()) {
+                @Override public Dimension getPreferredSize() {
+                    Dimension size = titlePanel.getPreferredSize();
+                    return new Dimension(Math.min(size.width, Math.min(200, Math.max(70, GenericHeader.this.getWidth()/3))), size.height);
+                }
+            };
+            clippedTitle.setOpaque(false);
+            clippedTitle.add(titlePanel, BorderLayout.CENTER);
+            toolbar.setBorder(BorderFactory.createEmptyBorder());
+            add(clippedTitle, BorderLayout.WEST);
+            add(toolbar, BorderLayout.CENTER);
+            add(menuCloseToolbar, BorderLayout.EAST);
+            numLines = 1;
+            validateInvalidate();
+            return;
+        }
 		if (toolbar == null) {
 			add(menuCloseToolbar, BorderLayout.EAST);
 		}
@@ -200,7 +221,7 @@ public class GenericHeader extends JPanel {
 			panel.add(toolbar);
 			panel.add(menuCloseToolbar);
 			add(panel, BorderLayout.EAST);
-			toolbar.setUseSingleLineLayout(true);
+			setToolbarSingleLine(true);
 			toolbar.invalidate();
 		}
 		add(titlePanel, BorderLayout.CENTER);
@@ -228,15 +249,24 @@ public class GenericHeader extends JPanel {
 		add(menuCloseToolbar, BorderLayout.EAST);
 
 		numLines = 2;
+        modernLine = false;
 		if (useSingleLineLayoutOverride) {
-			toolbar.setUseSingleLineLayout(true);
+			setToolbarSingleLine(true);
 		}
 		else {
-			toolbar.setUseSingleLineLayout(false);
+			setToolbarSingleLine(false);
 		}
 
 		validateInvalidate();
 	}
+
+    private Component toolbarContent() {
+        return toolbar.getComponentCount() == 0 ? toolbar : toolbar.getComponent(0);
+    }
+
+    private void setToolbarSingleLine(boolean single) {
+        if (toolbarContent() instanceof VariableHeightPanel variable) variable.setUseSingleLineLayout(single);
+    }
 
 	/**
 	 * updates the toolbar to include the new action.

@@ -156,7 +156,11 @@
     "filter-tree-regex": "<path d=\"M3 3v13h5M3 8h5M16 5v10M12 8l8 4M20 8l-8 4\"/><circle cx=\"20\" cy=\"19\" r=\"1\"/>",
     "next-bookmark": "<path d=\"M13 4H4v17l5-4 4 4zM19 4v16m-3-3 3 3 3-3\"/>",
     "graph-cycle": "<circle cx=\"5\" cy=\"6\" r=\"2\"/><circle cx=\"18\" cy=\"6\" r=\"2\"/><circle cx=\"12\" cy=\"19\" r=\"2\"/><path d=\"M8 6h6m-2-2 2 2-2 2M17 9l-3 6m3-1-3 1-1-3M9 18l-4-8m-1 3 1-3 3 1\"/>",
-    "function-compare": "<path d=\"M8 3H3v18h5M16 3h5v18h-5M8 9h8M8 15h8\"/>"
+    "function-compare": "<path d=\"M8 3H3v18h5M16 3h5v18h-5M8 9h8M8 15h8\"/>",
+    "filter-location-contains": "<path d=\"M19 9c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 14 0z\"/><circle cx=\"12\" cy=\"9\" r=\"2\"/>",
+    "filter-location-exact": "<path d=\"M19 9c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 14 0z\"/><path d=\"M9 7h6M9 11h6\"/>",
+    "filter-location-starts": "<path d=\"M19 9c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 14 0z\"/><path d=\"M9 9h6m-3-3 3 3-3 3\"/>",
+    "filter-location-regex": "<path d=\"M19 9c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 14 0z\"/><path d=\"M12 5v8M9 7l6 4M9 11l6-4\"/>"
   },
   "mappings": {
     "icon.flag": "flag",
@@ -708,8 +712,8 @@
       "dark": "icon.opcodex.glyph.breakpoint{icon.opcodex.glyph.close[size(8,8)][move(8,8)]}"
     },
     "icon.debugger.breakpoint.clear.all": {
-      "light": "icon.opcodex.glyph.breakpoint-disabled{icon.opcodex.glyph.layers[size(8,8)][move(8,8)]}",
-      "dark": "icon.opcodex.glyph.breakpoint-disabled{icon.opcodex.glyph.layers[size(8,8)][move(8,8)]}"
+      "light": "icon.opcodex.glyph.trash",
+      "dark": "icon.opcodex.glyph.trash"
     },
     "icon.debugger.breakpoint.disable": {
       "light": "icon.opcodex.glyph.breakpoint-disabled",
@@ -912,8 +916,8 @@
       "dark": "icon.opcodex.glyph.edit"
     },
     "icon.debugger.filter": {
-      "light": "icon.opcodex.glyph.filter-off",
-      "dark": "icon.opcodex.glyph.filter-off"
+      "light": "icon.opcodex.glyph.selection",
+      "dark": "icon.opcodex.glyph.selection"
     },
     "icon.debugger.import": {
       "light": "icon.opcodex.glyph.import",
@@ -976,8 +980,8 @@
       "dark": "icon.opcodex.glyph.flag"
     },
     "icon.debugger.model.table.attributes": {
-      "light": "icon.opcodex.glyph.table",
-      "dark": "icon.opcodex.glyph.table"
+      "light": "icon.opcodex.glyph.list",
+      "dark": "icon.opcodex.glyph.list"
     },
     "icon.debugger.model.table.elements": {
       "light": "icon.opcodex.glyph.table",
@@ -3882,6 +3886,22 @@
     "icon.filter.tree.regex": {
       "light": "icon.opcodex.glyph.filter-tree-regex",
       "dark": "icon.opcodex.glyph.filter-tree-regex"
+    },
+    "icon.debugger.filter.locations.contains": {
+      "light": "icon.opcodex.glyph.filter-location-contains",
+      "dark": "icon.opcodex.glyph.filter-location-contains"
+    },
+    "icon.debugger.filter.locations.exact": {
+      "light": "icon.opcodex.glyph.filter-location-exact",
+      "dark": "icon.opcodex.glyph.filter-location-exact"
+    },
+    "icon.debugger.filter.locations.starts": {
+      "light": "icon.opcodex.glyph.filter-location-starts",
+      "dark": "icon.opcodex.glyph.filter-location-starts"
+    },
+    "icon.debugger.filter.locations.regex": {
+      "light": "icon.opcodex.glyph.filter-location-regex",
+      "dark": "icon.opcodex.glyph.filter-location-regex"
     }
   },
   "compatibilityResources": {

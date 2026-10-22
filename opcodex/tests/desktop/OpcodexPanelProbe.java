@@ -163,17 +163,24 @@ public class OpcodexPanelProbe {
             String path=(String)type("resources.icons.UrlImageIcon").getMethod("getOriginalPath").invoke(icon);
             return path.replaceAll("^.*images/opcodex/ui/(?:light|dark)/", "").replaceAll("-[0-9]+[.]png$", "");
         }
+        if (kind.equals("docking.menu.OpcodexToolbarStrip$ScrollIcon")) {
+            // Parameterized geometry, like RotateIcon above, has two distinct directions.
+            Field direction = icon.getClass().getDeclaredField("forward"); direction.setAccessible(true);
+            return "toolbar-scroll-" + ((Boolean)direction.get(icon) ? "right" : "left");
+        }
         return kind;
     }
     private static String panel(Component component) throws Exception {
+        Window owner=SwingUtilities.getWindowAncestor(component);
+        String prefix=owner instanceof Frame frame && frame.getTitle().startsWith("Debugger") ? "Debugger / " : "";
         for (Container parent=component.getParent();parent!=null;parent=parent.getParent()) {
             if (type("docking.DockableComponent").isInstance(parent)) {
                 Method method=type("docking.DockableComponent").getDeclaredMethod("getComponentWindowingPlaceholder");
                 method.setAccessible(true);Object placeholder=method.invoke(parent);
-                return (String)type("docking.ComponentPlaceholder").getMethod("getName").invoke(placeholder);
+                return prefix+(String)type("docking.ComponentPlaceholder").getMethod("getName").invoke(placeholder);
             }
         }
-        return "Main toolbar";
+        return prefix+"Main toolbar";
     }
     private static void inventory(Component component, StringBuilder rows) throws Exception {
         Icon icon=null;String name=null;
@@ -190,6 +197,9 @@ public class OpcodexPanelProbe {
     }
     private static String iconInventory(Window window) throws Exception {
         StringBuilder rows=new StringBuilder("panel\tbutton\tids\tglyph\n");inventory(window,rows);return rows.toString();
+    }
+    public static void writeIconInventory(Window window,Path destination)throws Exception {
+        Files.writeString(destination,edt(()->iconInventory(window)));
     }
     private static void populateGraph(Object tool,Object provider,Class<?> providerType)throws Exception {
         Class<?> pmType=type("ghidra.app.services.ProgramManager"),programType=type("ghidra.program.model.listing.Program");

@@ -22,7 +22,7 @@ The external Linux audit tested alpha.2 source `56e307ed43`. The following corre
 
 ## Themes and responsiveness
 
-Bundled choices are Opcodex Dark, Opcodex Light and Ghidra Classic. Retired built-in preferences migrate to Classic. User-imported themes and the theme editor remain supported. Classic uses the original stable palette/resource mappings and original CodeBrowser docking layout; other tools already retain their stable layouts. Modern and Classic arrangements are retained separately in saved tool state. Dark/Light switching preserves positions without changing layout.
+Bundled choices are Opcodex Dark, Opcodex Light and Ghidra Classic. Opcodex Light is the default. Retired built-in preferences migrate to Light; explicit Classic selections remain Classic. User-imported themes and the theme editor remain supported. Classic uses the original stable palette/resource mappings and original CodeBrowser docking layout; other tools already retain their stable layouts. Modern and Classic arrangements are retained separately in saved tool state. Dark/Light switching preserves positions without changing layout.
 
 Icon measurement uses fixed logical dimensions; vector painting avoids bitmap decoding. Transparent themed icons preserve their live source instead of flattening to a small bitmap. Raw-resource vector painters and solid strokes are reused. The native smoke records actual event-dispatch response samples after settling, without promising a frame rate on untested hardware.
 
@@ -41,3 +41,11 @@ A real-panel inventory identified repeated geometry for different actions. The f
 The previous Windows CI failure came from requesting build-only runtime modules from an already linked Temurin JDK. The app-image runtime now retains every available module except `jdk.jlink` and `jdk.jpackage`.
 
 The broad Linux suite remains a separate release gate: the prior run includes missing external program fixtures (BSim and CodeCompare), a missing compiled HelloWorld fixture, a debugger breakpoint-state failure and a timeout. No tests are excluded and no failures are ignored by the release verifier. Final build, installation, merge and publication are pending.
+
+## Single-row and Linux follow-up
+
+Modern workspace and provider toolbars use one horizontal command strip with visible scroll controls when necessary. Actual original action/split buttons remain mounted; wheel scrolling and focus tracking expose off-screen commands. The Go To control is compact. Panel headers retain their title and window controls on the same line. Enabled commands use pointer cursors. Tooltips supplement the action name with its description and assigned shortcut, wrap long descriptions and stay visible longer.
+
+Light is the first-run/retired-theme default. The native branding listener follows the real theme manager after bootstrap and resubmits images to existing window handles; new help windows also resolve current branding. Explicit Classic settings and its original assets/layout remain supported.
+
+The expanded Debugger inventory separates clear-all/disable-all, attributes/elements and selected-breakpoint filtering. Location-filter matching modes have distinct artwork and retain inversion badges. Linux packaging adds a verified native Debian installer with its runtime, compiler/debugger modules, original notices and application-menu integration. Its installed desktop harness uses an isolated profile and a compiled ELF analysis fixture; Windows-only native-picker checks remain Windows-only. Full Linux release-suite failures remain blocking.

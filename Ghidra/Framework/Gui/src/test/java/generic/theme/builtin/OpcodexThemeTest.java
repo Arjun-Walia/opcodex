@@ -17,6 +17,9 @@ import generic.theme.laf.*;
 
 /** Contracts for the real theme objects rather than a duplicate palette fixture. */
 public class OpcodexThemeTest {
+    @Test public void freshInstallDefaultsToOpcodexLight() {
+        assertTrue(ThemeManager.getDefaultTheme() instanceof OpcodexLightTheme);
+    }
 	@Test
 	public void transparentIconsRetainTheirLiveSourceAndOpacity() {
 		javax.swing.Icon source = new OpcodexImageIcon("error", true);

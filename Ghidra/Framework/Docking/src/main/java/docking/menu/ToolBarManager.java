@@ -47,12 +47,8 @@ public class ToolBarManager {
             JComponent old = toolBar;
             if (old == null) return;
             for (var group : groupToItemsMap.values()) for (var item : group) item.refreshTheme();
-            JComponent fresh = buildToolbar();
             old.removeAll();
-            if (old instanceof VariableHeightPanel target && fresh instanceof VariableHeightPanel source) {
-                for (var child : source.getComponents()) target.add(child);
-                target.setBorder(source.getBorder());
-            }
+            old.add(buildToolbarContents(), java.awt.BorderLayout.CENTER);
             old.revalidate(); old.repaint();
         });
     };
@@ -140,6 +136,13 @@ public class ToolBarManager {
 	}
 
 	private JComponent buildToolbar() {
+        // OPCODEX: a stable host permits live switching between single-row and Classic layouts.
+        JPanel host = new JPanel(new java.awt.BorderLayout());
+        host.add(buildToolbarContents(), java.awt.BorderLayout.CENTER);
+        return host;
+    }
+
+    private JComponent buildToolbarContents() {
 		if (OpcodexUi.active()) {
 			return OpcodexToolbars.create(groupToItemsMap.values().stream()
 				.flatMap(Collection::stream).toList(), windowManager, local);

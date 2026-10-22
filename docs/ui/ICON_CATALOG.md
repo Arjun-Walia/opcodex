@@ -2,7 +2,7 @@
 
 # Opcodex icon catalog
 
-145 original outline glyphs replace 882 declared theme IDs. Transparent PNGs are exported at 16/20/24/32/48/64px; product themes paint Java2D geometry directly at display scale; multi-resolution images support image consumers and export. Registered built-in raw filename callers use live vector adapters, including startup tools. Composed aliases retain status overlays, dimensions and translations; intentional empty placeholders stay empty.
+149 original outline glyphs replace 886 declared theme IDs. Transparent PNGs are exported at 16/20/24/32/48/64px; product themes paint Java2D geometry directly at display scale; multi-resolution images support image consumers and export. Registered built-in raw filename callers use live vector adapters, including startup tools. Composed aliases retain status overlays, dimensions and translations; intentional empty placeholders stay empty.
 
 Sources: [catalog](../../ui-assets/icons/catalog.json) and [SVGs](../../ui-assets/icons/src). Regenerate with `node opcodex/generate-ui-assets.cjs` and `node opcodex/generate-design-preview.cjs` using Sharp as a development-only dependency.
 
