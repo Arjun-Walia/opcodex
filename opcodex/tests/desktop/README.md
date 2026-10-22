@@ -1,5 +1,5 @@
 <!-- Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0 -->
-# Windows desktop smoke harness
+# Desktop smoke harness
 
 These sources test a real, already built native app with a disposable settings directory and a controlled, analyzed fixture project. They are not included in application archives. The fixture is inspected, never executed. The harness exits its own app process after testing; use a separate profile and no user projects.
 
@@ -18,5 +18,9 @@ The native picker probe checks actual returned paths for single files, cancellat
 Screenshots capture real application windows. Revalidate/repaint before capturing moved Swing windows to avoid compositor artifacts. Do not label a development JAR overlay as a packaged or installed build. A JVM UI-scale override is distinct from changing Windows display settings.
 
 `audit-result.json` records live selection contrast, expanded paths retained after a theme switch, exact layout restoration and 80 event-dispatch response samples. These samples measure the tested machine after settling; they are not a universal frame-rate claim.
+
+The current harness also verifies first-run Light, retired-theme migration, preservation of explicit Classic preferences, native window-logo changes, toolbar geometry at 700/1500/1900 logical pixels, enabled pointer cursors and a tooltip actually shown by hovering. CodeBrowser and Debugger both run. Provider owners distinguish separate dynamic/static Listing panes that share an internal name.
+
+On Linux, `check_linux.py` prepares a controlled ELF fixture, compiles the platform-independent agent classes and launches an installed native launcher under Xvfb. Windows-native picker checks are deliberately Windows-only. Use persistent test directories for retained app images and a fresh output directory for each run. An overlay is development evidence; only an unchanged installed artifact proves the installer.
 
 Run `python opcodex/check_panel_icons.py <smoke-output>` after the probe. It compares the resolved geometry of visible commands, including split-control base icons and the complete main toolbar, in both Light and Dark. Different commands in one panel must not share a symbol. Repeated captures of the same command are counted once.

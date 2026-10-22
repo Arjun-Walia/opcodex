@@ -177,7 +177,10 @@ public class OpcodexPanelProbe {
             if (type("docking.DockableComponent").isInstance(parent)) {
                 Method method=type("docking.DockableComponent").getDeclaredMethod("getComponentWindowingPlaceholder");
                 method.setAccessible(true);Object placeholder=method.invoke(parent);
-                return prefix+(String)type("docking.ComponentPlaceholder").getMethod("getName").invoke(placeholder);
+                // Dynamic and static Listing providers share a name but are separate panels.
+                Object provider=type("docking.ComponentPlaceholder").getMethod("getProvider").invoke(placeholder);
+                String ownerName=(String)type("docking.ComponentProvider").getMethod("getOwner").invoke(provider);
+                return prefix+(String)type("docking.ComponentPlaceholder").getMethod("getName").invoke(placeholder)+" ["+ownerName+"]";
             }
         }
         return prefix+"Main toolbar";

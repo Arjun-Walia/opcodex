@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from zipfile import ZipFile
 
-from opcodex.build_linux import BOOTSTRAP, trim_classpath, verify_archive
+from opcodex.build_linux import BOOTSTRAP, prepare_debian_resources, trim_classpath, verify_archive
 from opcodex.package_release import digest
 
 
@@ -64,3 +64,27 @@ class LinuxPackageTests(unittest.TestCase):
         config.write_text('app.classpath=$APPDIR/unrelated.jar\n')
         with self.assertRaisesRegex(ValueError, 'bootstrap'):
             trim_classpath(config)
+
+    def test_installer_prepares_menu_directory_and_preserves_native_hooks(self):
+        java_home = self.directory / 'jdk'
+        (java_home / 'jmods').mkdir(parents=True)
+        body = '# Original vendor notices\nset -e\nDESKTOP_COMMANDS_INSTALL\nexit 0\n'
+        with ZipFile(java_home / 'jmods/jdk.jpackage.jmod', 'w') as module:
+            module.writestr('classes/jdk/jpackage/internal/resources/template.postinst', '#!/bin/sh\n' + body)
+        resources = prepare_debian_resources(java_home, self.directory / 'resources')
+        script = (resources / 'postinst').read_text()
+        self.assertTrue(script.startswith('#!/bin/sh\n'))
+        self.assertIn(body, script)
+        self.assertLess(script.index('mkdir -p /usr/share/desktop-directories'), script.index('DESKTOP_COMMANDS_INSTALL'))
+        self.assertIn('if [ "${1:-}" = configure ]; then', script)
+        self.assertIn('|| exit $?', script)
+        prepare_debian_resources(java_home, resources)
+        self.assertEqual((resources / 'postinst').read_text(), script)
+
+    def test_unrecognized_native_install_template_is_rejected(self):
+        java_home = self.directory / 'jdk'
+        (java_home / 'jmods').mkdir(parents=True)
+        with ZipFile(java_home / 'jmods/jdk.jpackage.jmod', 'w') as module:
+            module.writestr('classes/jdk/jpackage/internal/resources/template.postinst', 'Unexpected format\n')
+        with self.assertRaisesRegex(ValueError, 'template'):
+            prepare_debian_resources(java_home, self.directory / 'resources')

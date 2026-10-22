@@ -28,4 +28,6 @@ On Ubuntu 24.04 x86-64, install the build prerequisites (`JDK 21`, Python 3, nat
 
 After verifying its SHA-256 file, install with `sudo apt install ./opcodex_1.0.0-alpha.2_linux_x86_64_setup.deb`. Open **Opcodex** from the applications menu. No separate Java installation is needed for the installed desktop app. The application lives under `/opt/opcodex`; projects and settings stay in the user's profile. Linux distributions that cannot install Debian packages can use the portable Linux ZIP with JDK 21 or newer; broader distribution compatibility needs separate validation.
 
+The Debian installer prepares the standard XDG system-menu directory when a minimal desktop does not already provide it. It preserves the build JDK's install/uninstall hooks and their resource substitutions.
+
 CI installs the Debian package and launches its actual native launcher under Xvfb with a disposable profile and a controlled ELF analysis fixture. Checks cover the Light default, modern/Classic logo refresh, single-row toolbar resizing, hover labels, menus, nine panels, dividers, decompilation and graph navigation. The Windows-specific native file-picker test is only run on Windows. These checks supplement the full upstream unit-test gate.

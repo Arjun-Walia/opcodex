@@ -139,7 +139,8 @@ public class OpcodexSmokeAgent {
         Rectangle bounds = edt(() -> { for (Window other : Window.getWindows()) if (other.isShowing() && title(other).contains("Tip of the Day")) other.dispose(); Rectangle screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds(); if (w instanceof Frame) w.setBounds(screen.x+20, screen.y+20, Math.min(w.getWidth(), screen.width-40), Math.min(w.getHeight(), screen.height-40)); w.setAlwaysOnTop(true); w.toFront(); w.requestFocus(); return w.getBounds(); });
         edt(() -> { if (w instanceof RootPaneContainer frame) { JRootPane root=frame.getRootPane(); root.revalidate(); root.paintImmediately(0,0,root.getWidth(),root.getHeight()); } Toolkit.getDefaultToolkit().sync(); return null; });
         Thread.sleep(700);
-        bounds.grow(-8, -8); // Capture inside the native frame, excluding transparent OS borders.
+        // Windows has transparent native frame borders; bare Xvfb windows have none to remove.
+        if (System.getProperty("os.name").startsWith("Windows")) bounds.grow(-8, -8);
         Path file = OUTPUT.resolve(path);
         Files.createDirectories(file.getParent());
         java.awt.image.MultiResolutionImage capture = new Robot().createMultiResolutionScreenCapture(bounds);

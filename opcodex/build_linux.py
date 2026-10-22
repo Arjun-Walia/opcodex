@@ -49,6 +49,22 @@ def trim_classpath(config: Path) -> None:
                                 or line == BOOTSTRAP) + '\n')
 
 
+def prepare_debian_resources(java_home: Path, destination: Path) -> Path:
+    """Retain the build JDK's hooks and support desktops without an existing XDG menu directory."""
+    with ZipFile(java_home / 'jmods/jdk.jpackage.jmod') as archive:
+        template = archive.read('classes/jdk/jpackage/internal/resources/template.postinst').decode('utf-8')
+    first, separator, remainder = template.partition('\n')
+    if not separator or not first.startswith('#!'):
+        raise ValueError('Unrecognized jpackage post-install template')
+    setup = ('\n# OPCODEX: minimal desktops may not yet have the XDG system menu directory.\n'
+             'if [ "${1:-}" = configure ]; then\n'
+             '    mkdir -p /usr/share/desktop-directories || exit $?\n'
+             'fi\n')
+    destination.mkdir(parents=True, exist_ok=True)
+    (destination / 'postinst').write_text(first + '\n' + setup + remainder)
+    return destination
+
+
 def build(archive: Path, java_home: Path, output: Path) -> Path:
     manifest, checksum = verify_archive(archive)
     expected = {'linux_x86_64': 'x86_64', 'linux_arm_64': 'aarch64'}[manifest['platform']]
@@ -96,13 +112,15 @@ def build(archive: Path, java_home: Path, output: Path) -> Path:
                       runtime='Build JDK runtime with original legal notices',
                       packageVersion=release + '-' + package_release)
         (image / 'lib/app/desktop-build.json').write_text(json.dumps(record, indent=2) + '\n')
+        resources = prepare_debian_resources(java_home, work / 'resources')
         subprocess.run([str(jpackage), '--type', 'deb', '--name', 'Opcodex',
             '--app-image', str(image), '--app-version', release, '--dest', str(work / 'installer'),
             '--vendor', 'Opcodex', '--description', 'Opcodex ' + manifest['version'],
             '--linux-package-name', 'opcodex', '--linux-app-release', package_release,
             '--linux-app-category', 'devel', '--linux-menu-group', 'Development',
             '--linux-shortcut', '--install-dir', '/opt/opcodex',
-            '--license-file', str(payload / 'LICENSE'), '--about-url', 'https://opcodex.xyz'], check=True)
+            '--resource-dir', str(resources), '--license-file', str(payload / 'LICENSE'),
+            '--about-url', 'https://opcodex.xyz'], check=True)
         installers = list((work / 'installer').glob('*.deb'))
         if len(installers) != 1:
             raise ValueError('Expected exactly one Debian installer')
