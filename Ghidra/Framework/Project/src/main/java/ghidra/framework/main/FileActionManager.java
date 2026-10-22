@@ -31,6 +31,7 @@ import docking.tool.ToolConstants;
 import docking.widgets.OptionDialog;
 import docking.widgets.filechooser.GhidraFileChooser;
 import docking.wizard.WizardDialog;
+import generic.theme.GIcon;
 import ghidra.framework.client.RepositoryAdapter;
 import ghidra.framework.main.wizard.project.ProjectWizardModel;
 import ghidra.framework.model.*;
@@ -78,6 +79,9 @@ class FileActionManager {
 				.menuPath(ToolConstants.MENU_FILE, "New Project...")
 				.menuGroup("AProject")
 				.keyBinding("ctrl N")
+				// OPCODEX: expose the existing project command on the primary toolbar.
+				.toolBarIcon(new GIcon("icon.folder.new"))
+				.toolBarGroup("AProject")
 				.onAction(c -> newProject())
 				.buildAndInstall(tool);
 
@@ -85,6 +89,8 @@ class FileActionManager {
 				.menuPath(ToolConstants.MENU_FILE, "Open Project...")
 				.menuGroup("AProject")
 				.keyBinding("ctrl O")
+				.toolBarIcon(new GIcon("icon.folder.open"))
+				.toolBarGroup("AProject")
 				.onAction(c -> openProject())
 				.buildAndInstall(tool);
 
@@ -96,6 +102,7 @@ class FileActionManager {
 			}
 		};
 		saveAction.setEnabled(false);
+		saveAction.setToolBarData(new ToolBarData(new GIcon("icon.save"), "AProject"));
 		saveAction.setKeyBindingData(
 			new KeyBindingData(KeyStroke.getKeyStroke(SAVE_ACCELERATOR, ActionEvent.CTRL_MASK)));
 		saveAction.setMenuBarData(
@@ -193,7 +200,8 @@ class FileActionManager {
 		return null;
 	}
 
-	private void openProject() {
+	// OPCODEX: share the existing command with the welcome screen.
+	void openProject() {
 		ProjectLocator currentProjectLocator = null;
 		Project activeProject = plugin.getActiveProject();
 		if (activeProject != null) {

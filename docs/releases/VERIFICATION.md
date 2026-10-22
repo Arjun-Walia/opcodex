@@ -2,6 +2,24 @@
 
 # Opcodex v1 foundation verification
 
+## 2026-10-22: installed alpha.2 baseline and follow-up checks
+
+Follow-up source `634f9b517b2ccedfa1f8317f337cfc26465965e7` completed `buildOpcodexInstaller`: **BUILD SUCCESSFUL in 51m24s**, 705 tasks (401 executed, 304 up-to-date), without excluding build or test tasks. The Windows ZIP SHA-256 is `cde29692f91f13450a8f73296fbf25f224f82512d32253cf76134a1e5c478c8c`; its MSI (installer version `0.1.3`) SHA-256 is `504806126eb6af511a5da0a927e5f0d72cd0c6a73b6d215bc4c64cf8fd675146`. Installation of the final follow-up artifact is recorded separately below when complete.
+
+Development overlays of that application code passed the complete real desktop harness on Windows 11 and Ubuntu 24.04/OpenJDK 21/Xvfb, including both CodeBrowser and Debugger. The Linux fixture was compiled as ELF and analyzed, never executed. Both final inventories reported zero duplicate/flattened command errors after distinguishing provider owners: the dynamic and static Listing views have the same internal name but are separate providers. The catalog is 149 glyphs/886 declared bindings with zero asset errors. The contextual-filter test passed every match mode with its inversion indicator retained.
+
+CI [39771565063](https://github.com/Arjun-Walia/opcodex/actions/runs/39771565063) built Windows ZIP/MSI, macOS ZIP and Linux ZIP/Debian packages from source `634f9b517b2ccedfa1f8317f337cfc26465965e7`. Its Linux install check failed because a minimal system lacked the XDG system-menu directory. The packaging follow-up preserves the build JDK's native post-install template, prepares that directory and retains installation failures. Its boundary suite has 32 passing tests. Corrected installed Linux checks still need a fresh CI run; the development overlay is not proof of a corrected installed package.
+
+Source `3ae3b1319e0fc841188e55c95bbda53deccec68a` completed the full Windows native/installer build. Its portable ZIP SHA-256 is `12225fa2e358a9f2c92c03652d7b89d2e9a6218e03010f1b837d4bce0e8bfbde`; MSI SHA-256 is `7f856b291f8c0ed54357c518b1885b74f1438854298bf663326745a794fe8ec7`. The MSI installed successfully (exit 0) into `%LOCALAPPDATA%/Programs/Opcodex/Application`. Desktop and Start Menu shortcuts point to that native executable. The exact installed app passed the real desktop harness at normal scale and with a Java 200% UI-scale override. This override is not a Windows display-settings change. Both icon inventories had zero duplicate/flattened command errors across the tested CodeBrowser panels.
+
+CI run [39742047691](https://github.com/Arjun-Walia/opcodex/actions/runs/39742047691) built the Windows ZIP/MSI and native Linux/macOS ZIPs. The broad Linux unit-test job failed and timed out. Missing external BSim/CodeCompare/HelloWorld fixtures and a tab-layout test precondition were among the recorded failures. This is not a passing release run.
+
+The next follow-up changes make Light the default, refresh native branding after theme changes, keep toolbars on one row and improve hover labels/cursors. A Windows development overlay passed fresh Light startup, retired-theme migration, explicit Classic preservation, native-logo round trips, visible tooltips, CodeBrowser/Debugger resizing at 700/1500/1900 logical pixels, nine CodeBrowser panels, three dividers and the unchanged 922-command registry. The expanded Debugger inventory then identified additional symbol collisions; their corrections and the Linux installer are being validated separately. These development checks are not proof of a newly installed release artifact.
+
+Focused Linux checks under Ubuntu 24.04/OpenJDK 21/Xvfb passed 22 toolbar/tab tests using the same compiled Java classes and real Linux Swing environment. The tab fixture now waits for native validation before asserting overflow, retaining its original assertions. Windows checks passed 13 theme tests and 23 toolbar/tab tests after the provider-header correction. The packaging boundary suite has 30 passing tests. None of these replace the broad upstream release gate. Exact follow-up installer, installation and Linux desktop results will be recorded against their source manifests.
+
+## Historical alpha.1 verification
+
 Date: 2026-10-20 (Asia/Calcutta). Product: `1.0.0-alpha.1`. Engine baseline: `Ghidra_12.1.4_build`, commit `8b6bbb857accdfa20dc5b2f5dea471178c2e9fbc`.
 
 The implementation tested here is commit `1a51e8bca5cd0586d80df0f4ba3fb0f62640f24f`. Later documentation and screenshot changes do not alter that implementation. The packaged application is a branding/release alpha; the complete icon/theme/UX redesign remains a later v1 stage.

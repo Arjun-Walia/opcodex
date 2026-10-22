@@ -25,6 +25,9 @@ eclipse.project.name = 'Framework Docking'
 
 dependencies {
 	api project(':Help')
+	// OPCODEX: Windows Common Item Dialog; same audited JNA version used by Framework Pty.
+	implementation "net.java.dev.jna:jna:5.14.0"
+	implementation "net.java.dev.jna:jna-platform:5.14.0"
 	
 	// include code from src/test in Generic
 	testImplementation project(path: ':Generic', configuration: 'testArtifacts')

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// OPCODEX: keep category/tree filter symbols distinct from table filter controls.
 package docking.widgets.tree;
 
 import java.awt.BorderLayout;
@@ -121,7 +122,7 @@ public class DefaultGTreeFilterProvider implements GTreeFilterProvider {
 	private void updateModelFilter() {
 
 		FilterOptions filterOptions = filterFactory.getFilterOptions();
-		filterStateButton.setIcon(filterOptions.getFilterStateIcon());
+		filterStateButton.setIcon(filterOptions.getFilterStateIcon(true));
 		filterStateButton.setToolTipText(filterOptions.getFilterDescription());
 
 		gTree.filterChanged();

@@ -30,6 +30,7 @@ import docking.util.AnimationUtils;
 import docking.widgets.VariableHeightPanel;
 import docking.widgets.label.GDLabel;
 import generic.theme.GColor;
+import generic.theme.builtin.OpcodexUi;
 import generic.theme.GThemeDefaults.Colors;
 import generic.theme.GThemeDefaults.Colors.Palette;
 
@@ -39,6 +40,7 @@ public class GenericHeader extends JPanel {
 	private static final Color NON_FOCUS_START_COLOR = new GColor("color.bg.header.inactive");
 	private static final Color FOCUS_START_COLOR = new GColor("color.bg.header.active");
 	private static final int MINIMUM_TITLE_SIZE = 80;
+    private static final Color OPCODEX_SURFACE = new GColor("system.color.bg.control");
 
 	private Color nonFocusColor = NON_FOCUS_START_COLOR;
 	private Color focusColor = FOCUS_START_COLOR;
@@ -47,7 +49,8 @@ public class GenericHeader extends JPanel {
 
 	protected Component component;
 	protected DockableToolBarManager toolBarMgr;
-	private VariableHeightPanel toolbar;
+	private JComponent toolbar;
+    private boolean modernLine;
 	private JComponent menuCloseToolbar;
 	private int numLines = 0;
 
@@ -90,7 +93,13 @@ public class GenericHeader extends JPanel {
 		});
 	}
 
-	public void dispose() {
+    @Override public void updateUI() {
+        super.updateUI();
+        if (titlePanel != null && titlePanel.titleLabel != null) titlePanel.setIcon(titlePanel.originalIcon);
+        if (toolBarMgr != null) update();
+    }
+
+    public void dispose() {
 		toolBarMgr.dispose();
 	}
 
@@ -139,7 +148,7 @@ public class GenericHeader extends JPanel {
 			return; // initializing
 		}
 
-		toolbar = (VariableHeightPanel) toolBarMgr.getToolBar();
+		toolbar = toolBarMgr.getToolBar();
 		menuCloseToolbar = toolBarMgr.getMenuCloseToolBar();
 		numLines = 0;
 	}
@@ -148,6 +157,9 @@ public class GenericHeader extends JPanel {
 		if (toolBarMgr == null) {
 			return; // initializing
 		}
+		// OPCODEX: flat, quiet panel chrome; preserve provider identity and docking behavior.
+		setBorder(OpcodexUi.active() ? BorderFactory.createMatteBorder(0, 0, 1, 0,
+			new GColor("system.color.bg.border")) : BorderFactory.createLineBorder(Palette.GRAY));
 
 		resetComponents();
 		updateLayout();
@@ -164,11 +176,12 @@ public class GenericHeader extends JPanel {
 		}
 
 		Dimension mySize = getSize();
-		Dimension toolBarSize = toolbar.getPreferredLayoutSize();
+		Dimension toolBarSize = toolbarContent() instanceof VariableHeightPanel variable ?
+            variable.getPreferredLayoutSize() : toolbar.getPreferredSize();
 		Dimension d = menuCloseToolbar.getPreferredSize();
-		if (mySize.width == 0 || toolBarSize.width + d.width + MINIMUM_TITLE_SIZE < mySize.width ||
+		if (OpcodexUi.active() || mySize.width == 0 || toolBarSize.width + d.width + MINIMUM_TITLE_SIZE < mySize.width ||
 			useSingleLineLayoutOverride) {
-			if (numLines != 1) {
+			if (numLines != 1 || modernLine != OpcodexUi.active()) {
 				constructOneLinePanel();
 			}
 		}
@@ -180,6 +193,25 @@ public class GenericHeader extends JPanel {
 
 	private void constructOneLinePanel() {
 		removeAll();
+        // OPCODEX: keep panel titles, original actions and window controls on one line.
+        modernLine = OpcodexUi.active();
+        if (modernLine && toolbar != null) {
+            JPanel clippedTitle = new JPanel(new BorderLayout()) {
+                @Override public Dimension getPreferredSize() {
+                    Dimension size = titlePanel.getPreferredSize();
+                    return new Dimension(Math.min(size.width, Math.min(200, Math.max(70, GenericHeader.this.getWidth()/3))), size.height);
+                }
+            };
+            clippedTitle.setOpaque(false);
+            clippedTitle.add(titlePanel, BorderLayout.CENTER);
+            toolbar.setBorder(BorderFactory.createEmptyBorder());
+            add(clippedTitle, BorderLayout.WEST);
+            add(toolbar, BorderLayout.CENTER);
+            add(menuCloseToolbar, BorderLayout.EAST);
+            numLines = 1;
+            validateInvalidate();
+            return;
+        }
 		if (toolbar == null) {
 			add(menuCloseToolbar, BorderLayout.EAST);
 		}
@@ -189,7 +221,7 @@ public class GenericHeader extends JPanel {
 			panel.add(toolbar);
 			panel.add(menuCloseToolbar);
 			add(panel, BorderLayout.EAST);
-			toolbar.setUseSingleLineLayout(true);
+			setToolbarSingleLine(true);
 			toolbar.invalidate();
 		}
 		add(titlePanel, BorderLayout.CENTER);
@@ -217,15 +249,24 @@ public class GenericHeader extends JPanel {
 		add(menuCloseToolbar, BorderLayout.EAST);
 
 		numLines = 2;
+        modernLine = false;
 		if (useSingleLineLayoutOverride) {
-			toolbar.setUseSingleLineLayout(true);
+			setToolbarSingleLine(true);
 		}
 		else {
-			toolbar.setUseSingleLineLayout(false);
+			setToolbarSingleLine(false);
 		}
 
 		validateInvalidate();
 	}
+
+    private Component toolbarContent() {
+        return toolbar.getComponentCount() == 0 ? toolbar : toolbar.getComponent(0);
+    }
+
+    private void setToolbarSingleLine(boolean single) {
+        if (toolbarContent() instanceof VariableHeightPanel variable) variable.setUseSingleLineLayout(single);
+    }
 
 	/**
 	 * updates the toolbar to include the new action.
@@ -343,6 +384,8 @@ public class GenericHeader extends JPanel {
 		private PopupMouseListener popupMouseListener;
 		private JLabel titleLabel;
 		private boolean isSelected = false;
+		private String originalTitle = "";
+        private Icon originalIcon;
 
 		/**
 		 * Constructs a new titlePanel.
@@ -370,6 +413,15 @@ public class GenericHeader extends JPanel {
 		public void paintComponent(Graphics g) {
 
 			super.paintComponent(g);
+			if (OpcodexUi.active()) {
+				g.setColor(OPCODEX_SURFACE);
+				g.fillRect(0, 0, getWidth(), getHeight());
+				if (isSelected) {
+					g.setColor(new GColor("color.border.button.focused"));
+					g.fillRect(0, 8, 2, Math.max(0, getHeight() - 16));
+				}
+				return;
+			}
 
 			Graphics2D g2d = (Graphics2D) g;
 			Rectangle r = getBounds();
@@ -396,15 +448,23 @@ public class GenericHeader extends JPanel {
 		 * @param s the title to be displayed.
 		 */
 		void setTitle(String s) {
-			titleLabel.setText(s);
+			originalTitle = s;
+			String display = s;
+			titleLabel.setText(display);
 			titleLabel.setToolTipText(s);
 		}
 
 		String getTitle() {
-			return titleLabel.getText();
+			return originalTitle;
 		}
 
 		void setIcon(Icon icon) {
+            originalIcon = icon;
+			if (OpcodexUi.active()) {
+				titleLabel.setIcon(null);
+				titleLabel.setBorder(BorderFactory.createEmptyBorder(7, 10, 7, 8));
+				return;
+			}
 
 			icon = DockingUtils.scaleIconAsNeeded(icon);
 			if (icon != null) {

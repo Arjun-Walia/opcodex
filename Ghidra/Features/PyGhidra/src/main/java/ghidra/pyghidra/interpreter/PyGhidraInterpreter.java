@@ -15,6 +15,8 @@
  */
 package ghidra.pyghidra.interpreter;
 
+// OPCODEX: consistent product wording; retain engine identifiers and integration names.
+
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -79,7 +81,7 @@ public final class PyGhidraInterpreter implements Disposable, InterpreterConnect
     private void unavailableCallback() {
         console.setInputPermitted(false);
         PrintWriter out = console.getOutWriter();
-        out.println("Ghidra was not started with PyGhidra. Python is not available.");
+        out.println("Opcodex was not started with PyGhidra. Launch with the PyGhidra integration to use Python.");
     }
 
     /**

@@ -50,6 +50,7 @@ import docking.widgets.list.GListCellRenderer;
 import docking.widgets.textfield.GFormattedTextField;
 import generic.theme.GColor;
 import generic.theme.GIcon;
+import generic.theme.builtin.OpcodexUi;
 import ghidra.framework.preferences.Preferences;
 import ghidra.util.*;
 import ghidra.util.exception.AssertException;
@@ -1256,6 +1257,11 @@ public class GhidraFileChooser extends ReusableDialogComponentProvider implement
 		validatedFiles.setFile(null);
 		initialFile = selectedFiles.getFile();
 		initialFileToSelect = initialFile;
+		// OPCODEX: Use the Windows Common Item Dialog for supported local selections.
+		// Virtual models, subclasses and arbitrary filters retain their existing validation UI.
+		boolean[] handled = {false};
+		SystemUtilities.runSwingNow(() -> handled[0] = canUseNativePicker() && showNativePicker());
+		if (handled[0]) return;
 
 		SystemUtilities.runSwingLater(() -> {
 			File selectedFile = selectedFiles.getFile();
@@ -1271,6 +1277,51 @@ public class GhidraFileChooser extends ReusableDialogComponentProvider implement
 		restorePreferences();
 		DockingWindowManager.showDialog(parent, this);
 		cancelEdits();
+	}
+
+	private boolean canUseNativePicker() {
+		if (!OpcodexUi.active() || !com.sun.jna.Platform.isWindows() ||
+			!Boolean.parseBoolean(System.getProperty("opcodex.filechooser.native", "true")) ||
+			getClass() != GhidraFileChooser.class ||
+			fileChooserModel.getClass() != LocalFileChooserModel.class || isFilesAndDirectories()) {
+			return false;
+		}
+		for (int i = 0; i < filterModel.getSize(); i++) {
+			if (filterModel.getElementAt(i).getNativePatterns().isEmpty()) return false;
+		}
+		return true;
+	}
+
+	private boolean showNativePicker() {
+		try {
+			List<OpcodexNativeFileChooser.Filter> filters = new ArrayList<>();
+			for (int i = 0; i < filterModel.getSize(); i++) {
+				GhidraFileFilter filter = filterModel.getElementAt(i);
+				filters.add(new OpcodexNativeFileChooser.Filter(filter.getDescription(),
+					String.join(";", filter.getNativePatterns())));
+			}
+			File directory = initialFile == null ? currentDirectory() : initialFile.getParentFile();
+			if (isDirectoriesOnly() && initialFile != null && initialFile.isDirectory()) {
+				directory = initialFile;
+			}
+			var result = OpcodexNativeFileChooser.show(parent,
+				new OpcodexNativeFileChooser.Request(getTitle(), okButton.getText(), directory,
+					initialFile, isDirectoriesOnly(), multiSelectionEnabled, filters,
+					Math.max(0, filterCombo.getSelectedIndex())));
+			if (result.files().isEmpty()) {
+				wasCancelled = true;
+				return true;
+			}
+			int index = result.selectedFilter();
+			if (index >= 0 && index < filterModel.getSize()) filterCombo.setSelectedIndex(index);
+			updateDirOnly(result.files().get(0).getParentFile(), true);
+			doChooseFiles(result.files());
+			return true;
+		}
+		catch (RuntimeException | LinkageError error) {
+			Msg.warn(this, "Windows file picker unavailable; opening the application picker", error);
+			return false;
+		}
 	}
 
 	@Override

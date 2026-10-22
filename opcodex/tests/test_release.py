@@ -52,6 +52,7 @@ class ReleaseTests(unittest.TestCase):
 
     def test_package_preserves_payload_notices_modes_and_records_real_checksum(self):
         result = self.package()
+        self.assertNotIn('ghidra', result.name.lower())
         with ZipFile(result) as archive:
             prefix = result.stem + '/'
             self.assertEqual(archive.read(prefix + 'preserved.jar'), b'unchanged-engine-payload')
@@ -142,6 +143,24 @@ class ReleaseTests(unittest.TestCase):
 
 
 class BrandingContracts(unittest.TestCase):
+    def test_product_presentation_does_not_reintroduce_upstream_branding(self):
+        for name in ('README.md', 'CONTRIBUTING.md', 'opcodex/DISTRIBUTION_README.md',
+                     '.github/ISSUE_TEMPLATE/bug_report.md'):
+            self.assertNotIn('ghidra', (ROOT / name).read_text(encoding='utf-8').lower(), name)
+
+    def test_modern_icon_exports_are_complete_with_transparent_capability(self):
+        catalog = json.loads((ROOT / 'ui-assets/icons/catalog.json').read_text())
+        self.assertEqual(catalog['license'], 'Apache-2.0')
+        resources = ROOT / 'Ghidra/Framework/Gui/src/main/resources/images/opcodex/ui'
+        for glyph in set(catalog['mappings'].values()):
+            self.assertIn(glyph, catalog['glyphs'])
+            for theme in ('light', 'dark'):
+                for size in (16, 20, 24, 32, 48, 64):
+                    data = (resources / theme / f'{glyph}-{size}.png').read_bytes()
+                    self.assertEqual(data[:8], b'\x89PNG\r\n\x1a\n')
+                    self.assertEqual(struct.unpack('>II', data[16:24]), (size, size))
+                    self.assertIn(data[25], (4, 6), 'Glyph must retain an alpha channel')
+
     def test_engine_and_licenses_remain_at_the_pinned_stable_baseline(self):
         upstream = json.loads((ROOT / 'opcodex/upstream.json').read_text())
         config = properties((ROOT / 'Ghidra/application.properties').read_text())

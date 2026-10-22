@@ -199,7 +199,8 @@ class RootNode extends WindowNode {
 		mainWindow.setVisible(state);
 
 		if (state) {
-			WindowUtilities.ensureOnScreen(mainWindow);
+			// OPCODEX: default and restored tool windows must fit the available display.
+            WindowUtilities.ensureEntirelyOnScreen(mainWindow);
 		}
 
 		for (DetachedWindowNode windowNode : detachedWindows) {

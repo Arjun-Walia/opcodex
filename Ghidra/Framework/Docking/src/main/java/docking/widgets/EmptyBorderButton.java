@@ -15,7 +15,7 @@
  */
 package docking.widgets;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -25,6 +25,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import generic.theme.GColor;
+import generic.theme.builtin.OpcodexUi;
 import ghidra.docking.util.LookAndFeelUtils;
 import resources.ResourceManager;
 
@@ -123,9 +124,47 @@ public class EmptyBorderButton extends JButton {
 
 	@Override
 	public void setIcon(Icon newIcon) {
-		Icon disabledIcon = ResourceManager.getDisabledIcon(newIcon);
+		// OPCODEX: retain vector painting when disabled instead of creating a blurred bitmap.
+		Icon disabledIcon = OpcodexUi.active() ? OpcodexUi.disabled(newIcon) :
+			ResourceManager.getDisabledIcon(newIcon);
 		setDisabledIcon(disabledIcon);
 		super.setIcon(newIcon);
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension size = super.getPreferredSize();
+		int target = Boolean.TRUE.equals(getClientProperty("opcodex.compact")) ? 24 : 32;
+		return OpcodexUi.active() ? new Dimension(Math.max(target, size.width), Math.max(target, size.height)) : size;
+	}
+
+	@Override
+	protected void paintBorder(Graphics g) {
+		if (!OpcodexUi.active()) { super.paintBorder(g); return; }
+		if (isFocusOwner()) {
+			Graphics2D canvas = (Graphics2D) g.create();
+			try {
+				canvas.setColor(FOCUS_COLOR);
+				canvas.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 7, 7);
+			} finally { canvas.dispose(); }
+		}
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		if (OpcodexUi.active()) {
+			Graphics2D canvas = (Graphics2D) g.create();
+			try {
+				canvas.setColor(getBackground());
+				canvas.fillRect(0, 0, getWidth(), getHeight());
+				if (isEnabled() && (getModel().isRollover() || getModel().isPressed() || isSelected())) {
+					canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					canvas.setColor(new GColor("system.color.bg.selected.view"));
+					canvas.fillRoundRect(2, 2, getWidth() - 4, getHeight() - 4, 7, 7);
+				}
+			} finally { canvas.dispose(); }
+		}
+		super.paintComponent(g);
 	}
 
 	@Override
@@ -176,6 +215,13 @@ public class EmptyBorderButton extends JButton {
 		setBorder(NO_BUTTON_BORDER);
 		super.setEnabled(b);
 	}
+
+    // OPCODEX: apply the same pointer behavior to panel/header buttons and split controls.
+    @Override public Cursor getCursor() {
+        if (OpcodexUi.active()) return Cursor.getPredefinedCursor(
+            isEnabled() ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR);
+        return super.getCursor();
+    }
 
 	protected void updateBorderBasedOnState() {
 		if (!isEnabled()) {

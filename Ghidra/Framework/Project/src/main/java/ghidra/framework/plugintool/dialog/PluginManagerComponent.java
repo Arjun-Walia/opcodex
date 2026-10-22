@@ -59,6 +59,12 @@ public class PluginManagerComponent extends JPanel implements Scrollable {
 		}
 	}
 
+	// OPCODEX: display product wording without changing persisted plugin-package identifiers.
+	private static String displayName(PluginPackage pluginPackage) {
+		return "Ghidra Core".equals(pluginPackage.getName()) ? "Opcodex Core" :
+			pluginPackage.getName();
+	}
+
 	private void updateCheckboxes() {
 		for (PluginPackageComponent comp : packageComponentList) {
 			comp.updateCheckBoxState();
@@ -68,7 +74,7 @@ public class PluginManagerComponent extends JPanel implements Scrollable {
 	void managePlugins(PluginPackage pluginPackage) {
 		List<PluginDescription> descriptons = model.getPluginDescriptions(pluginPackage);
 		PluginInstallerDialog pluginInstallerDialog = new PluginInstallerDialog(
-			"Configure " + pluginPackage.getName() + " Plugins", tool, model, descriptons);
+			"Configure " + displayName(pluginPackage) + " Plugins", tool, model, descriptons);
 		tool.showDialog(pluginInstallerDialog);
 	}
 
@@ -174,7 +180,7 @@ public class PluginManagerComponent extends JPanel implements Scrollable {
 			JPanel labelPanel = new JPanel(new VerticalLayout(3));
 			labelPanel.setBackground(BG);
 
-			GLabel nameLabel = new GLabel(pluginPackage.getName());
+			GLabel nameLabel = new GLabel(displayName(pluginPackage));
 			Gui.registerFont(nameLabel, "font.pluginpanel.name");
 			nameLabel.setForeground(new GColor("color.fg.pluginpanel.name"));
 			labelPanel.add(nameLabel);

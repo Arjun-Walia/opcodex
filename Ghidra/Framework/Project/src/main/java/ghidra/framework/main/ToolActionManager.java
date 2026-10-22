@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main;
 
+// OPCODEX: product-facing UI wording; compatibility identifiers and help anchors are retained.
+
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
@@ -141,7 +143,7 @@ class ToolActionManager implements ToolChestChangeListener {
 
 		tool.addAction(importAction);
 
-		importDefaultToolsAction = new DockingAction("Import Ghidra Tools", plugin.getName()) {
+		importDefaultToolsAction = new DockingAction("Import Bundled Tools", plugin.getName()) {
 			@Override
 			public void actionPerformed(ActionContext e) {
 				addDefaultTools();

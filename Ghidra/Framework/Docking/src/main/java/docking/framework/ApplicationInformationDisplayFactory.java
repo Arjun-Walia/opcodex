@@ -36,6 +36,36 @@ public class ApplicationInformationDisplayFactory {
 	private static final String ICON_16 = "icon.docking.application.16";
 	private static final String ICON_128 = "icon.docking.application.128";
 
+    // OPCODEX: AWT copies image pixels into native window handles. Theme-aware GIcons alone
+    // cannot refresh those copies; resubmit fresh images after the theme transaction finishes.
+    private static final ThemeListener WINDOW_BRANDING = event -> {
+        if (!event.isLookAndFeelChanged() && !event.hasAnyIconChanged()) return;
+        SwingUtilities.invokeLater(() -> {
+            List<Image> icons = getWindowIcons();
+            for (Window window : Window.getWindows()) {
+                // Preserve the original macOS policy of letting the OS choose frame icons.
+                if (!(window instanceof Frame) || ghidra.framework.Platform.CURRENT_PLATFORM
+                        .getOperatingSystem() != ghidra.framework.OperatingSystem.MAC_OS_X)
+                    window.setIconImages(icons);
+            }
+            ghidra.docking.util.LookAndFeelUtils.performPlatformSpecificFixups();
+            ToolTipManager tips = ToolTipManager.sharedInstance();
+            boolean modern = generic.theme.builtin.OpcodexUi.active();
+            tips.setInitialDelay(modern ? 350 : 750);
+            tips.setDismissDelay(modern ? 12000 : 4000);
+        });
+    };
+    private static ThemeManager brandingManager;
+
+    private static synchronized void followWindowBranding() {
+        // This factory is sometimes loaded before the real theme manager replaces its stub.
+        ThemeManager current = ThemeManager.getInstance();
+        if (!(current instanceof ApplicationThemeManager) || current == brandingManager) return;
+        if (brandingManager != null) brandingManager.removeThemeListener(WINDOW_BRANDING);
+        brandingManager = current;
+        current.addThemeListener(WINDOW_BRANDING);
+    }
+
 	static {
 		PluggableServiceRegistry.registerPluggableService(
 			ApplicationInformationDisplayFactory.class, new ApplicationInformationDisplayFactory());
@@ -54,6 +84,7 @@ public class ApplicationInformationDisplayFactory {
 	}
 
 	public static List<Image> getWindowIcons() {
+        followWindowBranding();
 		ApplicationInformationDisplayFactory factory = PluggableServiceRegistry.getPluggableService(
 			ApplicationInformationDisplayFactory.class);
 		return factory.doGetWindowIcons();

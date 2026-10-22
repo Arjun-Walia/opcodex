@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OPCODEX: original tool identity; preserve all layout and plugin configuration. -->
+<!-- OPCODEX: focused workspace with a tabbed navigator, balanced code panes and optional console; preserve provider and plugin identities. -->
 <TOOL_CONFIG CONFIG_NAME="NO_LONGER_USED">
     <SUPPORTED_DATA_TYPE CLASS_NAME="ghidra.program.model.listing.Program" />
     <SUPPORTED_DATA_TYPE CLASS_NAME="ghidra.program.model.listing.DataTypeArchive" />
-    <ICON LOCATION="images/opcodex/tool-24.png" />
+    <ICON LOCATION="defaultTools/images/greenDragon24.png" />
     <TOOL TOOL_NAME="CodeBrowser" INSTANCE_NAME="">
         <OPTIONS />
         <PACKAGE NAME="Ghidra Core">
@@ -11,54 +11,38 @@
             <INCLUDE CLASS="ghidra.app.plugin.core.editor.TextEditorManagerPlugin" />
         </PACKAGE>
 	<PACKAGE NAME="BSim" />
-        <ROOT_NODE X_POS="409" Y_POS="179" WIDTH="1637" HEIGHT="931" EX_STATE="0" FOCUSED_OWNER="CodeBrowserPlugin" FOCUSED_NAME="Listing" FOCUSED_TITLE="Listing: ">
-            <SPLIT_NODE WIDTH="1621" HEIGHT="816" DIVIDER_LOCATION="148" ORIENTATION="VERTICAL">
+        <ROOT_NODE X_POS="60" Y_POS="60" WIDTH="1520" HEIGHT="900" EX_STATE="0" FOCUSED_OWNER="CodeBrowserPlugin" FOCUSED_NAME="Listing" FOCUSED_TITLE="Listing: ">
+            <SPLIT_NODE WIDTH="1500" HEIGHT="800" DIVIDER_LOCATION="150" ORIENTATION="VERTICAL">
                 <COMPONENT_NODE TOP_INFO="0">
                     <COMPONENT_INFO NAME="Entropy" OWNER="EntropyPlugin" TITLE="Entropy" ACTIVE="false" GROUP="Header" INSTANCE_ID="3207819926581772885" />
                     <COMPONENT_INFO NAME="Overview" OWNER="OverviewPlugin" TITLE="Overview" ACTIVE="false" GROUP="Header" INSTANCE_ID="3207819926581772883" />
                 </COMPONENT_NODE>
-                <SPLIT_NODE WIDTH="1637" HEIGHT="822" DIVIDER_LOCATION="143" ORIENTATION="HORIZONTAL">
-                    <SPLIT_NODE WIDTH="234" HEIGHT="822" DIVIDER_LOCATION="640" ORIENTATION="VERTICAL">
-                        <SPLIT_NODE WIDTH="234" HEIGHT="524" DIVIDER_LOCATION="502" ORIENTATION="VERTICAL">
+                <SPLIT_NODE WIDTH="1500" HEIGHT="800" DIVIDER_LOCATION="200" ORIENTATION="HORIZONTAL">
+                    <COMPONENT_NODE TOP_INFO="0">
+                        <COMPONENT_INFO NAME="Functions Window" OWNER="FunctionWindowPlugin" TITLE="Functions" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819980101091906" />
+                        <COMPONENT_INFO NAME="Symbol Tree" OWNER="SymbolTreePlugin" TITLE="Symbol Tree" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819977680978496" />
+                        <COMPONENT_INFO NAME="DataTypes Provider" OWNER="DataTypeManagerPlugin" TITLE="Data Type Manager" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819978370941521" />
+                        <COMPONENT_INFO NAME="Program Tree" OWNER="ProgramTreePlugin" TITLE="Program Trees" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772895" />
+                    </COMPONENT_NODE>
+                    <SPLIT_NODE WIDTH="1200" HEIGHT="800" DIVIDER_LOCATION="780" ORIENTATION="VERTICAL">
+                        <SPLIT_NODE WIDTH="1244" HEIGHT="800" DIVIDER_LOCATION="500" ORIENTATION="HORIZONTAL">
                             <COMPONENT_NODE TOP_INFO="0">
-                                <COMPONENT_INFO NAME="Program Tree" OWNER="ProgramTreePlugin" TITLE="Program Trees" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819926581772895" />
+                                <COMPONENT_INFO NAME="Listing" OWNER="CodeBrowserPlugin" TITLE="Listing: " ACTIVE="true" GROUP="Core" INSTANCE_ID="3207819926581772881" />
                             </COMPONENT_NODE>
                             <COMPONENT_NODE TOP_INFO="0">
-                                <COMPONENT_INFO NAME="Symbol Tree" OWNER="SymbolTreePlugin" TITLE="Symbol Tree" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819977680978496" />
+                                <COMPONENT_INFO NAME="Decompiler" OWNER="DecompilePlugin" TITLE="Decompile" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819926581772879" />
+                                <COMPONENT_INFO NAME="Bytes" OWNER="ByteViewerPlugin" TITLE="Bytes : No Program" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819977680978498" />
+                                <COMPONENT_INFO NAME="Data Window" OWNER="DataWindowPlugin" TITLE="Defined Data" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819980101091908" />
+                                <COMPONENT_INFO NAME="Defined Strings" OWNER="ViewStringsPlugin" TITLE="Defined Strings" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819980101091905" />
+                                <COMPONENT_INFO NAME="Equates Table" OWNER="EquateTablePlugin" TITLE="Equates Table" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819977680978499" />
+                                <COMPONENT_INFO NAME="External Programs" OWNER="ReferencesPlugin" TITLE="External Programs" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819977680978497" />
+                                <COMPONENT_INFO NAME="Relocation Table" OWNER="RelocationTablePlugin" TITLE="Relocation Table" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819978370941532" />
+                                <COMPONENT_INFO NAME="Data Type Preview" OWNER="DataTypePreviewPlugin" TITLE="Data Type Preview" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819978314318403" />
+                                <COMPONENT_INFO NAME="Virtual Disassembler - Current Instruction" OWNER="DisassembledViewPlugin" TITLE="Disassembled View" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772893" />
                             </COMPONENT_NODE>
                         </SPLIT_NODE>
                         <COMPONENT_NODE TOP_INFO="0">
-                            <COMPONENT_INFO NAME="DataTypes Provider" OWNER="DataTypeManagerPlugin" TITLE="Data Type Manager" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819978370941521" />
-                        </COMPONENT_NODE>
-                    </SPLIT_NODE>
-                    <SPLIT_NODE WIDTH="1399" HEIGHT="822" DIVIDER_LOCATION="785" ORIENTATION="VERTICAL">
-                        <SPLIT_NODE WIDTH="1386" HEIGHT="638" DIVIDER_LOCATION="705" ORIENTATION="VERTICAL">
-                            <SPLIT_NODE WIDTH="1399" HEIGHT="642" DIVIDER_LOCATION="679" ORIENTATION="HORIZONTAL">
-                                <COMPONENT_NODE TOP_INFO="0">
-                                    <COMPONENT_INFO NAME="Listing" OWNER="CodeBrowserPlugin" TITLE="Listing: " ACTIVE="true" GROUP="Core" INSTANCE_ID="3207819926581772881" />
-                                </COMPONENT_NODE>
-                                <COMPONENT_NODE TOP_INFO="0">
-                                    <COMPONENT_INFO NAME="Decompiler" OWNER="DecompilePlugin" TITLE="Decompile" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819926581772879" />
-                                    <COMPONENT_INFO NAME="Bytes" OWNER="ByteViewerPlugin" TITLE="Bytes : No Program" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819977680978498" />
-                                    <COMPONENT_INFO NAME="Data Window" OWNER="DataWindowPlugin" TITLE="Defined Data" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819980101091908" />
-                                    <COMPONENT_INFO NAME="Defined Strings" OWNER="ViewStringsPlugin" TITLE="Defined Strings" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819980101091905" />
-                                    <COMPONENT_INFO NAME="Equates Table" OWNER="EquateTablePlugin" TITLE="Equates Table" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819977680978499" />
-                                    <COMPONENT_INFO NAME="External Programs" OWNER="ReferencesPlugin" TITLE="External Programs" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819977680978497" />
-                                    <COMPONENT_INFO NAME="Functions Window" OWNER="FunctionWindowPlugin" TITLE="Functions" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819980101091906" />
-                                    <COMPONENT_INFO NAME="Relocation Table" OWNER="RelocationTablePlugin" TITLE="Relocation Table" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819978370941532" />
-                                </COMPONENT_NODE>
-                            </SPLIT_NODE>
-                            <SPLIT_NODE WIDTH="1386" HEIGHT="189" DIVIDER_LOCATION="495" ORIENTATION="HORIZONTAL">
-                                <COMPONENT_NODE TOP_INFO="0">
-                                    <COMPONENT_INFO NAME="Data Type Preview" OWNER="DataTypePreviewPlugin" TITLE="Data Type Preview" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819978314318403" />
-                                </COMPONENT_NODE>
-                                <COMPONENT_NODE TOP_INFO="0">
-                                    <COMPONENT_INFO NAME="Virtual Disassembler - Current Instruction" OWNER="DisassembledViewPlugin" TITLE="Disassembled View" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772893" />
-                                </COMPONENT_NODE>
-                            </SPLIT_NODE>
-                        </SPLIT_NODE>
-                        <COMPONENT_NODE TOP_INFO="0">
-                            <COMPONENT_INFO NAME="Console" OWNER="ConsolePlugin" TITLE="Console" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819926581772894" />
+                            <COMPONENT_INFO NAME="Console" OWNER="ConsolePlugin" TITLE="Console" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772894" />
                             <COMPONENT_INFO NAME="Bookmarks" OWNER="BookmarkPlugin" TITLE="Bookmarks" ACTIVE="false" GROUP="Core.Bookmarks" INSTANCE_ID="3207819977680978500" />
                         </COMPONENT_NODE>
                     </SPLIT_NODE>
@@ -99,7 +83,7 @@
                     <COMPONENT_INFO NAME="Checksum Generator" OWNER="ComputeChecksumsPlugin" TITLE="Checksum Generator" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772880" />
                 </COMPONENT_NODE>
             </WINDOW_NODE>
-            <WINDOW_NODE X_POS="-1" Y_POS="-1" WIDTH="0" HEIGHT="0">
+            <WINDOW_NODE X_POS="-1" Y_POS="-1" WIDTH="860" HEIGHT="420">
                 <COMPONENT_NODE TOP_INFO="0">
                     <COMPONENT_INFO NAME="Function Tags" OWNER="FunctionTagPlugin" TITLE="Function Tags" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772878" />
                 </COMPONENT_NODE>
@@ -427,27 +411,38 @@
                     </Table_State>
                 </XML>
             </PREFERENCE_STATE>
-            <PREFERENCE_STATE NAME="ghidra.app.plugin.core.functionwindow.FunctionTableModel:Label:Location:Function Signature:">
+            <PREFERENCE_STATE NAME="ghidra.app.plugin.core.functionwindow.FunctionTableModel:Name:Location:Function Signature:Function Size:Tags:Inline:Non-returning:Varargs:Custom Storage:Local Stack Size:Parameter Stack Size:">
                 <XML NAME="COLUMN_DATA">
                     <Table_State>
-                        <COLUMN NAME="ghidra.util.table.field.LabelTableColumn" WIDTH="148" VISIBLE="true" />
-                        <COLUMN NAME="ghidra.util.table.field.AddressTableColumn" WIDTH="124" VISIBLE="true" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionSignatureTableColumn" WIDTH="148" VISIBLE="true" />
-                        <COLUMN NAME="ghidra.util.table.field.OffcutReferenceCountToAddressTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.SymbolTypeTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.MemorySectionProgramLocationBasedTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.ReferenceCountToAddressTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionBodySizeTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionParameterCountTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.NamespaceTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionNameTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.SourceTypeTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionPurgeTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.MemoryTypeProgramLocationBasedTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.ByteCountProgramLocationBasedTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.BytesTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.FunctionCallingConventionTableColumn" WIDTH="75" VISIBLE="false" />
-                        <COLUMN NAME="ghidra.util.table.field.PreviewTableColumn" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.app.plugin.core.functionwindow.FunctionTableModel$NameTableColumn.Name" WIDTH="180" VISIBLE="true" />
+                        <COLUMN NAME="ghidra.util.table.field.AddressTableColumn.Location" WIDTH="110" VISIBLE="true" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionSignatureTableColumn.Function Signature" WIDTH="160" VISIBLE="true" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionBodySizeTableColumn.Function Size" WIDTH="160" VISIBLE="true" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionTagTableColumn.Tags" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.IsFunctionInlineTableColumn.Inline" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.IsFunctionNonReturningTableColumn.Non-returning" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.IsFunctionVarargsTableColumn.Varargs" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.IsFunctionCustomStorageTableColumn.Custom Storage" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionLocalStackSizeColumn.Local Stack Size" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionParameterStackSizeColumn.Parameter Stack Size" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.PreviewTableColumn.Preview" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.ByteCountProgramLocationBasedTableColumn.Byte Count" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.EOLCommentTableColumn.EOL Comment" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.OffcutReferenceCountToAddressTableColumn.Offcut Reference Count" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.BytesTableColumn.Bytes" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.SourceTypeTableColumn.Symbol Source" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.SymbolTypeTableColumn.Symbol Type" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.CodeUnitTableColumn.Code Unit" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.LabelTableColumn.Label" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionCallingConventionTableColumn.Function Calling Convention" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.MemoryTypeProgramLocationBasedTableColumn.Mem Type" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionNameTableColumn.Function Name" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionPurgeTableColumn.Function Purge" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.NamespaceTableColumn.Namespace" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.ReferenceCountToAddressTableColumn.Reference Count" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.MemorySourceProgramLocationBasedTableColumn.Mem Source" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.FunctionParameterCountTableColumn.Param Count" WIDTH="75" VISIBLE="false" />
+                        <COLUMN NAME="ghidra.util.table.field.MemorySectionProgramLocationBasedTableColumn.Mem Block" WIDTH="75" VISIBLE="false" />
                         <TABLE_SORT_STATE>
                             <COLUMN_SORT_STATE COLUMN_MODEL_INDEX="1" SORT_DIRECTION="ascending" SORT_ORDER="1" />
                         </TABLE_SORT_STATE>

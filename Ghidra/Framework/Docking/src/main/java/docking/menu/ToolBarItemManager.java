@@ -24,6 +24,7 @@ import javax.swing.JButton;
 import docking.DockingActionPerformer;
 import docking.DockingWindowManager;
 import docking.action.*;
+import generic.theme.builtin.OpcodexUi;
 
 /**
  * Class to manager toolbar buttons.
@@ -57,12 +58,18 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
 		if (toolBarButton == null) {
 			toolBarButton = createButton(toolBarAction);
 			toolBarButton.setEnabled(toolBarAction.isEnabled());
+            DockingToolBarUtils.setToolTipText(toolBarButton, toolBarAction);
 		}
 		return toolBarButton;
 	}
 
 	public JButton createButton(final DockingActionIf action) {
 		JButton button = action.createButton();
+		// OPCODEX: paint vectors at a consistent logical size, including HiDPI displays.
+		if (OpcodexUi.active()) {
+			ToolBarData data = action.getToolBarData();
+			button.setIcon(OpcodexUi.sized(data == null ? button.getIcon() : data.getIcon(), 20));
+		}
 		button.addActionListener(this);
 		button.addMouseListener(this);
 		button.setName(action.getName());
@@ -78,7 +85,15 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
 		return toolBarAction;
 	}
 
-	void dispose() {
+    // OPCODEX: always derive from the action's original icon, never resize an already scaled icon.
+    void refreshTheme() {
+        if (toolBarButton == null) return;
+        ToolBarData data = toolBarAction.getToolBarData();
+        if (data != null) toolBarButton.setIcon(OpcodexUi.active() ? OpcodexUi.sized(data.getIcon(), 20) : data.getIcon());
+        DockingToolBarUtils.setToolTipText(toolBarButton, toolBarAction);
+    }
+
+    void dispose() {
 		toolBarAction.removePropertyChangeListener(this);
 		if (toolBarButton != null) {
 			toolBarButton.removeActionListener(this);
@@ -94,13 +109,15 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
 		String name = e.getPropertyName();
 		if (name.equals(DockingActionIf.ENABLEMENT_PROPERTY)) {
 			toolBarButton.setEnabled(((Boolean) e.getNewValue()).booleanValue());
+            DockingToolBarUtils.setToolTipText(toolBarButton, toolBarAction);
 		}
 		else if (name.equals(DockingActionIf.DESCRIPTION_PROPERTY)) {
 			DockingToolBarUtils.setToolTipText(toolBarButton, toolBarAction);
 		}
 		else if (name.equals(DockingActionIf.TOOLBAR_DATA_PROPERTY)) {
 			ToolBarData toolBarData = (ToolBarData) e.getNewValue();
-			toolBarButton.setIcon(toolBarData == null ? null : toolBarData.getIcon());
+			javax.swing.Icon icon = toolBarData == null ? null : toolBarData.getIcon();
+			toolBarButton.setIcon(OpcodexUi.active() ? OpcodexUi.sized(icon, 20) : icon);
 		}
 		else if (name.equals(ToggleDockingActionIf.SELECTED_STATE_PROPERTY)) {
 			toolBarButton.setSelected((Boolean) e.getNewValue());

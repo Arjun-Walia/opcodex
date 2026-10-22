@@ -87,7 +87,8 @@ class DockableToolBarManager {
 
 	private void initialize(DockingWindowManager winMgr, MenuHandler menuHandler,
 			Iterator<DockingActionIf> actions) {
-		toolBarManager = new ToolBarManager(winMgr);
+		// OPCODEX: provider headers use the compact, local action presentation.
+		toolBarManager = new ToolBarManager(winMgr, true);
 		menuManager = new MenuManager(null, '\0', null, false, menuHandler, menuGroupMap);
 
 		while (actions.hasNext()) {
@@ -193,7 +194,8 @@ class DockableToolBarManager {
 		ToolBarCloseAction(String owner) {
 			super("Close Window", owner, KeyBindingType.SHARED);
 			setDescription("Close Window");
-			setToolBarData(new ToolBarData(CLOSE_ICON, null));
+			setToolBarData(new ToolBarData(generic.theme.builtin.OpcodexUi.active()
+				? new generic.theme.GIcon("icon.widget.tabs.close") : CLOSE_ICON, null));
 			markHelpUnnecessary();
 		}
 

@@ -316,6 +316,11 @@ public class ImageUtils {
 	 * @return a new icon, based on the original, made semi-transparent
 	 */
 	public static Icon makeTransparent(Icon icon, float alpha) {
+		// OPCODEX: retain live geometry and theme changes through transparency transforms.
+		if (icon instanceof generic.theme.GIcon || generic.theme.builtin.OpcodexUi.isVector(icon)) {
+			return generic.theme.builtin.OpcodexUi.imageIcon(icon, icon.getIconWidth(),
+				icon.getIconHeight(), alpha);
+		}
 		BufferedImage newImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(),
 			BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = newImage.createGraphics();

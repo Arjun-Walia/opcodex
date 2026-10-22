@@ -388,6 +388,7 @@ public class ComponentPlaceholder {
 	 * @return The text for display on the tab of a tabbed component.
 	 */
 	public String getTabText() {
+		// OPCODEX: use the same provider labels in tabs and Window menus.
 		return tabText;
 	}
 

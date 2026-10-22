@@ -104,6 +104,8 @@ public class DockingWindowManager implements PropertyChangeListener, Placeholder
 	private boolean isVisible;
 	private boolean isDocking;
 	private boolean hasStatusBar;
+    // OPCODEX: retain separate modern/classic layouts across switches and sessions.
+    private final OpcodexWorkspaceLayouts opcodexLayouts;
 
 	private boolean windowsOnTop;
 
@@ -154,6 +156,7 @@ public class DockingWindowManager implements PropertyChangeListener, Placeholder
 
 		placeholderManager = new PlaceholderManager(this);
 		actionToGuiMapper = new ActionToGuiMapper(this);
+        opcodexLayouts = new OpcodexWorkspaceLayouts(this);
 	}
 
 	@Override
@@ -911,6 +914,7 @@ public class DockingWindowManager implements PropertyChangeListener, Placeholder
 		}
 
 		rebuildUpdater.dispose();
+        opcodexLayouts.dispose();
 
 		KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		mgr.removePropertyChangeListener("permanentFocusOwner", this);
@@ -1026,6 +1030,7 @@ public class DockingWindowManager implements PropertyChangeListener, Placeholder
 		Element preferencesElement = savePreferencesToXML();
 		rootXMLElement.removeChild(preferencesElement.getName());
 		rootXMLElement.addContent(preferencesElement);
+        opcodexLayouts.save(rootXMLElement);
 	}
 
 	/**
@@ -1043,7 +1048,7 @@ public class DockingWindowManager implements PropertyChangeListener, Placeholder
 	 * @param rootXMLElement JDOM element from which to extract the state information.
 	 */
 	public void restoreFromXML(Element rootXMLElement) {
-		restoreWindowDataFromXml(rootXMLElement);
+		restoreWindowDataFromXml(opcodexLayouts.load(rootXMLElement));
 		restorePreferencesFromXML(rootXMLElement);
 	}
 
@@ -1053,6 +1058,8 @@ public class DockingWindowManager implements PropertyChangeListener, Placeholder
 	 * @param rootXMLElement JDOM element from which to extract the state information.
 	 */
 	public void restoreWindowDataFromXml(Element rootXMLElement) {
+        // OPCODEX: tools restore layout directly after their plugins are loaded.
+        if (!opcodexLayouts.isLoaded()) rootXMLElement = opcodexLayouts.load(rootXMLElement);
 		Element windowData = rootXMLElement.getChild(RootNode.ROOT_NODE_ELEMENT_NAME);
 		if (windowData == null) {
 			return;

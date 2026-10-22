@@ -19,3 +19,47 @@ tasks.register('buildOpcodex', Exec) {
             '--output-dir', layout.buildDirectory.dir('releases').get().asFile
     }
 }
+
+tasks.register('buildOpcodexLinuxInstaller', Exec) {
+    group = 'distribution'
+    description = 'Build a Linux Debian installer with a bundled desktop/compiler/debugger runtime.'
+    dependsOn tasks.named('buildOpcodex')
+    doFirst {
+        if (!System.getProperty('os.name').equals('Linux')) {
+            throw new GradleException('Build the Linux installer on native Linux.')
+        }
+        def product = new Properties()
+        file('Ghidra/application.properties').withInputStream { product.load(it) }
+        commandLine opcodexPython, 'opcodex/build_linux.py', '--package',
+            file("build/releases/opcodex_${product.getProperty('opcodex.version')}_${getCurrentPlatformName()}.zip"),
+            '--java-home', System.getProperty('java.home')
+    }
+}
+
+// Native Windows app image and current-user shortcuts; portable ZIP builds remain unchanged.
+['buildOpcodexDesktop': false, 'installOpcodexDesktop': true,
+ 'buildOpcodexInstaller': false].each { taskName, install ->
+    tasks.register(taskName, Exec) {
+        group = 'distribution'
+        description = install ? 'Build and install the native Opcodex desktop app.' :
+            'Build the native Opcodex Windows app image with its runtime.'
+        dependsOn tasks.named('buildOpcodex')
+        doFirst {
+            if (!System.getProperty('os.name').startsWith('Windows')) {
+                throw new GradleException('Native desktop installation currently supports Windows.')
+            }
+            def product = new Properties()
+            file('Ghidra/application.properties').withInputStream { product.load(it) }
+            def archive = file("build/releases/opcodex_${product.getProperty('opcodex.version')}_win_x86_64.zip")
+            def args = ['pwsh', '-NoProfile', '-File', file('opcodex/build-desktop.ps1'),
+                '-PackagePath', archive, '-BuildJavaHome', System.getProperty('java.home')]
+            if (install) {
+                args += '-Install'
+            }
+            if (taskName == 'buildOpcodexInstaller') {
+                args += '-Installer'
+            }
+            commandLine args
+        }
+    }
+}

@@ -39,7 +39,8 @@ class ProjectToolBar extends JToolBar implements ToolChestChangeListener {
 		toolButtonMap = new HashMap<>(TYPICAL_NUM_TOOLS);
 
 		// remove the default etched border
-		setBorder(BorderFactory.createTitledBorder("Tool Chest"));
+		// OPCODEX: a quiet inset instead of the inherited etched title frame.
+		setBorder(BorderFactory.createEmptyBorder(8, 4, 12, 4));
 
 		setActiveProject(plugin.getActiveProject());
 
@@ -125,8 +126,40 @@ class ProjectToolBar extends JToolBar implements ToolChestChangeListener {
 	 */
 	private void addConfig(ToolTemplate toolConfig) {
 		ToolButton button = new ToolButton(plugin, toolConfig);
-		this.add(button);
-		toolButtonMap.put(toolConfig.getName(), button);
+		// OPCODEX: align every startup tool on the same icon/caption baseline and hit target.
+        styleButton(button, toolConfig.getName());
+        this.add(button);
+        toolButtonMap.put(toolConfig.getName(), button);
+    }
+
+    @Override public void updateUI() {
+        super.updateUI();
+        if (toolButtonMap == null) return;
+        toolButtonMap.forEach((name, button) -> styleButton(button, name));
+        revalidate();
+    }
+
+    private void styleButton(ToolButton button, String name) {
+        if (!generic.theme.builtin.OpcodexUi.active()) {
+            button.setText(null);
+            button.setPreferredSize(null); button.setMinimumSize(null); button.setMaximumSize(null);
+            button.setMargin(new java.awt.Insets(0, 0, 0, 0));
+            return;
+        }
+        String label = switch (name) {
+			case "CodeBrowser" -> "Code Browser";
+			case "VersionTracking" -> "Version Tracking";
+			default -> name;
+		};
+		button.setText(label);
+		button.setIconTextGap(8);
+		button.getAccessibleContext().setAccessibleName(label);
+		button.setMargin(new java.awt.Insets(6, 8, 6, 8));
+		java.awt.Dimension tile = new java.awt.Dimension(Math.max(128,
+			button.getFontMetrics(button.getFont()).stringWidth(label) + 24), 72);
+		button.setPreferredSize(tile);
+		button.setMinimumSize(tile);
+		button.setMaximumSize(tile);
 	}
 
 	public ToolButton getToolButtonForToolConfig(ToolTemplate toolTemplate) {

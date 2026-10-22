@@ -45,9 +45,12 @@ public class StatusBar extends JPanel {
 
 	private static final Border STATUS_BORDER = BorderFactory.createCompoundBorder(
 		BorderFactory.createLoweredBevelBorder(), BorderFactory.createEmptyBorder(1, 2, 1, 2));
+	// OPCODEX: a single quiet status strip instead of a row of sunken boxes.
+	private static final Border PRODUCT_STATUS_BORDER = generic.theme.builtin.OpcodexUi.quietBorder(
+		STATUS_BORDER, new Insets(4, 8, 4, 8));
 
 	private static final Border STATUS_ITEM_BORDER = BorderFactory
-			.createCompoundBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0), STATUS_BORDER);
+			.createCompoundBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0), PRODUCT_STATUS_BORDER);
 
 	private static final int STATUS_BAR_GAP = 3;
 	private static final int MESSAGE_QUEUE_MAX_SIZE = 10;
@@ -90,7 +93,7 @@ public class StatusBar extends JPanel {
 		statusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		JPanel statusMessagePanel = new JPanel(new BorderLayout());
-		statusMessagePanel.setBorder(STATUS_BORDER);
+		statusMessagePanel.setBorder(PRODUCT_STATUS_BORDER);
 		statusMessagePanel.add(statusLabel, BorderLayout.CENTER);
 
 		add(statusMessagePanel, BorderLayout.CENTER);

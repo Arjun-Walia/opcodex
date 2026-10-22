@@ -43,5 +43,9 @@ public class FlatLookAndFeelManager extends LookAndFeelManager {
 		// if "Tree.showDefaultIcons" is false.  We want the tree to display folder icons.
 		//
 		UIManager.put("Tree.showDefaultIcons", Boolean.TRUE);
+		// OPCODEX: apply spacing only to the product themes, before refreshing component UIs.
+		if (themeManager.getActiveTheme() instanceof generic.theme.builtin.OpcodexTheme) {
+			generic.theme.builtin.OpcodexTheme.installComponentDefaults();
+		}
 	}
 }

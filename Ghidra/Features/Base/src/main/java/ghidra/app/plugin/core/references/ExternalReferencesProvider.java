@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.references;
 
+// OPCODEX: consistent product wording; retain engine identifiers and integration names.
+
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
 import java.util.*;
@@ -330,7 +332,7 @@ public class ExternalReferencesProvider extends ComponentProviderAdapter {
 		final static int NAME_COL = 0;
 		final static int PATH_COL = 1;
 		final static String EXTERNAL_NAME = "Name";
-		final static String PATH_NAME = "Ghidra Program";
+		final static String PATH_NAME = "Opcodex Program";
 		private final List<String> columns = List.of(EXTERNAL_NAME, PATH_NAME);
 
 		private List<ExternalNamesRow> paths = new ArrayList<>();

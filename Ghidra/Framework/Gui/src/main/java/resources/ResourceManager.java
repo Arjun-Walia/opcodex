@@ -327,6 +327,9 @@ public class ResourceManager {
 	 * @return A new, scaled ImageIcon
 	 */
 	public static ImageIcon getScaledIcon(Icon icon, int width, int height, int hints) {
+		// OPCODEX: keep original vector geometry through legacy ImageIcon APIs.
+		if (generic.theme.builtin.OpcodexUi.isVector(icon))
+			return generic.theme.builtin.OpcodexUi.imageIcon(icon, width, height, 1);
 		return new ScaledImageIcon(icon, width, height, hints);
 	}
 
@@ -340,6 +343,9 @@ public class ResourceManager {
 	 * @return A new, scaled ImageIcon
 	 */
 	public static ImageIcon getScaledIcon(ImageIcon icon, int width, int height) {
+		// OPCODEX: startup tool icons and tree cells must remain sharp on HiDPI displays.
+		if (generic.theme.builtin.OpcodexUi.isVector(icon))
+			return generic.theme.builtin.OpcodexUi.imageIcon(icon, width, height, 1);
 		return new ScaledImageIcon(icon, width, height);
 	}
 
@@ -354,6 +360,9 @@ public class ResourceManager {
 	 * @return A new, scaled ImageIcon
 	 */
 	public static Icon getScaledIcon(Icon icon, int width, int height) {
+		// OPCODEX: preserve vector painting for composed theme icons and overlays.
+		if (generic.theme.builtin.OpcodexUi.isVector(icon))
+			return generic.theme.builtin.OpcodexUi.imageIcon(icon, width, height, 1);
 		if (icon instanceof EmptyIcon) {
 			return new EmptyIcon(width, height);
 		}
@@ -367,6 +376,9 @@ public class ResourceManager {
 	 * @return disabled icon
 	 */
 	public static ImageIcon getDisabledIcon(Icon icon) {
+		// OPCODEX: disabled controls keep live geometry and inherited opacity.
+		if (generic.theme.builtin.OpcodexUi.isVector(icon))
+			return generic.theme.builtin.OpcodexUi.imageIcon(icon, icon.getIconWidth(), icon.getIconHeight(), .38f);
 		return new DisabledImageIcon(icon);
 	}
 
@@ -376,6 +388,9 @@ public class ResourceManager {
 	 * @return disabled icon
 	 */
 	public static ImageIcon getDisabledIcon(ImageIcon icon) {
+		// OPCODEX: same rendering for callers with a statically typed ImageIcon.
+		if (generic.theme.builtin.OpcodexUi.isVector(icon))
+			return generic.theme.builtin.OpcodexUi.imageIcon(icon, icon.getIconWidth(), icon.getIconHeight(), .38f);
 		return new DisabledImageIcon(icon);
 	}
 
@@ -505,7 +520,8 @@ public class ResourceManager {
 				iconMap.put(path, icon);
 			}
 		}
-		return icon;
+		// OPCODEX: keep resource identity consistent with loadImage and composed theme icons.
+		return icon == null ? null : generic.theme.builtin.OpcodexUi.resourceIcon(path, icon);
 	}
 
 	/**
@@ -530,7 +546,8 @@ public class ResourceManager {
 			}
 		}
 
-		return icon;
+		// OPCODEX: composed icons use the same live adapter as direct resource callers.
+		return icon == null ? null : generic.theme.builtin.OpcodexUi.resourceIcon(iconPath, icon);
 	}
 
 	/**
@@ -548,7 +565,9 @@ public class ResourceManager {
 				iconMap.put(iconPath, icon);
 			}
 		}
-		return icon == null ? new UnresolvedIcon(iconPath, DEFAULT_ICON) : icon;
+		// OPCODEX: adapt only registered built-in artwork; external/custom images keep their source.
+		return icon == null ? new UnresolvedIcon(iconPath, DEFAULT_ICON) :
+			generic.theme.builtin.OpcodexUi.resourceIcon(iconPath, icon);
 	}
 
 	/**
@@ -648,7 +667,8 @@ public class ResourceManager {
 	private static ImageIcon loadDefaultIcon() {
 		URL url = getResource(BOMB);
 		if (url != null) {
-			return new UrlImageIcon(BOMB, url);
+			// OPCODEX: retain URL equality between fallback and explicitly requested resource icons.
+			return generic.theme.builtin.OpcodexUi.resourceIcon(BOMB, new UrlImageIcon(BOMB, url));
 		}
 		Msg.error(ResourceManager.class, "Could not find default icon: " + BOMB);
 		return getImageIcon(new ColorIcon3D(Color.RED, 16, 16));

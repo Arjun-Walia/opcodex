@@ -45,8 +45,6 @@ import resources.Icons;
  */
 public class DockingHelpBroker extends GHelpBroker {
 
-	private static final List<Image> ICONS = ApplicationInformationDisplayFactory.getWindowIcons();
-
 	private HelpModelListener helpModelListener = new HelpIDChangedListener();
 
 	private CalloutRequest callout;
@@ -57,7 +55,8 @@ public class DockingHelpBroker extends GHelpBroker {
 
 	@Override
 	protected List<Image> getApplicationIcons() {
-		return ICONS;
+        // OPCODEX: a help window opened after switching themes must use the current logo.
+		return ApplicationInformationDisplayFactory.getWindowIcons();
 	}
 
 	@Override

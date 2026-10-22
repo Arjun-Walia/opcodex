@@ -268,7 +268,9 @@ class ComponentNode extends Node {
 		if (count == 1) {
 			top = activeComponents.get(0);
 			comp = top.getComponent();
-			comp.setBorder(BorderFactory.createRaisedBevelBorder());
+			// OPCODEX: let content and split gutters define panes, without raised frames.
+			comp.setBorder(generic.theme.builtin.OpcodexUi.quietBorder(
+				BorderFactory.createRaisedBevelBorder(), new java.awt.Insets(0, 0, 0, 0)));
 
 			installRenameMenu(top);
 		}

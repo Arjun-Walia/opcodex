@@ -6,6 +6,12 @@ Updated 2026-10-20 (Asia/Calcutta). The owner selected the stable Ghidra 12.1.4 
 
 The earlier 12.3 DEV audit is preserved on the `codex/ui-audit` branch. It is historical, superseded evidence for the old baseline. These CSVs refresh the tracked stable source after the branding implementation at `e3463a7054347ba142457af28f3872fce642b8fc`.
 
+## Current interface coverage
+
+This inventory is the recorded initial stable snapshot, not a fresh count of the alpha.2 resources. The modern family uses 121 original outline glyphs and paired bindings for all 878 declared IDs. It paints vectors directly, retains multi-resolution compatibility images, and supplies the product themes and startup artwork. See [design system](DESIGN_SYSTEM.md), [catalog](ICON_CATALOG.md) and [interface changes](UX_CHANGES.md) for the current delta.
+
+The strict coverage check now reports 878 of 878 declared theme IDs covered with no asset errors. Composed aliases preserve their overlays and dimensions; empty layout placeholders intentionally remain empty. Run `python opcodex/check_ui_coverage.py` for the strict completeness check, or add `--allow-incomplete` for an alpha progress report. Invalid original asset dimensions/transparency fail in either mode. See [coverage](coverage.json). Matching light/dark color/font/icon roles are checked against the real theme objects in `OpcodexThemeTest`.
+
 ## Measured scope
 
 | Measurement | Count |
@@ -19,7 +25,7 @@ The earlier 12.3 DEV audit is preserved on the `codex/ui-audit` branch. It is hi
 | Inventory rows including aliases/dependencies | 1003 |
 | Color candidates requiring contextual review | 210 |
 
-These are distinct populations: aliases reuse drawings, generated/native icons have no source bitmap, and runtime candidates include strips/illustrations. This pass introduces original product identity; it does not replace every action icon.
+These are distinct populations: aliases reuse drawings, generated/native icons have no source bitmap, and runtime candidates include strips/illustrations. At the initial audit, only the product identity was replaced; current declared-icon coverage is recorded above.
 
 ## Inventories
 
@@ -38,7 +44,7 @@ The local extraction command was `python C:\Users\pc\AppData\Local\Temp\opcodex-
 - Toolbar paths normalize to 16 px; tool icons use 16/22/24 px. Table sort/filter glyphs and theme overlays require smaller 8/10/12/14 px exceptions. Cursors, strips, splash artwork and native application icons need their own size rules.
 - Raw loader paths and programmatically drawn symbols require explicit handling beyond theme IDs. Confirmed raw UI color bypasses remain in `BrokenLinkIcon` and `ToolTipUtils`; Palette constants are already GColor-backed. Color pickers, serialization, ANSI colors and user annotations must not be blindly recolored.
 - Searchable action selection already exists through ActionChooserDialog, with Ctrl+3 in SystemKeyBindings. The requested palette should evaluate that mechanism before adding a duplicate.
-- CodeBrowser.tool now changes only its identity icon. The inherited layout and plugins remain intact; design-system, toolbar/tree pilot, full icon set, refined themes and workflow changes are later reviewed stages.
+- Alpha.2 updates CodeBrowser.tool with a tabbed function/symbol/type navigator, equal code panes and an on-demand console. Provider identities and plugins remain intact; full icon replacement is still incomplete.
 
 ## Checks and limits
 

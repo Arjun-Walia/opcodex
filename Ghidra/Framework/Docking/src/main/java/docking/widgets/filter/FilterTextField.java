@@ -58,6 +58,15 @@ public class FilterTextField extends JPanel {
 	private long lastFlashTime = 0;
 	private Timer flashTimer = new BackgroundFlashTimer();
 	private boolean hasText;
+    private boolean noMatches;
+    // OPCODEX: a visible no-results state, also announced to assistive technology.
+    public void setNoMatches(boolean value) {
+        noMatches = value;
+        textField.setToolTipText(value ? "No matching results" : null);
+        textField.putClientProperty("JComponent.outline", value ? "warning" : null);
+        textField.getAccessibleContext().setAccessibleDescription(value ? "No matching results" : "Filter results");
+        updateColor();
+    }
 
 	private JLayeredPane layeredPane;
 	private JTextField textField = new JTextField();
@@ -202,7 +211,11 @@ public class FilterTextField extends JPanel {
 			fgColor = hasText ? FILTERED_FOREGROUND_COLOR : noFlashFgColor;
 		}
 
-		doSetBackground(bgColor);
+        if (noMatches && hasText) {
+            bgColor = FILTERED_BACKGROUND_COLOR;
+            fgColor = new GColor("color.fg.messages.warning");
+        }
+        doSetBackground(bgColor);
 		doSetForeground(fgColor);
 	}
 
