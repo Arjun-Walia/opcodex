@@ -157,6 +157,7 @@ final class OpcodexVectorPaths {
 		case "filter-tree-regex" -> glyph141();
 		case "next-bookmark" -> glyph142();
 		case "graph-cycle" -> glyph143();
+		case "function-compare" -> glyph144();
 		default -> throw new IllegalArgumentException("Unknown glyph: " + name);
 	}; }
 	private static Part[] glyph0() {
@@ -2167,5 +2168,21 @@ final class OpcodexVectorPaths {
 		p3.lineTo(5.0, 10.0);
 		p3.lineTo(8.0, 11.0);
 		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null), new Part(p2, false, true, null), new Part(p3, false, true, null)};
+	}
+	private static Part[] glyph144() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(8.0, 3.0);
+		p0.lineTo(3.0, 3.0);
+		p0.lineTo(3.0, 21.0);
+		p0.lineTo(8.0, 21.0);
+		p0.moveTo(16.0, 3.0);
+		p0.lineTo(21.0, 3.0);
+		p0.lineTo(21.0, 21.0);
+		p0.lineTo(16.0, 21.0);
+		p0.moveTo(8.0, 9.0);
+		p0.lineTo(16.0, 9.0);
+		p0.moveTo(8.0, 15.0);
+		p0.lineTo(16.0, 15.0);
+		return new Part[]{new Part(p0, false, true, null)};
 	}
 }

@@ -354,6 +354,7 @@ final class OpcodexIcons {
 		theme.setIcon("icon.opcodex.glyph.filter-tree-regex", load("filter-tree-regex", dark));
 		theme.setIcon("icon.opcodex.glyph.next-bookmark", load("next-bookmark", dark));
 		theme.setIcon("icon.opcodex.glyph.graph-cycle", load("graph-cycle", dark));
+		theme.setIcon("icon.opcodex.glyph.function-compare", load("function-compare", dark));
 		for (String[] entry : ENTRIES) {
 			Icon icon = icons.computeIfAbsent(entry[1], glyph -> load(glyph, dark));
 			theme.setIcon(entry[0], icon);
@@ -874,7 +875,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.plugin.functioncompare.function.next", "icon.opcodex.glyph.down [move(3,1)] {icon.opcodex.glyph.function [move(-5,-2)]}"));
 			theme.addIcon(IconValue.parse("icon.plugin.functioncompare.function.previous", "icon.opcodex.glyph.up [move(3,1)] {icon.opcodex.glyph.function [move(-5,-2)]}"));
 			theme.addIcon(IconValue.parse("icon.plugin.functioncompare.function.remove", "icon.opcodex.glyph.trash [move(3,3)] {icon.opcodex.glyph.function [move(-5,-2)]}"));
-			theme.addIcon(IconValue.parse("icon.plugin.functioncompare.new", "icon.opcodex.glyph.code {icon.opcodex.glyph.star [size(16,16)][move(4,-4)]}"));
+			theme.addIcon(IconValue.parse("icon.plugin.functioncompare.new", "icon.opcodex.glyph.function-compare"));
 			theme.addIcon(IconValue.parse("icon.plugin.functioncompare.open.function.table", "icon.opcodex.glyph.code {icon.add [size(8,8)][move(8,8)]}"));
 			theme.addIcon(IconValue.parse("icon.plugin.functioncompare.scroll.lock", "icon.base.lock"));
 			theme.addIcon(IconValue.parse("icon.plugin.functioncompare.scroll.unlock", "icon.base.unlock"));

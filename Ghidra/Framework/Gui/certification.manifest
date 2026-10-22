@@ -1833,3 +1833,16 @@ src/main/resources/images/opcodex/ui/light/next-bookmark-24.png||Apache License 
 src/main/resources/images/opcodex/ui/light/next-bookmark-32.png||Apache License 2.0||||END|
 src/main/resources/images/opcodex/ui/light/next-bookmark-48.png||Apache License 2.0||||END|
 src/main/resources/images/opcodex/ui/light/next-bookmark-64.png||Apache License 2.0||||END|
+
+src/main/resources/images/opcodex/ui/dark/function-compare-16.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/function-compare-20.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/function-compare-24.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/function-compare-32.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/function-compare-48.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/function-compare-64.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/function-compare-16.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/function-compare-20.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/function-compare-24.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/function-compare-32.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/function-compare-48.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/function-compare-64.png||Apache License 2.0||||END|
