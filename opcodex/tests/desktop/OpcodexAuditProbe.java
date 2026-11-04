@@ -96,6 +96,11 @@ public final class OpcodexAuditProbe {
         if (component instanceof Container container) {
             if ("docking.menu.OpcodexToolbarStrip".equals(component.getClass().getName())) {
                 List<JButton> all = new ArrayList<>(); buttons(component,all);
+                if (all.stream().noneMatch(button -> button.getParent() != component &&
+                        !"More workspace actions".equals(button.getName()) &&
+                        !"More panel actions".equals(button.getName()))) {
+                    throw new AssertionError("Empty toolbar reserved a row");
+                }
                 Integer middle = null;
                 for (JButton button : all) {
                     if (button.getParent() == component) continue; // scroll controls
@@ -147,13 +152,23 @@ public final class OpcodexAuditProbe {
             ToolTipManager.sharedInstance().setEnabled(true); return null; });
     }
 
+    public static void verifyPanelToolbarRows(Window window) throws Exception {
+        edt(() -> { singleRows(window); return null; });
+    }
+
     public static void verifyToolbarWidths(Window window) throws Exception {
         Dimension original=edt(() -> window.getSize());
         try {
             for (int width : new int[] {700, 1500, 1900}) {
                 edt(() -> { window.setSize(width,original.height); window.validate(); return null; });
                 Thread.sleep(200);
-                edt(() -> { singleRows(window); return null; });
+                edt(() -> {
+                    singleRows(window);
+                    Component search = named(window,"Find a command");
+                    if (search != null && (!(search instanceof JTextField field) || !field.isShowing() || field.getVisibleRect().width<120))
+                        throw new AssertionError("Command search disappeared at width "+width);
+                    return null;
+                });
             }
         } finally { edt(() -> { window.setSize(original); window.validate(); return null; }); }
     }
@@ -181,6 +196,125 @@ public final class OpcodexAuditProbe {
             Component found = named(child,name); if (found != null) return found;
         }
         return null;
+    }
+    private static void ribbonSearch(Object tool, Window browser, Path output, Shot shot) throws Exception {
+        JTextField search=edt(() -> (JTextField)named(browser,"Find a command"));
+        if(search==null)throw new AssertionError("No visible command search");
+        Object manager=tool.getClass().getMethod("getWindowManager").invoke(tool);
+        Object graph=type("docking.DockingWindowManager").getMethod("getComponentProvider",String.class).invoke(manager,"Function Graph");
+        boolean original=(Boolean)edt(() -> type("docking.ComponentProvider").getMethod("isVisible").invoke(graph));
+        edt(() -> { search.setText("function graph"); return null; });
+        SwingUtilities.invokeLater(search::postActionEvent);
+        Window dialog=null;
+        for(int i=0;i<100 && dialog==null;i++) {
+            dialog=edt(() -> Arrays.stream(Window.getWindows()).filter(w -> w instanceof Dialog d && d.isShowing() && d.getTitle().startsWith("Find a command")).findFirst().orElse(null));
+            if(dialog==null)Thread.sleep(100);
+        }
+        if(dialog==null)throw new AssertionError("Command search did not open");
+        Window finder=dialog;
+        Object results=edt(() -> named(finder,"Opcodex command results"));
+        Object model=results.getClass().getMethod("getModel").invoke(results);
+        int size=(Integer)model.getClass().getMethod("getSize").invoke(model);
+        Object chosen=null;
+        for(int i=0;i<size;i++) {
+            Object entry=model.getClass().getMethod("getElementAt",int.class).invoke(model,i);
+            Object action=entry.getClass().getMethod("value").invoke(entry);
+            if(type("docking.action.DockingActionIf").getMethod("getName").invoke(action).equals("Function Graph") &&
+                    type("docking.action.DockingActionIf").getMethod("getOwner").invoke(action).equals("DockingWindows"))chosen=action;
+        }
+        if(chosen==null)throw new AssertionError("Search did not find the original Function Graph command");
+        Object command=chosen;
+        edt(() -> { results.getClass().getMethod("setSelectedItem",Object.class).invoke(results,command); return null; });
+        shot.take(finder,"light/command-search.png");
+        Object provider=finder.getClass().getMethod("getDialogComponent").invoke(finder);
+        java.lang.reflect.Method ok=type("docking.actions.dialog.ActionChooserDialog").getDeclaredMethod("okCallback");ok.setAccessible(true);
+        edt(() -> { ok.invoke(provider); return null; });
+        boolean visible=false;
+        for(int i=0;i<50 && !visible;i++) {
+            visible=(Boolean)edt(() -> type("docking.ComponentProvider").getMethod("isVisible").invoke(graph));
+            if(!visible)Thread.sleep(100);
+        }
+        if(!visible)throw new AssertionError("Search did not execute the original command");
+        edt(() -> { type("docking.ComponentProvider").getMethod("setVisible",boolean.class).invoke(graph,original); search.setText(""); return null; });
+        Files.writeString(output.resolve("ribbon-result.json"),"{\"visibleSearch\":true,\"originalCommandFound\":true,\"originalCommandExecuted\":true}\n");
+    }
+    public static void verifyDebugger(Object tool, Window window, Path output, Shot shot) throws Exception {
+        Object manager=tool.getClass().getMethod("getWindowManager").invoke(tool);
+        String modern=edt(() -> layout(manager));
+        if(edt(() -> named(window,"Opcodex debugger workflow"))==null)throw new AssertionError("Missing debugger orientation");
+        Component empty=edt(() -> named(window,"Opcodex debugger empty session"));
+        if(empty==null || !edt(empty::isShowing))throw new AssertionError("No-trace debugger state was not explained");
+        for(String name:List.of("Connections","Registers")) {
+            Object provider=type("docking.DockingWindowManager").getMethod("getComponentProvider",String.class).invoke(manager,name);
+            JComponent component=(JComponent)edt(() -> type("docking.ComponentProvider").getMethod("getComponent").invoke(provider));
+            if(!edt(component::isShowing))throw new AssertionError("Debugger default did not expose "+name);
+        }
+        for(String name:List.of("Connections","Threads","Registers","Stack","Memory","Breakpoints")) {
+            Component shortcut=edt(() -> named(window,"Workspace: "+name));
+            if(shortcut==null)throw new AssertionError("Missing debugger shortcut: "+name);
+        }
+        for(String name:List.of("2  Choose a thread","3  Inspect state")) {
+            AbstractButton step=edt(() -> (AbstractButton)named(window,"Debugger step: "+name));
+            edt(() -> { step.doClick(0); return null; });
+        }
+        shot.take(window,"dark/debugger-workspace.png");
+        String afterFocus=edt(() -> layout(manager));
+        verifyTraceEmptyState(tool,window,empty);
+        theme("GhidraClassicTheme");
+        Component classic=edt(() -> named(window,"Opcodex debugger workflow"));
+        if(classic!=null && edt(classic::isShowing))throw new AssertionError("Classic retained modern debugger guide");
+        if(edt(empty::isShowing))throw new AssertionError("Classic retained the modern no-trace overlay");
+        shot.take(window,"classic/debugger-workspace.png");
+        theme("OpcodexDarkTheme");
+        String restored=edt(() -> layout(manager));
+        if(!sameDebuggerLayout(afterFocus,restored)) {
+            Files.writeString(output.resolve("debugger-modern-before.xml"),afterFocus);
+            Files.writeString(output.resolve("debugger-modern-after.xml"),restored);
+            throw new AssertionError("Debugger modern layout was not restored");
+        }
+        Files.writeString(output.resolve("debugger-workspace-result.json"),"{\"workflowGuide\":true,\"debuggerShortcuts\":true,\"classicSeparate\":true,\"modernRestored\":true,\"traceEmptyStateTransitions\":true}\n");
+    }
+    private static void verifyTraceEmptyState(Object tool,Window window,Component empty) throws Exception {
+        Object languages=type("ghidra.program.util.DefaultLanguageService").getMethod("getLanguageService").invoke(null);
+        Object languageId=type("ghidra.program.model.lang.LanguageID").getConstructor(String.class).newInstance("x86:LE:64:default");
+        Object language=type("ghidra.program.model.lang.LanguageService").getMethod("getLanguage",type("ghidra.program.model.lang.LanguageID")).invoke(languages,languageId);
+        Object compiler=type("ghidra.program.model.lang.Language").getMethod("getDefaultCompilerSpec").invoke(language);
+        Object consumer=new Object();
+        Object trace=type("ghidra.trace.database.DBTrace").getConstructor(String.class,type("ghidra.program.model.lang.CompilerSpec"),Object.class).newInstance("Opcodex UI trace",compiler,consumer);
+        Class<?> serviceType=type("ghidra.app.services.DebuggerTraceManagerService"),traceType=type("ghidra.trace.model.Trace");
+        Object service=tool.getClass().getMethod("getService",Class.class).invoke(tool,serviceType);
+        try {
+            edt(() -> {serviceType.getMethod("openTrace",traceType).invoke(service,trace);serviceType.getMethod("activateTrace",traceType).invoke(service,trace);return null;});
+            for(int i=0;i<60 && edt(empty::isShowing);i++)Thread.sleep(100);
+            if(edt(empty::isShowing))throw new AssertionError("No-trace overlay obscured an active trace");
+        } finally {
+            edt(() -> {serviceType.getMethod("closeTraceNoConfirm",traceType).invoke(service,trace);return null;});
+            type("ghidra.framework.model.DomainObject").getMethod("release",Object.class).invoke(trace,consumer);
+        }
+        for(int i=0;i<60 && !edt(empty::isShowing);i++)Thread.sleep(100);
+        if(!edt(empty::isShowing))throw new AssertionError("No-trace state did not return after closing the owned trace");
+    }
+    private static boolean sameDebuggerLayout(String before,String after) throws Exception {
+        var factory=javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
+        var builder=factory.newDocumentBuilder();
+        var a=builder.parse(new org.xml.sax.InputSource(new java.io.StringReader(before))).getDocumentElement();
+        var b=builder.parse(new org.xml.sax.InputSource(new java.io.StringReader(after))).getDocumentElement();
+        return sameLayoutNode(a,b);
+    }
+    private static boolean sameLayoutNode(org.w3c.dom.Element a,org.w3c.dom.Element b) {
+        if(!a.getTagName().equals(b.getTagName()) || a.getAttributes().getLength()!=b.getAttributes().getLength())return false;
+        for(int i=0;i<a.getAttributes().getLength();i++) {
+            var attribute=a.getAttributes().item(i);String key=attribute.getNodeName(),x=attribute.getNodeValue(),y=b.getAttribute(key);
+            if(x.equals(y))continue;
+            // Native layout may round saved divider fractions (per 1000) and pane sizes by 1–2 units.
+            if(!List.of("WIDTH","HEIGHT","DIVIDER_LOCATION").contains(key) || Math.abs(Integer.parseInt(x)-Integer.parseInt(y))>2)return false;
+        }
+        var left=a.getChildNodes();var right=b.getChildNodes();if(left.getLength()!=right.getLength())return false;
+        for(int i=0;i<left.getLength();i++)if(left.item(i) instanceof org.w3c.dom.Element x) {
+            if(!(right.item(i) instanceof org.w3c.dom.Element y) || !sameLayoutNode(x,y))return false;
+        }
+        return true;
     }
     private static Window waitWindow(String title) throws Exception {
         for (int i=0;i<100;i++) {
@@ -335,6 +469,7 @@ public final class OpcodexAuditProbe {
         verifyToolbarWidths(browser);
         edt(() -> { selectionContrast(); return null; });
         followup(tool,browser,project,output,shot);
+        ribbonSearch(tool,browser,output,shot);
         long until=System.currentTimeMillis()+4000;
         boolean retained;
         do {

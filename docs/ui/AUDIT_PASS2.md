@@ -8,7 +8,7 @@ The tester installed the Linux Debian package built from `a71cc371737bbb80588046
 
 ## Corrections in the follow-up source
 
-“Implemented” below means changed in source. Exact packaged Windows/Linux retests remain required before these can be called release-verified fixes.
+“Implemented” below means changed in source. Exact installed source `4bdb269187113c7e3fca6385b6cdcba0451601a3` passed the complete desktop harness on Windows 11 and Ubuntu 24.04/OpenJDK 21, at normal scale and with a Java 200% scale override. The next follow-up adds the tabbed ribbon, complete command finder, Debugger workflow/default layout and actionable no-trace view, and removes an empty detached-toolbar row. Its rebuilt packages require their own checks.
 
 | Finding | Change | Verification required |
 | --- | --- | --- |
@@ -44,3 +44,15 @@ Public documentation lives on [the website](https://opcodex.xyz/docs/); the Obsi
 Additional visual follow-up: Help commands/navigation tabs and local chooser file rows use the live vector family; Help typography uses a sans-serif reading hierarchy in modern themes. Classic retains its assets and original stylesheet. Help styles are applied before parsing the page to avoid late view-structure changes. An uncaught-EDT exception now fails the desktop harness rather than being lost behind a successful result.
 
 Website documentation was published to the website main branch at `80d8970` and the live release-status route returned HTTP200 with the new independent-audit section on 2026-11-04. Local website checks: 40 pages, zero Astro diagnostics,6 content tests,9 browser tests including the accessibility matrix. This does not publish a desktop artifact.
+
+Detached-panel follow-up: toolbar creation now returns a zero-height component when there are no actions. Script Manager keeps its real provider commands without a second empty window-toolbar row. A regression case covers both local and window toolbars; native panel checks also reject overflow-only strips. The Linux CI desktop check now starts its own Openbox inside disposable Xvfb, so real hover/activation behavior is tested in a window-managed desktop. No product or upstream test assertion was relaxed.
+
+## Product workflow follow-up
+
+The compact ribbon now has Home, Navigate, Analyze, Panels, Debug where applicable, and All tools. Home is deliberately concise; All tools retains every original toolbar button, and the original menus remain. This replaces the earlier default that displayed the whole flat toolbar. One icon row per ribbon page remains required. Search stays visible and indexes names, menu paths, shortcuts and plain descriptions once per dialog; it deduplicates entry points and retains unavailable actions with an explanation. Per-action contexts are captured through the original docking manager, and original action execution is retained.
+
+The modern Debugger starts with session/execution commands and a layout for Connections, code, state, output and threads/stack. All 51 stock default provider identities remain, and the original Debugger.tool is unchanged for Classic. Customized saved layouts are preserved; the modern reset/previous controls also support Debugger. A focus fallback prevents theme changes from activating an unintended tab. Native size/divider rounding is allowed within two persisted units, while provider identity, visibility and selected tabs remain strict.
+
+The Dynamic Listing explains the no-trace state and offers launcher search and Connections. A temporary in-memory trace in the desktop harness confirms that this overlay disappears on actual trace activation and returns on close; it does not run a binary or claim a live backend test. The existing listing and comparison contents remain mounted. The visible API Reference name replaces the old product-prefixed Help command while retaining its original target.
+
+Development run `build/smoke-tabbed-ribbon2` passed the complete Windows desktop harness, including actual Function Graph execution from search, the trace-state transitions, theme/layout round trips, full original command/menu continuity and zero uncaught UI exceptions. Settled dispatch: 80 samples, P95 0.1582ms and maximum 3.8263ms. These are development-overlay results, not final installer evidence. The first oversized caption ribbon was rejected during visual review and replaced by the compact task-tab design. See [product direction](PRODUCT_DIRECTION.md) for the cross-tool contract.

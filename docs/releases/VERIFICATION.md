@@ -2,6 +2,24 @@
 
 # Opcodex v1 foundation verification
 
+## 2026-11-04: compact ribbon and Debugger product workflow
+
+The follow-up implements a compact task-tab ribbon (Home/Navigate/Analyze/Panels/Debug/All tools), visible cached command search, a separate modern Debugger layout, direct debugger navigation and a real no-trace empty state. All tools retains the original toolbar controls and split alternatives; original menus remain. The Windows numeric installer is 0.1.5. See [product direction](../ui/PRODUCT_DIRECTION.md).
+
+Changed-area checks pass: 20 Java cases (six ribbon/toolbar, three finder, nine original chooser, two listing/comparison empty-state cases) and 33 Python release/feature cases. The original Debugger.tool and all 51 stock default provider identities are retained. The latest full Windows development overlay, `build/smoke-tabbed-ribbon2`, passed startup, native file selection, nine providers, original command registry, dividers, light/dark/classic layouts, real hover/cursors, Help and agreement checks, command-search execution and actual temporary-trace empty-state transitions, with zero uncaught UI exceptions and zero panel icon errors. Dispatch response over 80 settled samples: P95 0.1582ms, maximum 3.8263ms; this is not an FPS guarantee. A final focused Debugger run verified corrected pane proportions. These are explicitly development images; final rebuilt installer results are recorded separately.
+
+The earlier caption-heavy ribbon was rejected in visual review. The compact task tabs replace that design. A serialized-layout comparison caught a real selected-tab change when no provider held focus; the product now captures a selected-provider fallback. Provider identities, active flags and selected tabs remain strict; native size/divider rounding is bounded to two persisted units. Search tests select the Window-owned Function Graph command, avoiding separate graph-context commands with the same short name. No original chooser test or release gate was removed.
+
+## 2026-11-04: exact installed candidate and detached-toolbar follow-up
+
+Source `4bdb269187113c7e3fca6385b6cdcba0451601a3` completed full native builds: Windows MSI/ZIP in 37m10s (705 tasks) and Linux Debian/ZIP in 17m46s (705 tasks). Windows MSI version 0.1.4 was installed successfully (exit 0); installed source, embedded source, canonical runtime revision, five framework-module hashes and both shortcut targets matched its package. Linux's unchanged Debian package was reinstalled with source, checksum and desktop entry verified.
+
+Both exact installed applications passed the full desktop harness at normal scale (Windows physical 125%, Linux Xvfb 100%) and with a Java 200% scale override. Every run retained the complete command registry, nine tested providers, resize dividers, three theme layouts/logo refresh, visible hover names, cursor state, agreement text, Help controls and product/build identity; all panel icon checks reported zero duplicate or missing-capture errors. Windows native file selection passed single, cancel, folder, multiple and new-filename cases with responsive Swing dispatch. Neither final application run reported an uncaught UI exception. The enlarged checks are JVM overrides, not changes to the user's Windows display setting.
+
+The first bare-Xvfb Linux run failed its final real-hover assertion. The unchanged installed app passed using a window-managed Xvfb session, at both scales. CI now supplies Openbox inside that disposable server; no hover assertion was bypassed. A Windows screenshot review then caught an empty overflow-only toolbar row in detached Script Manager. Follow-up source removes that row and adds a regression assertion; new installer version 0.1.5 must be rebuilt and retested before final installation evidence is claimed.
+
+Artifact hashes for the 4bdb candidate: Windows ZIP `5eef79b30499c282822800b5b638c24bfd670f8f5f18a55a6c533570317080d2`, MSI `ed26465184b3b75a8e876e7db919d139c793574ac82b3db27e4061c777c7c753`; Linux ZIP `452caf29ce9b27b276683f4af02a8297db2f1b6486120e8039a4229907107e4c`, Debian `b6fd76eca6762a159512c0c44d73661ef202b1964c5bf7a2d7762bd5e4fb5d70`. Full upstream regression and engine/security review remain open; these native build/UI passes do not authorize a public release.
+
 ## 2026-11-04: second-audit follow-up and workspace navigation
 
 The independent second audit exercised the installed Linux package from source `a71cc37`: 76 passes, eight Opcodex defects and seven inherited failures, with explicitly limited coverage. The follow-up implementation and remaining checks are mapped in [AUDIT_PASS2](../ui/AUDIT_PASS2.md).

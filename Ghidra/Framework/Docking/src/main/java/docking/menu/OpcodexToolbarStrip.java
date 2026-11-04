@@ -16,6 +16,9 @@ final class OpcodexToolbarStrip extends JPanel {
             if (child.getParent() instanceof JComponent parent) parent.scrollRectToVisible(child.getBounds());
         }
     };
+    private static final ContainerAdapter FOLLOW_CHILDREN = new ContainerAdapter() {
+        @Override public void componentAdded(ContainerEvent event) { followFocus(event.getChild()); }
+    };
     private final JPanel commands;
     private final JScrollPane scroll;
     private final JButton previous = arrow(false);
@@ -42,15 +45,18 @@ final class OpcodexToolbarStrip extends JPanel {
         add(previous, BorderLayout.WEST);
         add(scroll, BorderLayout.CENTER);
         add(next, BorderLayout.EAST);
-        commands.addContainerListener(new ContainerAdapter() {
-            @Override public void componentAdded(ContainerEvent event) { followFocus(event.getChild()); }
-        });
+        commands.addContainerListener(FOLLOW_CHILDREN);
         for (Component child : commands.getComponents()) followFocus(child);
     }
 
-    private void followFocus(Component child) {
+    private static void followFocus(Component child) {
         child.removeFocusListener(FOLLOW_FOCUS);
         child.addFocusListener(FOLLOW_FOCUS);
+        if (child instanceof Container container) {
+            container.removeContainerListener(FOLLOW_CHILDREN);
+            container.addContainerListener(FOLLOW_CHILDREN);
+            for (Component nested : container.getComponents()) followFocus(nested);
+        }
     }
 
     private static JButton arrow(boolean forward) {

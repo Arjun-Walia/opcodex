@@ -30,11 +30,17 @@ final class OpcodexToolbars {
 
 	static JComponent create(List<ToolBarItemManager> items,
 			DockingWindowManager manager, boolean local) {
+		// Detached providers can have panel commands but no window-level actions.
+		// An empty overflow control must not reserve a second toolbar row.
+		if (items.isEmpty()) {
+			return new JPanel(new BorderLayout());
+		}
 		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEADING, 2, 0) {
             @Override public void layoutContainer(Container parent) {
                 int x = 0;
                 int height = preferredLayoutSize(parent).height;
                 for (Component child : parent.getComponents()) {
+                    if (!child.isVisible()) continue;
                     Dimension size = child.getPreferredSize();
                     child.setBounds(x, (height - size.height) / 2, size.width, size.height);
                     x += size.width + 2;
@@ -42,7 +48,7 @@ final class OpcodexToolbars {
             }
         });
 		populate(bar, items, manager, local, true);
-		return new OpcodexToolbarStrip(bar, local);
+		return local ? new OpcodexToolbarStrip(bar, true) : OpcodexRibbon.wrap(bar, manager);
 	}
 
 	private static void populate(JPanel bar, List<ToolBarItemManager> items,
@@ -53,8 +59,17 @@ final class OpcodexToolbars {
 			.filter(item -> !expanded && !isPrimary(item, visible)).toList();
 		String previousGroup = null;
 		boolean first = true;
+		Map<String, JPanel> ribbonGroups = new LinkedHashMap<>();
 		for (ToolBarItemManager item : items) {
 			if (expanded || isPrimary(item, visible)) {
+				if (!local) {
+					String group = OpcodexRibbon.category(item.getAction());
+					JPanel section = ribbonGroups.computeIfAbsent(group, name -> {
+						JPanel created = OpcodexRibbon.group(name); bar.add(created); return created;
+					});
+					OpcodexRibbon.add(section, item.getButton(), OpcodexRibbon.caption(item.getAction().getName()));
+					continue;
+				}
 				if (!first && !java.util.Objects.equals(previousGroup, item.getGroup())) {
 					JSeparator divider = new JSeparator(SwingConstants.VERTICAL);
 					divider.setPreferredSize(new Dimension(8, 18));
@@ -70,19 +85,29 @@ final class OpcodexToolbars {
 			manager != null && manager.getTool() != null &&
 			manager.getTool().getAllActions().stream()
 				.anyMatch(action -> action.getName().equals("Go To Address/Label"))) {
-			bar.add(Box.createHorizontalStrut(16));
 			JButton navigate = new JButton(new GIcon("icon.search"));
 			navigate.setName("Opcodex Go To");
 			navigate.setToolTipText("<html><b>Go to symbol or address</b><br>Open a function, symbol or address.<br>Shortcut: G</html>");
 			navigate.getAccessibleContext().setAccessibleName("Go to symbol or address");
 			navigate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			navigate.setHorizontalAlignment(SwingConstants.LEFT);
-			navigate.setPreferredSize(new Dimension(32, 32));
 			navigate.addActionListener(event -> manager.getTool().getAllActions().stream()
 				.filter(action -> action.getName().equals("Go To Address/Label"))
 				.findFirst().ifPresent(action -> DockingActionPerformer.perform(action,
 					new ActionEvent(navigate, ActionEvent.ACTION_PERFORMED, action.getName()), manager)));
-			bar.add(navigate);
+			JPanel navigation = ribbonGroups.computeIfAbsent("Navigate", name -> {
+				JPanel created = OpcodexRibbon.group(name); bar.add(created); return created;
+			});
+			OpcodexRibbon.add(navigation, navigate, "Go to");
+		}
+		if (!local) {
+			List<String> order = manager != null && manager.getTool() != null &&
+				manager.getTool().getName().equals("Debugger")
+				? List.of("Debug session", "Execution", "Navigate", "Project", "Edit", "Analyze")
+				: List.of("Project", "Navigate", "Analyze", "Edit", "Search", "Graph");
+			bar.removeAll();
+			for (String group : order) if (ribbonGroups.containsKey(group)) bar.add(ribbonGroups.get(group));
+			for (var entry : ribbonGroups.entrySet()) if (!order.contains(entry.getKey())) bar.add(entry.getValue());
 		}
 		if (!hidden.isEmpty() || expanded) {
 			EmptyBorderButton more = new EmptyBorderButton(OpcodexUi.sized(new MoreIcon(), 20));
@@ -112,15 +137,17 @@ final class OpcodexToolbars {
 					section.add(entry);
 				}
 				if (!hidden.isEmpty()) menu.addSeparator();
-				JCheckBoxMenuItem complete = new JCheckBoxMenuItem("Show complete toolbar", expanded);
+				JCheckBoxMenuItem complete = new JCheckBoxMenuItem("Show complete toolbar", local ? expanded :
+					"All tools".equals(bar.getClientProperty("opcodex.ribbon.tab")));
 				complete.addActionListener(click -> {
-					populate(bar, items, manager, local, !expanded);
+					if (local) populate(bar, items, manager, true, !expanded);
+					else OpcodexRibbon.showComplete(bar, complete.isSelected());
 					bar.revalidate();
 					bar.repaint();
 				});
 				menu.add(complete);
 				if (!local && manager != null && manager.getTool() != null &&
-					manager.getTool().getName().equals("CodeBrowser")) {
+					Set.of("CodeBrowser", "Debugger").contains(manager.getTool().getName())) {
 					menu.addSeparator();
 					JMenuItem focused = new JMenuItem("Restore focused workspace");
 					focused.addActionListener(click -> OpcodexWorkspaces.focus(manager));
@@ -132,7 +159,12 @@ final class OpcodexToolbars {
 				}
 				menu.show(more, 0, more.getHeight());
 			});
-			bar.add(more);
+			if (local) bar.add(more);
+			else {
+				JPanel workspace = OpcodexRibbon.group("Workspace");
+				OpcodexRibbon.add(workspace, more, "Layout");
+				bar.add(workspace);
+			}
 		}
 	}
 

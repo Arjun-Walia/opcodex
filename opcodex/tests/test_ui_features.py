@@ -11,6 +11,19 @@ BASELINE = json.loads((ROOT / 'opcodex/upstream.json').read_text(encoding='utf-8
 
 
 class WorkbenchFeatureTests(unittest.TestCase):
+    def test_debugger_modern_layout_keeps_every_original_provider_and_classic_default(self):
+        relative = 'Ghidra/Debug/Debugger/src/main/resources/defaultTools/Debugger.tool'
+        baseline = BASELINE.get('commit') or BASELINE.get('revision')
+        original_bytes = subprocess.check_output(['git', 'show', f'{baseline}:{relative}'], cwd=ROOT)
+        self.assertEqual(original_bytes.decode().splitlines(), (ROOT / relative).read_text(encoding='utf-8').splitlines())
+        original = ET.fromstring(original_bytes).find('TOOL/ROOT_NODE')
+        modern = ET.parse(ROOT / 'Ghidra/Debug/Debugger/src/main/resources/opcodexTools/Debugger.xml').getroot().find('ROOT_NODE')
+        def identities(root):
+            return sorted(tuple(node.get(attr, '') for attr in ['NAME', 'OWNER', 'INSTANCE_ID', 'GROUP'])
+                          for node in root.iter('COMPONENT_INFO'))
+        self.assertEqual(identities(original), identities(modern))
+        self.assertEqual(modern.get('FOCUSED_NAME'), 'Connections')
+
     def test_bundled_tools_keep_every_plugin_and_supported_data_type(self):
         baseline = BASELINE.get('commit') or BASELINE.get('revision')
         self.assertTrue(baseline, 'Pinned engine revision is required')

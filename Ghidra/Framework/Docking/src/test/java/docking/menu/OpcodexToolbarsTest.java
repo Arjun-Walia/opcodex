@@ -19,6 +19,36 @@ import docking.test.AbstractDockingTest;
 import resources.ResourceManager;
 
 public class OpcodexToolbarsTest extends AbstractDockingTest {
+    @Test public void ribbonLabelsOriginalButtonsAndRestoresTheirPresentation() {
+        runSwing(() -> {
+            DockingAction action = new DockingAction("Save File", "Test") {
+                @Override public void actionPerformed(ActionContext context) {}
+            };
+            action.setToolBarData(new ToolBarData(ResourceManager.getDefaultIcon()));
+            ToolBarItemManager item = new ToolBarItemManager(action, null);
+            try {
+                String original = item.getButton().getText();
+                JComponent ribbon = OpcodexToolbars.create(List.of(item), null, false);
+                assertNotNull(find(ribbon, "Ribbon group: Project"));
+                assertEquals("Save", item.getButton().getText());
+                assertTrue(SwingUtilities.isDescendingFrom(item.getButton(), ribbon));
+                item.getButton().setVisible(false);
+                OpcodexRibbon.restore(item.getButton());
+                assertEquals(original, item.getButton().getText());
+                assertTrue(item.getButton().isVisible());
+            } finally { item.dispose(); }
+        });
+    }
+    @Test public void emptyDetachedToolbarsDoNotReserveAnotherRow() {
+        runSwing(() -> {
+            for (boolean local : new boolean[] {false, true}) {
+                JComponent toolbar = OpcodexToolbars.create(List.of(), null, local);
+                assertEquals(0, toolbar.getPreferredSize().height);
+                assertNull(find(toolbar, "More workspace actions"));
+                assertNull(find(toolbar, "More panel actions"));
+            }
+        });
+    }
     @Test public void providerHeadersAcceptTheStableToolbarHost() {
         runSwing(() -> {
             docking.GenericHeader header = new docking.GenericHeader();
@@ -26,7 +56,7 @@ public class OpcodexToolbarsTest extends AbstractDockingTest {
             finally { header.dispose(); }
         });
     }
-	@Test public void ordinaryWindowProxiesRemainVisibleByDefault() {
+	@Test public void allToolsTabRetainsEveryOriginalWindowProxy() {
 		runSwing(() -> {
 			DockingAction action = new DockingAction("Secondary command", "Test") {
 				@Override public void actionPerformed(ActionContext context) {}
@@ -35,7 +65,9 @@ public class OpcodexToolbarsTest extends AbstractDockingTest {
 			ToolBarItemManager item = new ToolBarItemManager(new DockingActionProxy(action), null);
 			try {
 				JComponent toolbar = OpcodexToolbars.create(List.of(item), null, false);
+				((AbstractButton)find(toolbar, "Ribbon tab: All tools")).doClick(0);
 				assertTrue(SwingUtilities.isDescendingFrom(item.getButton(), toolbar));
+                assertTrue(item.getButton().isVisible());
                 assertNotNull(find(toolbar, "More workspace actions"));
 			}
 			finally { item.dispose(); }
@@ -91,6 +123,7 @@ public class OpcodexToolbarsTest extends AbstractDockingTest {
                     items.add(new ToolBarItemManager(action, null));
                 }
                 JComponent strip = OpcodexToolbars.create(items, null, false);
+                ((AbstractButton)find(strip, "Ribbon tab: All tools")).doClick(0);
                 frame.add(strip); frame.setSize(360, 110); frame.setVisible(true); frame.validate();
                 int center = items.get(0).getButton().getY() + items.get(0).getButton().getHeight() / 2;
                 for (var item : items) {

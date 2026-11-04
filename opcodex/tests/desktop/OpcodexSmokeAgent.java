@@ -286,6 +286,14 @@ public class OpcodexSmokeAgent {
                 .invoke(services, "CodeBrowser", files));
             if (browser == null) throw new AssertionError("CodeBrowser failed to launch");
             Window browserWindow = (Window) browser.getClass().getMethod("getToolFrame").invoke(browser);
+            if(Boolean.getBoolean("opcodex.smoke.debuggerOnly")) {
+                Object debugger=edt(() -> type("ghidra.framework.model.ToolServices").getMethod("launchTool",String.class,Collection.class).invoke(services,"Debugger",java.util.List.of()));
+                Window window=(Window)debugger.getClass().getMethod("getToolFrame").invoke(debugger);
+                Thread.sleep(1000);
+                OpcodexAuditProbe.verifyDebugger(debugger,window,OUTPUT,OpcodexSmokeAgent::capture);
+                if(unexpectedUiFailure!=null)throw new AssertionError("Unexpected UI exception",unexpectedUiFailure);
+                System.out.println("OPCODEX_DEBUGGER_PREVIEW_PASS");System.exit(0);
+            }
             if (Boolean.getBoolean("opcodex.smoke.inventoryOnly")) {
                 Thread.sleep(1000);
                 StringBuilder tables = new StringBuilder();
@@ -309,19 +317,15 @@ public class OpcodexSmokeAgent {
             if (overflow == null || edt(() -> menuItem(overflow, "Show complete toolbar")) == null)
                 throw new AssertionError("Complete toolbar access missing");
             capture(browserWindow, "dark/overflow.png");
-            if (!edt(() -> ((JCheckBoxMenuItem) menuItem(overflow, "Show complete toolbar")).isSelected()))
-                throw new AssertionError("All original toolbar actions must be visible by default");
-            edt(() -> { menuItem(overflow, "Show complete toolbar").doClick(0); return null; });
-            edt(() -> { named(browserWindow, "More workspace actions").doClick(0); return null; });
-            Thread.sleep(150);
-            JPopupMenu compactMenu = edt(() -> {
-                for (MenuElement element : MenuSelectionManager.defaultManager().getSelectedPath())
-                    if (element instanceof JPopupMenu popup) return popup;
-                return null;
-            });
-            JMenuItem symbols = edt(() -> menuItem(compactMenu, "Symbol Tree"));
-            if (symbols == null || !symbols.isEnabled()) throw new AssertionError("Symbol command missing from overflow");
-            edt(() -> { symbols.doClick(0); MenuSelectionManager.defaultManager().clearSelectedPath(); return null; });
+            // The requested tabbed ribbon starts at Home; All tools retains the original controls.
+            AbstractButton home = edt(() -> named(browserWindow, "Ribbon tab: Home"));
+            AbstractButton allTools = edt(() -> named(browserWindow, "Ribbon tab: All tools"));
+            if(home==null || allTools==null || !edt(home::isSelected))throw new AssertionError("Tabbed ribbon did not start at Home");
+            edt(() -> { MenuSelectionManager.defaultManager().clearSelectedPath(); allTools.doClick(0); return null; });
+            Thread.sleep(200);
+            AbstractButton symbols = edt(() -> named(browserWindow, "Symbol Tree"));
+            if (symbols == null || !symbols.isEnabled() || !edt(symbols::isShowing)) throw new AssertionError("Original Symbol Tree command missing from All tools");
+            edt(() -> { symbols.doClick(0); home.doClick(0); return null; });
             Thread.sleep(300);
             edt(() -> { named(browserWindow, "More workspace actions").doClick(0); return null; });
             Thread.sleep(150);
@@ -439,6 +443,7 @@ public class OpcodexSmokeAgent {
             Window debuggerWindow=(Window)debugger.getClass().getMethod("getToolFrame").invoke(debugger);
             Thread.sleep(800);
             OpcodexAuditProbe.verifyToolbarWidths(debuggerWindow);
+            OpcodexAuditProbe.verifyDebugger(debugger,debuggerWindow,OUTPUT,OpcodexSmokeAgent::capture);
             OpcodexPanelProbe.writeIconInventory(debuggerWindow,OUTPUT.resolve("dark-icons-Debugger.tsv"));
             capture(debuggerWindow,"dark/debugger-toolbar.png");
             edt(() -> { debuggerWindow.setVisible(false); return null; });

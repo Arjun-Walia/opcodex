@@ -118,6 +118,7 @@ public class OpcodexPanelProbe {
             JComponent component=(JComponent)edt(()->providerType.getMethod("getComponent").invoke(provider));
             if(!edt(component::isShowing))throw new AssertionError("Panel did not open: "+name);
             Window pane=edt(()->SwingUtilities.getWindowAncestor(component));
+            OpcodexAuditProbe.verifyPanelToolbarRows(pane);
             shot.take(pane,theme+"/panels/"+name.toLowerCase(Locale.ROOT).replace(' ','-')+".png");
             final Window iconPane = pane;
             Files.writeString(output.resolve(theme + "-icons-" + name.replace(' ', '-') + ".tsv"),

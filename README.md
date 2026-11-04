@@ -53,3 +53,5 @@ Opcodex additions are Apache-2.0. Included components retain their original term
 ### Workspace and second-audit follow-up
 
 Modern workspaces now have a dedicated navigation rail and searchable panel picker using the original providers, grouped one-row commands and clearer panel surfaces. Light remains the default; Dark keeps a black canvas and Classic retains its own layout/assets. See [the second-audit implementation record](docs/ui/AUDIT_PASS2.md) for identity, chooser, Help and contrast corrections, including what still requires exact packaged-app verification. [Public guides](https://opcodex.xyz/docs/) cover installation, workspace controls, themes and release status.
+
+The desktop direction and review contract are documented in [Product direction](docs/ui/PRODUCT_DIRECTION.md). The current development follow-up adds a compact task-tab ribbon, visible command finder and a distinct Debugger workflow; exact installer evidence is recorded in [Verification](docs/releases/VERIFICATION.md).

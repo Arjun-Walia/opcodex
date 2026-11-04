@@ -21,10 +21,12 @@ final class OpcodexWorkspaces {
 
 	static void focus(DockingWindowManager manager) {
 		try {
-			var resource = ResourceManager.getResource("defaultTools/CodeBrowser.tool");
+			String tool = manager.getTool().getName();
+			var resource = ResourceManager.getResource(tool.equals("Debugger")
+				? "opcodexTools/Debugger.xml" : "defaultTools/CodeBrowser.tool");
 			if (resource == null) throw new java.io.IOException("Focused workspace resource is missing");
-			Element template = XmlUtilities.createSecureSAXBuilder(false, false).build(resource)
-				.getRootElement().getChild("TOOL");
+			Element template = XmlUtilities.createSecureSAXBuilder(false, false).build(resource).getRootElement();
+			if (template.getName().equals("TOOL_CONFIG")) template = template.getChild("TOOL");
 			if (template == null || template.getChild("ROOT_NODE") == null)
 				throw new java.io.IOException("Focused workspace resource is incomplete");
 			PREVIOUS.put(manager, snapshot(manager));

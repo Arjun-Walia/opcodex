@@ -167,3 +167,15 @@ See [docs/releases/VERIFICATION.md](docs/releases/VERIFICATION.md) for exact com
 | `Ghidra/Framework/Docking/src/main/java/docking/widgets/filechooser/LocalFileChooserModel.java` | OPCODEX: modern Help presentation and themed local chooser icons; original actions, browsing behavior and notices retained. |
 
 | `Ghidra/Framework/Help/src/main/java/help/GHelpHTMLEditorKit.java` | OPCODEX: modern Help presentation and themed local chooser icons; original actions, browsing behavior and notices retained. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/actions/dialog/ActionChooserDialog.java` | OPCODEX: Visible ribbon command discovery, cached purpose/menu search and readable availability details; original action runner and Classic chooser retained. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/actions/dialog/ActionsModel.java` | OPCODEX: Deduplicate ribbon search results and capture original per-action contexts; retain the original chooser behavior by default. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/nav/ListingPanelContainer.java` | OPCODEX: Preserve the original listing/comparison views under an optional session empty-state layer. |
+
+| `Ghidra/Debug/Debugger/src/main/java/ghidra/app/plugin/core/debug/gui/listing/DebuggerListingProvider.java` | OPCODEX: Explain a missing trace in modern themes, driven by real trace activation; retain all original engine operations. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/script/GhidraScriptActionManager.java` | OPCODEX: Name the visible API Reference by purpose while retaining the original documentation target. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/debug/JavaHelpPlugin.java` | OPCODEX: Follow the renamed API Reference action in help diagnostics. |

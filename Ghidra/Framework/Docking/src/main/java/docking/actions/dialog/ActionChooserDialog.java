@@ -22,6 +22,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Locale;
+import java.util.Map;
+import java.util.IdentityHashMap;
+import java.util.regex.Pattern;
 import java.util.function.BiPredicate;
 
 import javax.swing.*;
@@ -37,6 +41,7 @@ import generic.theme.GThemeDefaults.Colors.Messages;
 import ghidra.util.HTMLUtilities;
 import ghidra.util.Swing;
 import resources.Icons;
+import generic.theme.builtin.OpcodexUi;
 
 /**
  * Dialog for displaying and invoking docking actions. The dialog will display a mix of local
@@ -46,6 +51,26 @@ public class ActionChooserDialog extends DialogComponentProvider {
 	private ActionsModel model;
 	private SearchList<DockingActionIf> searchList;
 	private ActionRunner actionRunner;
+	// OPCODEX: expose purpose and context alongside searchable command names.
+	private JTextArea commandDetails;
+	private boolean commandFinder;
+	private final Map<DockingActionIf, String> commandIndex = new IdentityHashMap<>();
+	private static final Pattern HTML_TAG = Pattern.compile("<[^>]*>");
+
+	public static ActionChooserDialog forOpcodex(Tool tool, ActionContext context, String query) {
+		ActionsModel model = new ActionsModel(new HashSet<>(), new HashSet<>(tool.getAllActions()), context, true);
+		model.captureContexts(tool.getWindowManager()::createActionContext);
+		ActionChooserDialog dialog = new ActionChooserDialog(model);
+		dialog.commandFinder = true;
+		dialog.setActionDisplayLevel(ActionDisplayLevel.ALL);
+		dialog.setPreferredSize(850, 600);
+		dialog.setOkButtonText("Run command");
+		dialog.searchList.setName("Opcodex command results");
+		dialog.searchList.setShowCategories(false);
+		dialog.setAccessibleDescription("Search every command by name, menu path or purpose. Use arrows to select, Enter to run and Escape to close. Unavailable commands remain discoverable.");
+		dialog.setFilterText(query);
+		return dialog;
+	}
 
 	/**
 	 * Constructor given an ActionsModel.
@@ -113,7 +138,7 @@ public class ActionChooserDialog extends DialogComponentProvider {
 	 * @param level the action display level to use.
 	 */
 	public void setActionDisplayLevel(ActionDisplayLevel level) {
-		model.setDisplayLevel(level);
+		model.setDisplayLevel(commandFinder ? ActionDisplayLevel.ALL : level);
 		updateTitle();
 	}
 
@@ -126,6 +151,7 @@ public class ActionChooserDialog extends DialogComponentProvider {
 	}
 
 	private void updateTitle() {
+		if (commandFinder) { setTitle("Find a command · " + model.getSize() + " indexed actions"); return; }
 		switch (model.getActionDisplayLevel()) {
 			case LOCAL:
 				setTitle("Relevant Actions (" + model.getSize() + ")");
@@ -145,7 +171,13 @@ public class ActionChooserDialog extends DialogComponentProvider {
 		searchList = new SearchList<DockingActionIf>(model, (a, c) -> actionChosen(a)) {
 			@Override
 			protected BiPredicate<DockingActionIf, String> createFilter(String text) {
-				return new ActionsFilter(text);
+				if (!OpcodexUi.active()) return new ActionsFilter(text);
+				String[] words = text.strip().toLowerCase(Locale.ROOT).split("\\s+");
+				return (action, category) -> {
+					String indexed = commandIndex.computeIfAbsent(action, ActionChooserDialog::commandIndexText);
+					for (String word : words) if (!indexed.contains(word)) return false;
+					return true;
+				};
 			}
 		};
 
@@ -155,6 +187,17 @@ public class ActionChooserDialog extends DialogComponentProvider {
 		searchList.setDisplayNameFunction(
 			(t, c) -> getActionDisplayName(t, c) + " " + getKeyBindingString(t));
 		panel.add(searchList);
+		if (OpcodexUi.active()) {
+			commandDetails = new JTextArea(4, 50);
+			commandDetails.setName("Command purpose and availability");
+			commandDetails.setEditable(false);
+			commandDetails.setLineWrap(true);
+			commandDetails.setWrapStyleWord(true);
+			commandDetails.setFont(UIManager.getFont("Label.font"));
+			commandDetails.setBorder(BorderFactory.createEmptyBorder(12, 8, 8, 8));
+			commandDetails.setText("Search by command name, menu path or purpose. Select a result to read its description.");
+			panel.add(commandDetails, BorderLayout.SOUTH);
+		}
 		return panel;
 	}
 
@@ -162,9 +205,17 @@ public class ActionChooserDialog extends DialogComponentProvider {
 		if (!canPerformAction(action)) {
 			return;
 		}
-		ActionContext context = model.getContext();
-		close();
-		scheduleActionAfterFocusRestored(action, context);
+		ActionContext context = model.getContext(action);
+		if (commandFinder) {
+			// Register before closing: native focus can return synchronously during close().
+			scheduleActionAfterFocusRestored(action, context);
+			close();
+			Swing.runLater(actionRunner::focusRestoredIfReady);
+		}
+		else {
+			close();
+			scheduleActionAfterFocusRestored(action, context);
+		}
 	}
 
 	private void scheduleActionAfterFocusRestored(DockingActionIf action, ActionContext context) {
@@ -187,13 +238,14 @@ public class ActionChooserDialog extends DialogComponentProvider {
 	public void dispose() {
 		super.dispose();
 		searchList.dispose();
+		commandIndex.clear();
 	}
 
 	private boolean canPerformAction(DockingActionIf action) {
 		if (action == null) {
 			return false;
 		}
-		ActionContext context = model.getContext();
+		ActionContext context = model.getContext(action);
 		return action.isValidContext(context) && action.isEnabledForContext(context);
 	}
 
@@ -202,6 +254,30 @@ public class ActionChooserDialog extends DialogComponentProvider {
 		// setKeybinding action (F4) work on the currently selected action in the dialog
 		DockingWindowManager.setMouseOverAction(action);
 		setOkEnabled(canPerformAction(action));
+		if (commandDetails != null) {
+			String description = action == null ? "No matching command. Try a shorter name or another word." :
+				action.getName() + "\n" + plainDescription(action) + "\n" +
+				(canPerformAction(action) ? "Available in the current view." :
+				 "Unavailable here. Open the relevant panel or select a program, target or item first.");
+			commandDetails.setText(description);
+			commandDetails.setCaretPosition(0);
+		}
+	}
+
+	private static String plainDescription(DockingActionIf action) {
+		String text = action.getDescription();
+		if (text == null) return "";
+		// Do not construct a Swing HTML view for every search result or keystroke.
+		if (text.regionMatches(true, 0, "<html>", 0, 6)) text = HTML_TAG.matcher(text).replaceAll(" ");
+		return text.replace("&nbsp;", " ").replace("&lt;", "<").replace("&gt;", ">")
+			.replace("&quot;", "\"").replace("&amp;", "&").strip();
+	}
+
+	static String commandIndexText(DockingActionIf action) {
+		String text = action.getName() + " " + plainDescription(action) + " " + getKeyBindingString(action);
+		if (action.getMenuBarData() != null) text += " " + action.getMenuBarData().getMenuPathDisplayString();
+		if (action.getPopupMenuData() != null) text += " " + action.getPopupMenuData().getMenuPathDisplayString();
+		return text.toLowerCase(Locale.ROOT);
 	}
 
 	private static String getActionsDisplayMenuName(DockingActionIf action, MenuData menuData) {
@@ -254,14 +330,22 @@ public class ActionChooserDialog extends DialogComponentProvider {
 
 		private DockingActionIf action;
 		private ActionContext context;
+		private Window sourceWindow;
+		private boolean scheduled;
 
 		ActionRunner(DockingActionIf action, ActionContext context) {
 			this.action = action;
 			this.context = context;
+			sourceWindow = SwingUtilities.getWindowAncestor(searchList);
 		}
 
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
+			if (scheduled) return;
+			if (commandFinder && (evt.getNewValue() == null ||
+				(evt.getNewValue() instanceof Component component && sourceWindow != null &&
+				 SwingUtilities.isDescendingFrom(component, sourceWindow)))) return;
+			scheduled = true;
 			KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 			kfm.removePropertyChangeListener("permanentFocusOwner", this);
 
@@ -270,7 +354,14 @@ public class ActionChooserDialog extends DialogComponentProvider {
 			Swing.runLater(() -> activateAction());
 		}
 
+		private void focusRestoredIfReady() {
+			Component focus = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+			if (focus != null && (sourceWindow == null || !SwingUtilities.isDescendingFrom(focus, sourceWindow)))
+				propertyChange(new PropertyChangeEvent(this, "permanentFocusOwner", null, focus));
+		}
+
 		private void activateAction() {
+			if (commandFinder && !(action.isValidContext(context) && action.isEnabledForContext(context))) return;
 			// Toggle actions do not toggle their state directly, therefore we have to do it 
 			// explicitly before we execute the action.
 			if (action instanceof ToggleDockingActionIf toggleAction) {
@@ -313,7 +404,7 @@ public class ActionChooserDialog extends DialogComponentProvider {
 			Color fgName = getForeground(); // defaults to list foreground; handles selected state
 			Color fgKeyBinding = isSelected ? getForeground() : Messages.HINT;
 
-			ActionContext context = model.getContext();
+			ActionContext context = model.getContext(action);
 			if (!(action.isValidContext(context) && action.isEnabledForContext(context))) {
 				fgName = isSelected ? getForeground() : Colors.FOREGROUND_DISABLED;
 				fgKeyBinding = isSelected ? getForeground() : Colors.FOREGROUND_DISABLED;
@@ -351,13 +442,13 @@ public class ActionChooserDialog extends DialogComponentProvider {
 		private String filterText;
 
 		ActionsFilter(String filterText) {
-			this.filterText = filterText.toLowerCase();
+			this.filterText = filterText.toLowerCase(Locale.ROOT);
 		}
 
 		@Override
 		public boolean test(DockingActionIf t, String category) {
-			return getActionDisplayName(t, category).toLowerCase().contains(filterText) ||
-				getKeyBindingString(t).toLowerCase().contains(filterText);
+			return getActionDisplayName(t, category).toLowerCase(Locale.ROOT).contains(filterText) ||
+				getKeyBindingString(t).toLowerCase(Locale.ROOT).contains(filterText);
 		}
 	}
 

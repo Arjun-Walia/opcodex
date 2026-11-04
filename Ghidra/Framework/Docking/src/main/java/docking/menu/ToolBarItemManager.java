@@ -88,6 +88,8 @@ public class ToolBarItemManager implements PropertyChangeListener, ActionListene
     // OPCODEX: always derive from the action's original icon, never resize an already scaled icon.
     void refreshTheme() {
         if (toolBarButton == null) return;
+        // OPCODEX: Classic restores the original icon-only command presentation.
+        OpcodexRibbon.restore(toolBarButton);
         ToolBarData data = toolBarAction.getToolBarData();
         if (data != null) toolBarButton.setIcon(OpcodexUi.active() ? OpcodexUi.sized(data.getIcon(), 20) : data.getIcon());
         DockingToolBarUtils.setToolTipText(toolBarButton, toolBarAction);

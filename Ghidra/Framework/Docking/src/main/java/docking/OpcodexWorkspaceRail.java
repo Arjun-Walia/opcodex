@@ -59,6 +59,16 @@ final class OpcodexWorkspaceRail extends JPanel {
 		if (!signature.equals(providerSignature)) {
 			providerSignature = signature;
 			shortcuts.removeAll(); targets.clear();
+			if (manager.getTool().getName().equals("Debugger")) {
+				addShortcut("Connections", "bug", "Connections");
+				addShortcut("Threads", "tree", "Threads");
+				addShortcut("Stack", "layers", "Stack");
+				addShortcut("Registers", "register-bank", "Registers");
+				addShortcut("Memory", "memory", "Memory");
+				addShortcut("Breakpoints", "breakpoint", "Breakpoints");
+				addShortcut("Debug Console", "terminal", "Debug Console");
+			}
+			else {
 			addShortcut("Listing", "listing", "Listing");
 			addShortcut("Functions", "function", "Functions Window");
 			addShortcut("Symbols", "tree", "Symbol Tree");
@@ -66,6 +76,7 @@ final class OpcodexWorkspaceRail extends JPanel {
 			addShortcut("Graph", "graph", "Function Graph");
 			addShortcut("Scripts", "code", "Script Manager");
 			addShortcut("Console", "terminal", "Console");
+			}
 			shortcuts.revalidate();
 		}
 		refreshFocus();

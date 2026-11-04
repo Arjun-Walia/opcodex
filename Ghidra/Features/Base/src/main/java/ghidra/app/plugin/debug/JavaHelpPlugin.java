@@ -68,7 +68,8 @@ public class JavaHelpPlugin extends Plugin implements ApplicationLevelPlugin {
 		noHelpActions.add("TipOfTheDayPlugin - Tips of the day");
 		noHelpActions.add("MemoryUsagePlugin - Show VM memory");
 		noHelpActions.add("Tool - Show Log");
-		noHelpActions.add("GhidraScriptMgrPlugin - Ghidra API Help");
+		// OPCODEX: follow the renamed API Reference action; its documentation target is unchanged.
+		noHelpActions.add("GhidraScriptMgrPlugin - API Reference");
 	}
 
 	public JavaHelpPlugin(PluginTool tool) {

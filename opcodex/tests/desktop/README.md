@@ -23,6 +23,16 @@ The current harness also verifies first-run Light, retired-theme migration, pres
 
 The pass-2 follow-up adds `pass2-result.json`: actual Runtime Information and controlled error Details must agree on product, engine and source revision; common buttons must set an actual AWT cursor property; navigation-rail shortcuts and its searchable panel picker open existing providers. The Light chooser's flat places sidebar must match the live theme. Script Manager Help is opened and its reading width checked. These run inside the same isolated profile and never submit an error report. The rail has its own icon-inventory scope, distinct from the main toolbar and docked provider headers.
 
-On Linux, `check_linux.py` prepares a controlled ELF fixture, compiles the platform-independent agent classes and launches an installed native launcher under Xvfb. Windows-native picker checks are deliberately Windows-only. Use persistent test directories for retained app images and a fresh output directory for each run. An overlay is development evidence; only an unchanged installed artifact proves the installer.
+On Linux, `check_linux.py` prepares a controlled ELF fixture, compiles the platform-independent agent classes and launches an installed native launcher. Run it in a disposable window-managed Xvfb session, with `openbox`, `x11-utils`, `gcc` and the build JDK installed:
+
+```sh
+xvfb-run -a -s '-screen 0 2560x1440x24' bash opcodex/tests/desktop/run_linux.sh \
+  --launcher /opt/opcodex/opcodex/bin/Opcodex \
+  --output /tmp/opcodex-installed-check
+```
+
+The wrapper starts and cleans up only its own window manager. A bare Xvfb server is not a complete desktop: a real tooltip hover failed there but passed with window management, without changing the installed application. Window identity, PID and desktop entry remain required. Windows-native picker checks are deliberately Windows-only. Use persistent test directories for retained app images and a fresh output directory for each run. An overlay is development evidence; only an unchanged installed artifact proves the installer. Panel checks also reject an empty overflow-only toolbar row in detached windows.
 
 Run `python opcodex/check_panel_icons.py <smoke-output>` after the probe. It compares the resolved geometry of visible commands, including split-control base icons and the complete main toolbar, in both Light and Dark. Different commands in one panel must not share a symbol. Repeated captures of the same command are counted once.
+
+The tabbed-ribbon follow-up starts at Home (Debug in the Debugger), selects All tools to verify the complete original toolbar, and runs the original Window → Function Graph command from search. The finder lists separate actions with the same short name distinctly; the test chooses the Window action by owner, rather than accidentally selecting an unavailable graph-context action. Debugger checks include the session/state defaults, its own rail, Classic separation and selected-tab restoration with bounded native divider rounding. A temporary DBTrace is opened/activated/closed through the original trace manager to verify empty-state transitions; no live process or sample is executed. `opcodex.smoke.debuggerOnly` is an explicitly limited development diagnostic and is not full smoke evidence.
