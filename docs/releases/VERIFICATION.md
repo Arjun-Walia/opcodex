@@ -2,6 +2,10 @@
 
 # Opcodex v1 foundation verification
 
+## Packaging classification correction
+
+The first native packaging attempt for ribbon source `d6aef2cb20bf8d05a539a9c970f2fba9420489d0` stopped at `Debugger:ip`: the new derived Debugger layout XML had no certification-manifest classification. The Windows build was stopped after the same issue was identified. The layout is now recorded under the same inherited GHIDRA/Apache-2.0 classification as the original Debugger.tool. No license check was skipped and no original notice was removed. Application UI/engine code is unchanged by this metadata correction; final packages must identify the correction commit in their manifests.
+
 ## 2026-11-04: compact ribbon and Debugger product workflow
 
 The follow-up implements a compact task-tab ribbon (Home/Navigate/Analyze/Panels/Debug/All tools), visible cached command search, a separate modern Debugger layout, direct debugger navigation and a real no-trace empty state. All tools retains the original toolbar controls and split alternatives; original menus remain. The Windows numeric installer is 0.1.5. See [product direction](../ui/PRODUCT_DIRECTION.md).
