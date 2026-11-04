@@ -2,13 +2,43 @@
 """Exercise an installed Linux app with a disposable project and the real desktop agent."""
 # Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import argparse
+import configparser
 import json
 import os
 import subprocess
+import shlex
 import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
+
+
+def verify_desktop_entry(launcher: Path, directories=None):
+    """Find the installed launcher in system XDG data directories, not one distro's path."""
+    if directories is None:
+        bases = os.environ.get('XDG_DATA_DIRS', '').split(':') + ['/usr/local/share', '/usr/share']
+        directories = list(dict.fromkeys(Path(base) / 'applications' for base in bases
+                                        if base and Path(base).is_absolute()))
+    matches = []
+    for directory in directories:
+        for path in sorted(directory.glob('*.desktop')):
+            entry = configparser.ConfigParser(interpolation=None, strict=False)
+            try:
+                entry.read(path, encoding='utf-8')
+                desktop = entry['Desktop Entry']
+                command = shlex.split(desktop.get('Exec', ''))
+            except (configparser.Error, UnicodeError, KeyError, ValueError):
+                continue  # Unrelated desktop entries may use another format or encoding.
+            if not command or Path(command[0]).resolve() != launcher.resolve():
+                continue
+            if desktop.get('Name') != 'Opcodex' or desktop.get('Type') != 'Application':
+                raise ValueError('The installed launcher has the wrong product identity: ' + str(path))
+            if desktop.get('StartupWMClass') != 'opcodex-Opcodex':
+                raise ValueError('The installed desktop entry has the wrong window class: ' + str(path))
+            matches.append(dict(path=str(path), executable=command[0], wmClass='opcodex-Opcodex'))
+    if not matches:
+        raise FileNotFoundError('No system desktop entry points to the installed launcher: ' + str(launcher))
+    return matches
 
 
 def check(launcher: Path, output: Path, java_home: Path, development_overlay: bool = False):
@@ -19,9 +49,9 @@ def check(launcher: Path, output: Path, java_home: Path, development_overlay: bo
     if (launcher.parent.parent / 'preview-origin.json').exists() and not development_overlay:
         raise ValueError('A modified test image requires --development-overlay; it is not installed-package evidence')
     if not development_overlay:
-        desktop = Path('/usr/share/applications/opcodex-Opcodex.desktop').read_text()
-        if 'StartupWMClass=opcodex-Opcodex' not in desktop.splitlines():
-            raise ValueError('The installed desktop entry does not match the product window class')
+        entries = verify_desktop_entry(launcher)
+        (output / 'linux-desktop-entry.json').write_text(json.dumps(entries, indent=2) + '\n')
+        print('Validated system desktop entries:', ', '.join(entry['path'] for entry in entries), flush=True)
     projects, fixtures, classes = output / 'projects', output / 'fixtures', output / 'classes'
     for directory in (projects, fixtures, classes, output / 'headless-home'):
         directory.mkdir()
