@@ -64,6 +64,8 @@ class ReleaseTests(unittest.TestCase):
             self.assertEqual((archive.getinfo(prefix + 'preserved.jar').external_attr >> 16) & 0o777, 0o755)
             manifest = json.loads(archive.read(prefix + 'opcodex-release.json'))
             self.assertEqual(manifest['sourceRevision'], 'a' * 40)
+            bundled = properties(archive.read(prefix + 'Ghidra/application.properties').decode())
+            self.assertEqual(bundled['opcodex.source.revision'], manifest['sourceRevision'])
             self.assertEqual(manifest['upstream']['version'], '12.1.4')
             self.assertEqual(manifest['sourceArchiveSha256'], digest(self.source))
         self.assertEqual(result.with_suffix('.zip.sha256').read_text().split()[0], digest(result))

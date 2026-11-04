@@ -13,6 +13,7 @@ import javax.swing.*;
 public class OpcodexSmokeAgent {
     private static final Path OUTPUT = Path.of(System.getProperty("opcodex.smoke.output"));
     private static final long DEADLINE = System.currentTimeMillis() + 240000;
+    private static volatile Throwable unexpectedUiFailure;
     private static Class<?> type(String name) throws Exception {
         return Class.forName(name, true, ClassLoader.getSystemClassLoader());
     }
@@ -175,6 +176,18 @@ public class OpcodexSmokeAgent {
         }
         if (component instanceof Container c) for (Component child : c.getComponents()) dumpButtons(child, output);
     }
+    private static void verifyAgreementFits(Component component) throws Exception {
+        if (component instanceof JEditorPane editor) {
+            String text=editor.getDocument().getText(0,editor.getDocument().getLength());
+            int last=text.length()-1;
+            while(last>0 && Character.isWhitespace(text.charAt(last))) last--;
+            java.awt.geom.Rectangle2D end=editor.modelToView2D(last);
+            if(end==null || end.getMaxY()>editor.getVisibleRect().getMaxY()+2)
+                throw new AssertionError("Agreement legal text requires scrolling: end="+end+", viewport="+
+                    editor.getVisibleRect()+", preferred="+editor.getPreferredSize()+", size="+editor.getSize());
+        }
+        if(component instanceof Container parent) for(Component child:parent.getComponents()) verifyAgreementFits(child);
+    }
     private static void run() {
         try {
             Files.createDirectories(OUTPUT);
@@ -187,6 +200,8 @@ public class OpcodexSmokeAgent {
                 });
                 if (agreement != null && !accepted) {
                     capture(agreement, "agreement.png");
+                    final Window agreementWindow=agreement;
+                    edt(() -> { verifyAgreementFits(agreementWindow); return null; });
                     edt(() -> { button(agreement, "I Agree").doClick(); return null; });
                     accepted = true;
                 }
@@ -194,6 +209,13 @@ public class OpcodexSmokeAgent {
                 Thread.sleep(250);
             }
             if (main == null) throw new AssertionError("Opcodex project window did not start");
+            edt(() -> { Thread.currentThread().setUncaughtExceptionHandler((thread,error) -> {
+                unexpectedUiFailure=error;
+                error.printStackTrace();
+                try { java.io.StringWriter trace=new java.io.StringWriter(); error.printStackTrace(new java.io.PrintWriter(trace));
+                    Files.writeString(OUTPUT.resolve("unexpected-ui-exception.txt"),trace.toString());
+                } catch(java.io.IOException logging) { logging.printStackTrace(); }
+            });return null; });
             StringBuilder defaults = new StringBuilder();
             edt(() -> {
                 UIManager.getDefaults().entrySet().stream().sorted(Comparator.comparing(e -> e.getKey().toString()))
@@ -421,6 +443,7 @@ public class OpcodexSmokeAgent {
             capture(debuggerWindow,"dark/debugger-toolbar.png");
             edt(() -> { debuggerWindow.setVisible(false); return null; });
             OpcodexAuditProbe.verify(browser, browserWindow, main, OUTPUT, OpcodexSmokeAgent::capture);
+            if(unexpectedUiFailure!=null)throw new AssertionError("Unexpected event-dispatch exception",unexpectedUiFailure);
             Files.writeString(OUTPUT.resolve("result.json"), "{\"startup\":true,\"isolatedProfile\":true,\"agreement\":" + accepted + ",\"codeBrowser\":true,\"welcome\":true,\"focusedToolbar\":true,\"workspaceResetAndUndo\":true,\"overflowCommand\":true,\"goTo\":true,\"themeDiscovery\":true,\"themes\":[\"Opcodex Light\",\"Opcodex Dark\",\"Ghidra Classic\"],\"about\":true,\"cleanTaskProgress\":true,\"startupVectorIcons\":true,\"multiplePanels\":true,\"resizableDividers\":true,\"menuAndToolbarParity\":true}\n");
             Files.writeString(OUTPUT.resolve("display.txt"), "Java=" + System.getProperty("java.version") + "\nOS=" + System.getProperty("os.name") + "\nNativeLauncher=" + System.getProperty("jpackage.app-path") + "\nScale=" + GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform().getScaleX() + "\n");
             System.out.println("OPCODEX_SMOKE_PASS");

@@ -124,6 +124,14 @@ def package_release(source: Path, destination: Path, platform: str,
                     entry = copy.copy(member)
                     entry.filename = f'{name}/{relative}'
                     entry.compress_type = ZIP_DEFLATED
+                    if relative == 'Ghidra/application.properties':
+                        # Source identity must not depend on the build checkout's directory name.
+                        text = incoming.read(member).decode('utf-8')
+                        text = '\n'.join(line for line in text.splitlines()
+                                         if not line.startswith('opcodex.source.revision='))
+                        outgoing.writestr(entry, text + '\n# OPCODEX: verified package source identity.\n'
+                                          + 'opcodex.source.revision=' + revision + '\n')
+                        continue
                     with incoming.open(member) as reader, outgoing.open(entry, 'w') as writer:
                         shutil.copyfileobj(reader, writer)
                 for relative, path in additions.items():

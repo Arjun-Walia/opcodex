@@ -34,7 +34,7 @@ final class OpcodexToolbarStrip extends JPanel {
         scroll.getViewport().addChangeListener(event -> updateArrows());
         scroll.addMouseWheelListener(event -> {
             if (commands.getWidth() <= scroll.getViewport().getWidth()) return;
-            move(event.getWheelRotation() * 96);
+            move((int) Math.round(event.getPreciseWheelRotation() * 96));
             event.consume();
         });
         previous.addActionListener(event -> move(-scroll.getViewport().getWidth() / 2));
@@ -61,6 +61,7 @@ final class OpcodexToolbarStrip extends JPanel {
         button.setToolTipText(name + " · mouse wheel also scrolls commands");
         button.getAccessibleContext().setAccessibleName(name);
         button.setPreferredSize(new Dimension(24, 32));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.addPropertyChangeListener("enabled", event -> button.setCursor(Cursor.getPredefinedCursor(
             button.isEnabled() ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR)));
         return button;

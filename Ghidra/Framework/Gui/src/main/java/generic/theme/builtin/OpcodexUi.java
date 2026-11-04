@@ -31,6 +31,7 @@ public final class OpcodexUi {
 	}
 	/** Recognize vector sources through the standard theme and derived-icon wrappers. */
 	public static boolean isVector(Icon icon) {
+		if (icon instanceof PaintedIcon painted) return isVector(painted.source());
 		if (icon instanceof OpcodexImageIcon || icon instanceof OpcodexResourceIcon ||
 			icon instanceof OpcodexPaintedImageIcon) return true;
 		if (icon instanceof generic.theme.GIcon themed) return isVector(themed.getDelegate());

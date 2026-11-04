@@ -1895,3 +1895,16 @@ src/main/resources/images/opcodex/ui/light/filter-location-starts-24.png||Apache
 src/main/resources/images/opcodex/ui/light/filter-location-starts-32.png||Apache License 2.0||||END|
 src/main/resources/images/opcodex/ui/light/filter-location-starts-48.png||Apache License 2.0||||END|
 src/main/resources/images/opcodex/ui/light/filter-location-starts-64.png||Apache License 2.0||||END|
+
+src/main/resources/images/opcodex/ui/dark/print-16.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/print-20.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/print-24.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/print-32.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/print-48.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/dark/print-64.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/print-16.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/print-20.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/print-24.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/print-32.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/print-48.png||Apache License 2.0||||END|
+src/main/resources/images/opcodex/ui/light/print-64.png||Apache License 2.0||||END|

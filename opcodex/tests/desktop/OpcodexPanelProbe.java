@@ -174,6 +174,8 @@ public class OpcodexPanelProbe {
         Window owner=SwingUtilities.getWindowAncestor(component);
         String prefix=owner instanceof Frame frame && frame.getTitle().startsWith("Debugger") ? "Debugger / " : "";
         for (Container parent=component.getParent();parent!=null;parent=parent.getParent()) {
+            if (parent.getClass().getName().equals("docking.OpcodexWorkspaceRail"))
+                return prefix+"Workspace navigation";
             if (type("docking.DockableComponent").isInstance(parent)) {
                 Method method=type("docking.DockableComponent").getDeclaredMethod("getComponentWindowingPlaceholder");
                 method.setAccessible(true);Object placeholder=method.invoke(parent);

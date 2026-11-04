@@ -151,3 +151,19 @@ See [docs/releases/VERIFICATION.md](docs/releases/VERIFICATION.md) for exact com
 | `Ghidra/Debug/Debugger/src/main/java/ghidra/app/plugin/core/debug/gui/breakpoint/DebuggerBreakpointsProvider.java` | OPCODEX: distinguish location-filter controls while preserving matching and inversion settings. |
 
 | `Ghidra/Framework/Docking/src/main/java/docking/help/DockingHelpBroker.java` | OPCODEX: resolve current theme branding for newly opened help windows. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/DockableComponent.java` | OPCODEX: pass-2 identity, readability and workspace presentation corrections; original APIs and licensing preserved. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/ErrLogDialog.java` | OPCODEX: pass-2 identity, readability and workspace presentation corrections; original APIs and licensing preserved. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/filechooser/FileChooserToggleButton.java` | OPCODEX: pass-2 identity, readability and workspace presentation corrections; original APIs and licensing preserved. |
+
+| `Ghidra/Framework/Utility/src/main/java/ghidra/framework/ApplicationProperties.java` | OPCODEX: pass-2 identity, readability and workspace presentation corrections; original APIs and licensing preserved. |
+
+| `Ghidra/RuntimeScripts/Common/support/launch.properties` | OPCODEX: pass-2 identity, readability and workspace presentation corrections; original APIs and licensing preserved. |
+
+| `Ghidra/RuntimeScripts/Linux/support/launch.sh` | OPCODEX: pass-2 identity, readability and workspace presentation corrections; original APIs and licensing preserved. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/widgets/filechooser/LocalFileChooserModel.java` | OPCODEX: modern Help presentation and themed local chooser icons; original actions, browsing behavior and notices retained. |
+
+| `Ghidra/Framework/Help/src/main/java/help/GHelpHTMLEditorKit.java` | OPCODEX: modern Help presentation and themed local chooser icons; original actions, browsing behavior and notices retained. |

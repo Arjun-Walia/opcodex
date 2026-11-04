@@ -2,6 +2,20 @@
 
 # Opcodex v1 foundation verification
 
+## 2026-11-04: second-audit follow-up and workspace navigation
+
+The independent second audit exercised the installed Linux package from source `a71cc37`: 76 passes, eight Opcodex defects and seven inherited failures, with explicitly limited coverage. The follow-up implementation and remaining checks are mapped in [AUDIT_PASS2](../ui/AUDIT_PASS2.md).
+
+Focused checks pass: 23 Java cases (13 theme, four source identity, four toolbar, two agreement) and 32 Python release/feature cases. The icon catalog has 150 original glyphs and 886 declared bindings, with zero missing IDs or asset errors. Modified upstream license headers, OPCODEX markers and modification records were checked. Pinned engine, processor, DB and decompiler sources and original notices remain unchanged.
+
+Windows development run `build/smoke-pass2-preview12` passed the complete desktop harness at the machine's 125% scale. This covers original command/menu parity, nine panels, independent dividers, Light/Dark/Classic layout and logo changes, actual cursor properties and a visibly displayed hover name. The pass-2 record confirms that Runtime Information and controlled error Details identify product, engine and revision separately; rail shortcuts and the searchable picker operate; the Light chooser sidebar follows its palette; and the agreement's final line is visible initially. Help retains its vector controls and usable reading width, including zoom/navigation commands and the correct heading color after the theme round trip. The icon inventory reports zero duplicate or flattened command errors. No uncaught event-dispatch exception occurred after moving Help style initialization before parsing. Settled dispatch turnaround: 80 samples, P95 0.0849 ms, maximum 2.2604 ms. This is not an FPS or universal performance guarantee.
+
+These are development JAR overlays over an older distribution, **not exact final installer evidence**. A Linux development check confirmed WM_CLASS `opcodex-Opcodex` and the matching launcher PID. The Linux harness now checks the installed desktop entry and actual X11 identity. Modified images require an explicit development-overlay flag and are never labelled installed proof. Final native Windows/Linux builds and installation checks will be recorded separately. The previous verified PC installation remains source `3ae3b13` until the new installer is actually installed.
+
+Website documentation was fast-forwarded to its main branch at `80d8970` after local formatting, zero Astro diagnostics, a 40-page production/link check, six content tests and nine browser/accessibility tests passed. The live release-status route returned HTTP 200 with the new audit section. Obsidian contains the raw audit, implementation follow-up, workspace guide and current release-status note. No desktop tag, public release or Community main merge is implied by the website deployment.
+
+Broad upstream Linux tests still have missing external fixtures and failing or timed-out cases. No test exclusion or failure gate was weakened. Upstream 12.2 security changes are not included or claimed backported into the 12.1.4 engine pin; review is required before shipment.
+
 ## 2026-10-22: installed alpha.2 baseline and follow-up checks
 
 Follow-up source `634f9b517b2ccedfa1f8317f337cfc26465965e7` completed `buildOpcodexInstaller`: **BUILD SUCCESSFUL in 51m24s**, 705 tasks (401 executed, 304 up-to-date), without excluding build or test tasks. The Windows ZIP SHA-256 is `cde29692f91f13450a8f73296fbf25f224f82512d32253cf76134a1e5c478c8c`; its MSI (installer version `0.1.3`) SHA-256 is `504806126eb6af511a5da0a927e5f0d72cd0c6a73b6d215bc4c64cf8fd675146`. Installation of the final follow-up artifact is recorded separately below when complete.

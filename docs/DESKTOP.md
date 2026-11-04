@@ -18,7 +18,7 @@ For portable launches, use `opcodexRun.bat`. Portable ZIPs do not bundle Java. m
 
 Building this installer requires JDK 25, PowerShell 7, WiX 5.0.2 and the matching `WixToolset.UI.wixext`/`WixToolset.Util.wixext` extensions. WiX is a build tool, not an application dependency. Put `wix.exe` on PATH or set `OPCODEX_WIX_HOME` to its directory. CI pins these tools. Use a clean committed checkout.
 
-The Windows numeric installer version is `0.1.3` for product `1.0.0-alpha.2`, allowing the final `1.0.0` installer to upgrade it. Both identities and the stable upgrade UUID are recorded in `opcodex/windows-installer.json`. Keep the upgrade UUID across releases. The MSI application directory is `%LOCALAPPDATA%\Programs\Opcodex\Application`, separate from the existing `%LOCALAPPDATA%\opcodex` cache and the older versioned preview folders. Projects/settings live outside the installation directory.
+The Windows numeric installer version is `0.1.4` for product `1.0.0-alpha.2`, allowing the final `1.0.0` installer to upgrade it. Both identities and the stable upgrade UUID are recorded in `opcodex/windows-installer.json`. Keep the upgrade UUID across releases. The MSI application directory is `%LOCALAPPDATA%\Programs\Opcodex\Application`, separate from the existing `%LOCALAPPDATA%\opcodex` cache and the older versioned preview folders. Projects/settings live outside the installation directory.
 
 Creating an MSI does not publish a release. Public promotion still requires the checks in [RELEASING](releases/RELEASING.md), and actual installation/launch evidence belongs in [VERIFICATION](releases/VERIFICATION.md).
 
@@ -26,7 +26,7 @@ Creating an MSI does not publish a release. Public promotion still requires the 
 
 On Ubuntu 24.04 x86-64, install the build prerequisites (`JDK 21`, Python 3, native C/C++ tools and `fakeroot`), fetch the pinned dependencies, then run `./gradlew buildOpcodexLinuxInstaller` from a clean committed checkout. It produces `build/releases/opcodex_1.0.0-alpha.2_linux_x86_64_setup.deb`, a SHA-256 file and a provenance manifest. The Debian package includes the runtime, compiler/debugger modules and original runtime notices. It uses the original minimal module-loader bootstrap.
 
-After verifying its SHA-256 file, install with `sudo apt install ./opcodex_1.0.0-alpha.2_linux_x86_64_setup.deb`. Open **Opcodex** from the applications menu. No separate Java installation is needed for the installed desktop app. The application lives under `/opt/opcodex`; projects and settings stay in the user's profile. Linux distributions that cannot install Debian packages can use the portable Linux ZIP with JDK 21 or newer; broader distribution compatibility needs separate validation.
+After verifying its SHA-256 file, install with `sudo apt install ./opcodex_1.0.0-alpha.2_linux_x86_64_setup.deb`. Open **Opcodex** from the applications menu. No separate Java installation is needed for the installed desktop app. The native launcher is `/opt/opcodex/opcodex/bin/Opcodex`; projects and settings stay in the user's profile. Linux distributions that cannot install Debian packages can use the portable Linux ZIP with JDK 21 or newer; broader distribution compatibility needs separate validation.
 
 The Debian installer prepares the standard XDG system-menu directory when a minimal desktop does not already provide it. It preserves the build JDK's install/uninstall hooks and their resource substitutions.
 

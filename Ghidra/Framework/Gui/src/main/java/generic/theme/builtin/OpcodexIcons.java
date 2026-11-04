@@ -359,6 +359,7 @@ final class OpcodexIcons {
 		theme.setIcon("icon.opcodex.glyph.filter-location-exact", load("filter-location-exact", dark));
 		theme.setIcon("icon.opcodex.glyph.filter-location-starts", load("filter-location-starts", dark));
 		theme.setIcon("icon.opcodex.glyph.filter-location-regex", load("filter-location-regex", dark));
+		theme.setIcon("icon.opcodex.glyph.print", load("print", dark));
 		for (String[] entry : ENTRIES) {
 			Icon icon = icons.computeIfAbsent(entry[1], glyph -> load(glyph, dark));
 			theme.setIcon(entry[0], icon);
@@ -607,7 +608,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.filechooser.places.desktop", "icon.opcodex.glyph.monitor"));
 			theme.addIcon(IconValue.parse("icon.filechooser.places.downloads", "icon.opcodex.glyph.import"));
 			theme.addIcon(IconValue.parse("icon.filechooser.places.home", "icon.opcodex.glyph.home"));
-			theme.addIcon(IconValue.parse("icon.filechooser.places.my.computer", "icon.opcodex.glyph.monitor"));
+			theme.addIcon(IconValue.parse("icon.filechooser.places.my.computer", "icon.opcodex.glyph.drive"));
 			theme.addIcon(IconValue.parse("icon.filechooser.places.recent", "icon.opcodex.glyph.folder {icon.opcodex.glyph.undo [move(6,10)]}"));
 			theme.addIcon(IconValue.parse("icon.filter.options.contains", "icon.opcodex.glyph.filter"));
 			theme.addIcon(IconValue.parse("icon.filter.options.exact", "icon.opcodex.glyph.text"));

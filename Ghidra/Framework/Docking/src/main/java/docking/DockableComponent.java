@@ -32,6 +32,14 @@ import help.HelpService;
  * functionality.
  */
 public class DockableComponent extends JPanel implements ContainerListener {
+	// OPCODEX: inset each provider as a distinct workspace surface without replacing its content.
+	@Override public void updateUI() {
+		super.updateUI();
+		setBorder(generic.theme.builtin.OpcodexUi.active() ?
+			BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(
+				new generic.theme.GColor("system.color.bg.border")),
+				BorderFactory.createEmptyBorder(0, 3, 3, 3)) : BorderFactory.createEmptyBorder());
+	}
 	private static final int DROP_EDGE_OFFSET = 20;
 
 	private static final Dimension MIN_DIM = new Dimension(100, 50);

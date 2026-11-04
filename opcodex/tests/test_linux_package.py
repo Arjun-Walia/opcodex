@@ -71,6 +71,7 @@ class LinuxPackageTests(unittest.TestCase):
         body = '# Original vendor notices\nset -e\nDESKTOP_COMMANDS_INSTALL\nexit 0\n'
         with ZipFile(java_home / 'jmods/jdk.jpackage.jmod', 'w') as module:
             module.writestr('classes/jdk/jpackage/internal/resources/template.postinst', '#!/bin/sh\n' + body)
+            module.writestr('classes/jdk/jpackage/internal/resources/template.desktop', '[Desktop Entry]\nName=APPLICATION_NAME\n')
         resources = prepare_debian_resources(java_home, self.directory / 'resources')
         script = (resources / 'postinst').read_text()
         self.assertTrue(script.startswith('#!/bin/sh\n'))
@@ -78,6 +79,8 @@ class LinuxPackageTests(unittest.TestCase):
         self.assertLess(script.index('mkdir -p /usr/share/desktop-directories'), script.index('DESKTOP_COMMANDS_INSTALL'))
         self.assertIn('if [ "${1:-}" = configure ]; then', script)
         self.assertIn('|| exit $?', script)
+        self.assertEqual((resources / 'Opcodex.desktop').read_text(),
+                         '[Desktop Entry]\nName=APPLICATION_NAME\nStartupWMClass=opcodex-Opcodex\n')
         prepare_debian_resources(java_home, resources)
         self.assertEqual((resources / 'postinst').read_text(), script)
 
@@ -86,5 +89,6 @@ class LinuxPackageTests(unittest.TestCase):
         (java_home / 'jmods').mkdir(parents=True)
         with ZipFile(java_home / 'jmods/jdk.jpackage.jmod', 'w') as module:
             module.writestr('classes/jdk/jpackage/internal/resources/template.postinst', 'Unexpected format\n')
+            module.writestr('classes/jdk/jpackage/internal/resources/template.desktop', '[Desktop Entry]\n')
         with self.assertRaisesRegex(ValueError, 'template'):
             prepare_debian_resources(java_home, self.directory / 'resources')

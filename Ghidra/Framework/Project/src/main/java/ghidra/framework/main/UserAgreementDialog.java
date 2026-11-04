@@ -19,6 +19,7 @@ package ghidra.framework.main;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
+import java.awt.Dimension;
 import java.io.InputStream;
 
 import javax.swing.*;
@@ -44,9 +45,10 @@ public class UserAgreementDialog extends DialogComponentProvider {
 	private boolean exitOnCancel;
 
 	public UserAgreementDialog(boolean showAgreementChoices, boolean exitOnCancel) {
-		super("", true, false, true, false);
+		super("Opcodex User Agreement", true, false, true, false);
 		this.exitOnCancel = exitOnCancel;
-		addWorkPanel(buildWorkPanel());
+		JComponent work = buildWorkPanel();
+		addWorkPanel(work);
 		addOKButton();
 		if (showAgreementChoices) {
 			setOkButtonText("I Agree");
@@ -56,7 +58,8 @@ public class UserAgreementDialog extends DialogComponentProvider {
 		else {
 			setOkButtonText("OK");
 		}
-		setPreferredSize(1000, 500);
+		// Let packing include the dialog's own insets/buttons as well as the measured document.
+		setRememberSize(false);
 	}
 
 	private JComponent buildWorkPanel() {
@@ -76,6 +79,9 @@ public class UserAgreementDialog extends DialogComponentProvider {
 		editorPane.setEditable(false);
 
 		JScrollPane scrollPane = new JScrollPane(editorPane);
+		// OPCODEX: measure wrapped legal text; a fixed compact height can clip its last lines.
+		editorPane.setSize(740, Short.MAX_VALUE);
+		scrollPane.setPreferredSize(new Dimension(760, editorPane.getPreferredSize().height + 8));
 		scrollPane.getAccessibleContext().setAccessibleName("Editor");
 		panel.add(scrollPane, BorderLayout.CENTER);
 		JPanel checkBoxPanel = new JPanel(new VerticalLayout(10));

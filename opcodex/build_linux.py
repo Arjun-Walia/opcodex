@@ -53,6 +53,7 @@ def prepare_debian_resources(java_home: Path, destination: Path) -> Path:
     """Retain the build JDK's hooks and support desktops without an existing XDG menu directory."""
     with ZipFile(java_home / 'jmods/jdk.jpackage.jmod') as archive:
         template = archive.read('classes/jdk/jpackage/internal/resources/template.postinst').decode('utf-8')
+        desktop = archive.read('classes/jdk/jpackage/internal/resources/template.desktop').decode('utf-8')
     first, separator, remainder = template.partition('\n')
     if not separator or not first.startswith('#!'):
         raise ValueError('Unrecognized jpackage post-install template')
@@ -62,6 +63,7 @@ def prepare_debian_resources(java_home: Path, destination: Path) -> Path:
              'fi\n')
     destination.mkdir(parents=True, exist_ok=True)
     (destination / 'postinst').write_text(first + '\n' + setup + remainder)
+    (destination / 'Opcodex.desktop').write_text(desktop.rstrip() + '\nStartupWMClass=opcodex-Opcodex\n')
     return destination
 
 
@@ -97,7 +99,7 @@ def build(archive: Path, java_home: Path, output: Path) -> Path:
             '--copyright', 'Copyright 2026 Opcodex contributors',
             '--input', str(payload), '--dest', str(work / 'image'),
             '--main-jar', 'Ghidra/Framework/Utility/lib/Utility.jar',
-            '--main-class', 'ghidra.Ghidra', '--arguments', 'ghidra.GhidraRun',
+            '--main-class', 'opcodex.Opcodex', '--arguments', 'ghidra.GhidraRun',
             '--add-modules', ','.join(modules),
             '--jlink-options', '--strip-debug --no-man-pages --no-header-files',
             '--icon', str(ROOT / 'Ghidra/Framework/Gui/src/main/resources/images/opcodex/brand/app-neutral-256.png')]

@@ -199,7 +199,7 @@ public class GenericHeader extends JPanel {
             JPanel clippedTitle = new JPanel(new BorderLayout()) {
                 @Override public Dimension getPreferredSize() {
                     Dimension size = titlePanel.getPreferredSize();
-                    return new Dimension(Math.min(size.width, Math.min(200, Math.max(70, GenericHeader.this.getWidth()/3))), size.height);
+                    return new Dimension(Math.min(size.width, Math.min(420, Math.max(100, GenericHeader.this.getWidth()*2/5))), size.height);
                 }
             };
             clippedTitle.setOpaque(false);

@@ -160,7 +160,8 @@
     "filter-location-contains": "<path d=\"M19 9c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 14 0z\"/><circle cx=\"12\" cy=\"9\" r=\"2\"/>",
     "filter-location-exact": "<path d=\"M19 9c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 14 0z\"/><path d=\"M9 7h6M9 11h6\"/>",
     "filter-location-starts": "<path d=\"M19 9c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 14 0z\"/><path d=\"M9 9h6m-3-3 3 3-3 3\"/>",
-    "filter-location-regex": "<path d=\"M19 9c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 14 0z\"/><path d=\"M12 5v8M9 7l6 4M9 11l6-4\"/>"
+    "filter-location-regex": "<path d=\"M19 9c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 14 0z\"/><path d=\"M12 5v8M9 7l6 4M9 11l6-4\"/>",
+    "print": "<path d=\"M7 8V3h10v5M7 17H3V9h18v8h-4\"/><path d=\"M7 14h10v7H7zM17 11h1\"/>"
   },
   "mappings": {
     "icon.flag": "flag",
@@ -1332,8 +1333,8 @@
       "dark": "icon.opcodex.glyph.home"
     },
     "icon.filechooser.places.my.computer": {
-      "light": "icon.opcodex.glyph.monitor",
-      "dark": "icon.opcodex.glyph.monitor"
+      "light": "icon.opcodex.glyph.drive",
+      "dark": "icon.opcodex.glyph.drive"
     },
     "icon.filechooser.places.recent": {
       "light": "icon.opcodex.glyph.folder {icon.opcodex.glyph.undo [move(6,10)]}",

@@ -214,13 +214,15 @@ public class EmptyBorderButton extends JButton {
 	public void setEnabled(boolean b) {
 		setBorder(NO_BUTTON_BORDER);
 		super.setEnabled(b);
+		updatePointer();
 	}
 
     // OPCODEX: apply the same pointer behavior to panel/header buttons and split controls.
-    @Override public Cursor getCursor() {
-        if (OpcodexUi.active()) return Cursor.getPredefinedCursor(
-            isEnabled() ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR);
-        return super.getCursor();
+    // OPCODEX: update the actual AWT cursor field used by the native cursor manager.
+    @Override public void updateUI() { super.updateUI(); updatePointer(); }
+    private void updatePointer() {
+        setCursor(OpcodexUi.active() ? Cursor.getPredefinedCursor(
+            isEnabled() ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR) : null);
     }
 
 	protected void updateBorderBasedOnState() {

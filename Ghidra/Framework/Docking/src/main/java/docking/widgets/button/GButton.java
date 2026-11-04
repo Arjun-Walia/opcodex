@@ -24,11 +24,12 @@ import resources.ResourceManager;
  * A drop-in replacement for {@link JButton} that correctly installs a disabled icon.
  */
 public class GButton extends JButton {
-    // OPCODEX: use the same enabled-pointer affordance on welcome and dialog commands.
-    @Override public java.awt.Cursor getCursor() {
-        if (generic.theme.builtin.OpcodexUi.active()) return java.awt.Cursor.getPredefinedCursor(
-            isEnabled() ? java.awt.Cursor.HAND_CURSOR : java.awt.Cursor.DEFAULT_CURSOR);
-        return super.getCursor();
+    // OPCODEX: AWT's native cursor manager reads the field, bypassing getCursor overrides.
+    @Override public void updateUI() { super.updateUI(); updatePointer(); }
+    @Override public void setEnabled(boolean enabled) { super.setEnabled(enabled); updatePointer(); }
+    private void updatePointer() {
+        setCursor(generic.theme.builtin.OpcodexUi.active() ? java.awt.Cursor.getPredefinedCursor(
+            isEnabled() ? java.awt.Cursor.HAND_CURSOR : java.awt.Cursor.DEFAULT_CURSOR) : null);
     }
 
 	public GButton() {

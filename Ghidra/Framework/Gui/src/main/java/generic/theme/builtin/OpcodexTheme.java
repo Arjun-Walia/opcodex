@@ -50,6 +50,12 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
             "MenuItem.selectionForeground", "CheckBoxMenuItem.selectionForeground", "RadioButtonMenuItem.selectionForeground",
             "MenuBar.selectionForeground", "MenuItem.underlineSelectionForeground");
         refs("system.color.fg.view", "Table.selectionInactiveForeground", "Tree.selectionInactiveForeground");
+		refs("system.color.fg.selected.view", "MenuItem.acceleratorSelectionForeground",
+			"CheckBoxMenuItem.acceleratorSelectionForeground", "RadioButtonMenuItem.acceleratorSelectionForeground");
+		refs("system.color.fg.control", "MenuItem.acceleratorForeground",
+			"CheckBoxMenuItem.acceleratorForeground", "RadioButtonMenuItem.acceleratorForeground");
+		color("color.bg.filechooser.shortcut", surface);
+		for (String heading : new String[] {"h1", "h2", "h3"}) color("color.fg.help.selector." + heading, text);
         color("system.color.fg.disabled", secondary);
 		color("color.fg.disabled", secondary);
 		color("color.fg.messages.hint", secondary);
@@ -129,7 +135,7 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		color("color.bg.find.highlight.active", dark ? "#75602a" : "#ffd775");
 		color("color.bg.selection", selection);
 		color("color.bg.fieldpanel.selection", selection);
-		color("color.bg.currentline", dark ? "#0c1516" : "#edf5f6");
+		color("color.bg.currentline", dark ? "#10282b" : "#d9edef");
 		color("color.bg.listing.highlighter", dark ? "#111c1e" : "#e7eff1");
 		String keyword = dark ? "#8bbcec" : "#245b9c";
 		String comment = dark ? "#a1a8b3" : "#606a76";
@@ -173,6 +179,7 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		}
 		setFont("font.monospaced", preferredFont("Cascadia Mono", "Consolas", "Menlo",
 			"DejaVu Sans Mono", Font.MONOSPACED));
+		setFont("font.user.agreement", ui.deriveFont(Font.BOLD, 18f));
 		addProperty(new BooleanPropertyValue("laf.property.Table.showHorizontalLines", false));
 		addProperty(new BooleanPropertyValue("laf.property.Table.showVerticalLines", false));
 		OpcodexIcons.install(this, dark);
@@ -207,6 +214,10 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
         // normalized-color mapper cannot install them. Bind them explicitly as live tokens.
         UIManager.put("MenuBar.selectionForeground", new GColor("system.color.fg.selected.view"));
         UIManager.put("MenuBar.selectionBackground", new GColor("system.color.bg.selected.view"));
+		for (String menu : new String[] {"MenuItem", "CheckBoxMenuItem", "RadioButtonMenuItem"}) {
+			UIManager.put(menu + ".acceleratorSelectionForeground", new GColor("system.color.fg.selected.view"));
+			UIManager.put(menu + ".acceleratorForeground", new GColor("system.color.fg.control"));
+		}
 		UIManager.put("ScrollPane.border", BorderFactory.createEmptyBorder());
 		UIManager.put("Component.arc", 8);
 		UIManager.put("Button.arc", 8);

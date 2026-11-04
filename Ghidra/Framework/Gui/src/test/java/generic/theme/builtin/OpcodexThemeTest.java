@@ -53,6 +53,8 @@ public class OpcodexThemeTest {
 	}
 	@Test
 	public void sizedAndDisabledIconsKeepLiveVectorPaintingAtDisplayScale() {
+		assertTrue(OpcodexUi.isVector(OpcodexUi.sized(new OpcodexImageIcon("print", true), 20)));
+		assertTrue(OpcodexUi.isVector(OpcodexUi.disabled(OpcodexUi.sized(new OpcodexImageIcon("print", true), 20))));
 		final double[] observed = new double[2];
 		javax.swing.Icon vector = new javax.swing.Icon() {
 			public int getIconWidth() { return 16; }
@@ -153,6 +155,12 @@ public class OpcodexThemeTest {
                 assertNotNull(key, fg); assertNotNull(key, bg);
                 assertTrue(theme.getName() + " " + key + " contrast", contrast(fg, bg) >= 4.5);
             }
+			for (String key : new String[] {"MenuItem", "CheckBoxMenuItem", "RadioButtonMenuItem"}) {
+				Color fg = values.getResolvedColor("laf.color." + key + ".acceleratorSelectionForeground");
+				Color bg = values.getResolvedColor("laf.color." + key + ".selectionBackground");
+				assertNotNull(key, fg);
+				assertTrue(key + " shortcut contrast", contrast(fg, bg) >= 4.5);
+			}
         }
     }
     private static double contrast(Color first, Color second) {

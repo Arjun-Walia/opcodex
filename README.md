@@ -48,3 +48,8 @@ Use `.\gradlew.bat` in PowerShell. Native C/C++ build tools are required. Output
 ## License
 
 Opcodex additions are Apache-2.0. Included components retain their original terms. [LICENSE](LICENSE), [NOTICE](NOTICE), [third-party notices](THIRD_PARTY_NOTICES.md) and [modifications](MODIFICATIONS.md) provide the required terms, attribution and change records.
+
+
+### Workspace and second-audit follow-up
+
+Modern workspaces now have a dedicated navigation rail and searchable panel picker using the original providers, grouped one-row commands and clearer panel surfaces. Light remains the default; Dark keeps a black canvas and Classic retains its own layout/assets. See [the second-audit implementation record](docs/ui/AUDIT_PASS2.md) for identity, chooser, Help and contrast corrections, including what still requires exact packaged-app verification. [Public guides](https://opcodex.xyz/docs/) cover installation, workspace controls, themes and release status.

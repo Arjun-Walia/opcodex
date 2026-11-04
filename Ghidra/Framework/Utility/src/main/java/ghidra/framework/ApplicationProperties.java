@@ -275,6 +275,19 @@ public class ApplicationProperties extends Properties {
 		return appVersion;
 	}
 
+	/** OPCODEX: source identity is independent of Gradle's checkout-directory suffix. */
+	public String getSourceRevision() {
+		String product = getProperty("opcodex.source.revision", "").trim();
+		if (product.matches("[0-9a-f]{40}")) return product;
+		String checkout = getProperty(REVISION_PROPERTY_PREFIX + "opcodex", "").trim();
+		if (checkout.matches("[0-9a-f]{40}")) return checkout;
+		return stringPropertyNames().stream()
+			.filter(key -> key.matches("application\\.revision\\.src\\d*"))
+			.sorted().map(this::getProperty).map(String::trim)
+			.filter(value -> value.matches("[0-9a-f]{40}"))
+			.findFirst().orElse("Unavailable (development checkout)");
+	}
+
 	/**
 	 * Gets the application's release name.
 	 * 

@@ -162,6 +162,7 @@ final class OpcodexVectorPaths {
 		case "filter-location-exact" -> glyph146();
 		case "filter-location-starts" -> glyph147();
 		case "filter-location-regex" -> glyph148();
+		case "print" -> glyph149();
 		default -> throw new IllegalArgumentException("Unknown glyph: " + name);
 	}; }
 	private static Part[] glyph0() {
@@ -2246,6 +2247,29 @@ final class OpcodexVectorPaths {
 		p1.lineTo(15.0, 11.0);
 		p1.moveTo(9.0, 11.0);
 		p1.lineTo(15.0, 7.0);
+		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
+	}
+	private static Part[] glyph149() {
+		Path2D.Double p0 = new Path2D.Double();
+		p0.moveTo(7.0, 8.0);
+		p0.lineTo(7.0, 3.0);
+		p0.lineTo(17.0, 3.0);
+		p0.lineTo(17.0, 8.0);
+		p0.moveTo(7.0, 17.0);
+		p0.lineTo(3.0, 17.0);
+		p0.lineTo(3.0, 9.0);
+		p0.lineTo(21.0, 9.0);
+		p0.lineTo(21.0, 17.0);
+		p0.lineTo(17.0, 17.0);
+		Path2D.Double p1 = new Path2D.Double();
+		p1.moveTo(7.0, 14.0);
+		p1.lineTo(17.0, 14.0);
+		p1.lineTo(17.0, 21.0);
+		p1.lineTo(7.0, 21.0);
+		p1.lineTo(7.0, 14.0);
+		p1.closePath();
+		p1.moveTo(17.0, 11.0);
+		p1.lineTo(18.0, 11.0);
 		return new Part[]{new Part(p0, false, true, null), new Part(p1, false, true, null)};
 	}
 }

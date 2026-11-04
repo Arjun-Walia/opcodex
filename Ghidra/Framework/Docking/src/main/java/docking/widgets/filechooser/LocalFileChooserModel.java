@@ -117,6 +117,12 @@ public class LocalFileChooserModel implements GhidraFileChooserModel {
 
 	@Override
 	public Icon getIcon(File file) {
+		// OPCODEX: modern file rows use live themed geometry and avoid OS icon lookups on the EDT.
+		if (generic.theme.builtin.OpcodexUi.active()) {
+			if (file == null || !file.exists()) return PROBLEM_FILE_ICON;
+			if (FS_ROOT_INFO.isRoot(file)) return PENDING_ROOT_ICON;
+			return file.isDirectory() ? ICON_DIR_DEFAULT : ICON_FILE_DEFAULT;
+		}
 		if (FS_ROOT_INFO.isRoot(file)) {
 			return FS_ROOT_INFO.getRootIcon(file);
 		}

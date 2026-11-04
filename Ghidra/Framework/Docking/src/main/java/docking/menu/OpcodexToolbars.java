@@ -51,8 +51,19 @@ final class OpcodexToolbars {
 		Set<String> visible = local ? LOCAL : PRIMARY;
 		List<ToolBarItemManager> hidden = items.stream()
 			.filter(item -> !expanded && !isPrimary(item, visible)).toList();
+		String previousGroup = null;
+		boolean first = true;
 		for (ToolBarItemManager item : items) {
-			if (expanded || isPrimary(item, visible)) bar.add(item.getButton());
+			if (expanded || isPrimary(item, visible)) {
+				if (!first && !java.util.Objects.equals(previousGroup, item.getGroup())) {
+					JSeparator divider = new JSeparator(SwingConstants.VERTICAL);
+					divider.setPreferredSize(new Dimension(8, 18));
+					bar.add(divider);
+				}
+				bar.add(item.getButton());
+				previousGroup = item.getGroup();
+				first = false;
+			}
 		}
 		if (!local && items.stream().anyMatch(item ->
 			item.getAction().getName().equals("Previous Location in History")) &&

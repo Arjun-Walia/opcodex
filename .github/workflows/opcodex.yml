@@ -79,7 +79,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y fakeroot xvfb gcc
+          sudo apt-get install -y fakeroot xvfb gcc x11-utils
           ./gradlew --no-daemon buildOpcodexLinuxInstaller
       - name: Upload native package and provenance
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

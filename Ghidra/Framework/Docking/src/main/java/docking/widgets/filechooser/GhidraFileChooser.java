@@ -443,7 +443,9 @@ public class GhidraFileChooser extends ReusableDialogComponentProvider implement
 		shortcutPanel.add(recentButton);
 
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createLoweredBevelBorder());
+		// OPCODEX: remove the recessed places well while retaining Classic rendering.
+		panel.setBorder(generic.theme.builtin.OpcodexUi.quietBorder(
+			BorderFactory.createLoweredBevelBorder(), new Insets(8, 8, 8, 8)));
 		panel.setBackground(SHORTCUT_BACKGROUND_COLOR);
 		panel.add(shortcutPanel, BorderLayout.NORTH);
 		panel.getAccessibleContext().setAccessibleName("Short Cut");
