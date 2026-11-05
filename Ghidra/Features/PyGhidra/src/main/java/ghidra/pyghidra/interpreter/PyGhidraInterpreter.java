@@ -62,7 +62,7 @@ public final class PyGhidraInterpreter implements Disposable, InterpreterConnect
 
     @Override
     public String getTitle() {
-        return PyGhidraPlugin.TITLE;
+        return "Python Console";
     }
 
     @Override

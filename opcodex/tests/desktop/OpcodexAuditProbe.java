@@ -1,5 +1,7 @@
 /* Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0 */
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.nio.file.*;
 import java.util.*;
 import java.util.List;
@@ -128,12 +130,15 @@ public final class OpcodexAuditProbe {
         JButton target = edt(() -> {
             browser.setAlwaysOnTop(true); browser.toFront();
             List<JButton> all = new ArrayList<>(); buttons(browser,all);
-            return all.stream().filter(b -> b.isShowing() && b.isEnabled() && b.getName()!=null &&
+            JButton command=all.stream().filter(b -> "Script Manager".equals(b.getName()) && b.isShowing() && b.isEnabled() &&
                 b.getToolTipText()!=null && b.getToolTipText().contains("<b>"+b.getName()+"</b>") &&
                 b.getVisibleRect().width>=b.getWidth()-2).findFirst().orElseThrow();
+            command.scrollRectToVisible(new Rectangle(0,0,command.getWidth(),command.getHeight()));
+            ToolTipManager.sharedInstance().setEnabled(false);ToolTipManager.sharedInstance().setEnabled(true);
+            return command;
         });
         Point point=edt(() -> { Point p=target.getLocationOnScreen();p.translate(target.getWidth()/2,target.getHeight()/2);return p; });
-        Robot robot=new Robot(); robot.mouseMove(point.x+2,point.y+2); Thread.sleep(100);
+        Robot robot=new Robot(); robot.mouseMove(point.x,Math.max(0,point.y-60)); Thread.sleep(200);
         robot.mouseMove(point.x,point.y);
         boolean visible=false;
         for(int i=0;i<30 && !visible;i++) {
@@ -146,7 +151,11 @@ public final class OpcodexAuditProbe {
                 return false;
             });
         }
-        if(!visible) throw new AssertionError("Hover did not show the action name: "+target.getName());
+        if(!visible) {
+            Files.writeString(output.resolve("hover-diagnostic.txt"),"Target="+point+"\nPointer="+MouseInfo.getPointerInfo().getLocation()+"\nScale="+browser.getGraphicsConfiguration().getDefaultTransform()+"\n");
+            shot.take(browser,"hover-failure.png");
+            throw new AssertionError("Hover did not show the action name: "+target.getName());
+        }
         shot.take(browser,"dark/toolbar-tooltip.png");
         edt(() -> { browser.setAlwaysOnTop(false); ToolTipManager.sharedInstance().setEnabled(false);
             ToolTipManager.sharedInstance().setEnabled(true); return null; });
@@ -197,14 +206,80 @@ public final class OpcodexAuditProbe {
         }
         return null;
     }
+
+    private static void key(Robot robot, int code) {
+        robot.keyPress(code);
+        robot.keyRelease(code);
+        robot.waitForIdle();
+    }
+
+    private static void typeIn(Window window, JTextField field, String value) throws Exception {
+        edt(() -> { window.toFront(); return null; });
+        Robot robot = new Robot();
+        robot.setAutoDelay(35);
+        robot.waitForIdle();
+        Point center = edt(() -> {
+            Point p = field.getLocationOnScreen();
+            p.translate(field.getWidth() / 2, field.getHeight() / 2);
+            return p;
+        });
+        robot.mouseMove(center.x, center.y);
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        robot.waitForIdle();
+        for (int attempt = 0; attempt < 20 && !edt(field::isFocusOwner); attempt++) {
+            Thread.sleep(50);
+        }
+        for (char c : value.toCharArray()) {
+            assertFocus(field);
+            key(robot, KeyEvent.getExtendedKeyCodeForChar(c));
+        }
+        assertFocus(field);
+    }
+
+    private static void assertFocus(JTextField field) throws Exception {
+        edt(() -> {
+            if (!field.isFocusOwner()) {
+                Component owner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+                throw new AssertionError(field.getName() + " lost focus to " + owner);
+            }
+            return null;
+        });
+    }
+
+    public static void verifyProjectDirectory(Window wizard) throws Exception {
+        JTextField directory = edt(() -> (JTextField) named(wizard, "Project Directory"));
+        JTextField name = edt(() -> (JTextField) named(wizard, "Project Name"));
+        String initialName = edt(name::getText);
+        edt(() -> { directory.setText(""); return null; });
+        typeIn(wizard, directory, "focusprobe");
+        if (!"focusprobe".equals(edt(directory::getText)) || !initialName.equals(edt(name::getText))) {
+            throw new AssertionError("Project directory keystrokes were redirected");
+        }
+    }
+
+    public static void verifyFrontEndSearch(Window window) throws Exception {
+        JTextField search = edt(() -> (JTextField) named(window, "Find a command"));
+        typeIn(window, search, "help");
+        if (!"help".equals(edt(search::getText))) {
+            throw new AssertionError("Project window search did not receive the typed query");
+        }
+        edt(() -> { search.setText(""); return null; });
+    }
+
     private static void ribbonSearch(Object tool, Window browser, Path output, Shot shot) throws Exception {
         JTextField search=edt(() -> (JTextField)named(browser,"Find a command"));
         if(search==null)throw new AssertionError("No visible command search");
         Object manager=tool.getClass().getMethod("getWindowManager").invoke(tool);
         Object graph=type("docking.DockingWindowManager").getMethod("getComponentProvider",String.class).invoke(manager,"Function Graph");
         boolean original=(Boolean)edt(() -> type("docking.ComponentProvider").getMethod("isVisible").invoke(graph));
-        edt(() -> { search.setText("function graph"); return null; });
-        SwingUtilities.invokeLater(search::postActionEvent);
+        typeIn(browser, search, "function graph");
+        if (!"function graph".equals(edt(search::getText))) {
+            throw new AssertionError("Command search did not receive the typed query");
+        }
+        Robot robot = new Robot();
+        robot.keyPress(KeyEvent.VK_ENTER);
+        robot.keyRelease(KeyEvent.VK_ENTER);
         Window dialog=null;
         for(int i=0;i<100 && dialog==null;i++) {
             dialog=edt(() -> Arrays.stream(Window.getWindows()).filter(w -> w instanceof Dialog d && d.isShowing() && d.getTitle().startsWith("Find a command")).findFirst().orElse(null));

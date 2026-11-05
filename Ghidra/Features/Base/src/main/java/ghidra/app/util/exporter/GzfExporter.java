@@ -15,6 +15,8 @@
  */
 package ghidra.app.util.exporter;
 
+// OPCODEX: Present the program archive by format without changing its extension or contents.
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -34,7 +36,7 @@ public class GzfExporter extends Exporter {
 	public static final String EXTENSION = "gzf";
 	public static final String SUFFIX = "." + EXTENSION;
 
-	public static final String NAME = "Ghidra Zip File";
+	public static final String NAME = "Program Archive (GZF)";
 
 	public GzfExporter() {
 		super(NAME, EXTENSION, new HelpLocation("ExporterPlugin", "gzf"));

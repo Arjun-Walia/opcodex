@@ -134,8 +134,8 @@ public abstract class OpcodexTheme extends DiscoverableGTheme {
 		color("color.bg.find.highlight", dark ? "#574b28" : "#ffedb3");
 		color("color.bg.find.highlight.active", dark ? "#75602a" : "#ffd775");
 		color("color.bg.selection", selection);
-		color("color.bg.fieldpanel.selection", selection);
-		color("color.bg.currentline", dark ? "#10282b" : "#d9edef");
+		color("color.bg.fieldpanel.selection", dark ? selection : "#bbdfe4");
+		color("color.bg.currentline", dark ? "#10282b" : "#d6e6f3");
 		color("color.bg.listing.highlighter", dark ? "#111c1e" : "#e7eff1");
 		String keyword = dark ? "#8bbcec" : "#245b9c";
 		String comment = dark ? "#a1a8b3" : "#606a76";

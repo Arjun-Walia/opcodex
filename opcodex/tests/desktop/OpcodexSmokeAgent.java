@@ -248,10 +248,17 @@ public class OpcodexSmokeAgent {
             SwingUtilities.invokeLater(() -> button(mainWindow(), "Create Project").doClick());
             Window wizard = waitFor("New Project");
             capture(wizard, "dark/create-project.png");
+            if (!Boolean.getBoolean("opcodex.smoke.galleryOnly")) {
+                edt(() -> { button(wizard, "Next >>").doClick(); return null; });
+                OpcodexAuditProbe.verifyProjectDirectory(wizard);
+            }
             edt(() -> { button(wizard, "Cancel").doClick(); return null; });
+            if (!Boolean.getBoolean("opcodex.smoke.galleryOnly")) {
+                OpcodexAuditProbe.verifyFrontEndSearch(main);
+            }
             type("ghidra.framework.GenericRunInfo").getMethod("setProjectsDirPath", String.class)
                 .invoke(null, OUTPUT.toString());
-            if (System.getProperty("os.name").startsWith("Windows")) {
+            if (System.getProperty("os.name").startsWith("Windows") && !Boolean.getBoolean("opcodex.smoke.galleryOnly")) {
                 SwingUtilities.invokeLater(() -> button(mainWindow(), "Open Project").doClick());
                 Class<?> picker = type("OpcodexNativePickerProbe");
                 picker.getMethod("finish",String.class,Path.class,boolean.class).invoke(null,
@@ -286,6 +293,19 @@ public class OpcodexSmokeAgent {
                 .invoke(services, "CodeBrowser", files));
             if (browser == null) throw new AssertionError("CodeBrowser failed to launch");
             Window browserWindow = (Window) browser.getClass().getMethod("getToolFrame").invoke(browser);
+            if(Boolean.getBoolean("opcodex.smoke.galleryOnly")) {
+                Thread.sleep(1000);
+                Object manager=browser.getClass().getMethod("getWindowManager").invoke(browser);
+                Object scripts=type("docking.DockingWindowManager").getMethod("getComponentProvider",String.class).invoke(manager,"Script Manager");
+                edt(() -> {type("docking.ComponentProvider").getMethod("setVisible",boolean.class).invoke(scripts,true);return null;});
+                Thread.sleep(700);
+                JComponent content=(JComponent)edt(() -> type("docking.ComponentProvider").getMethod("getComponent").invoke(scripts));
+                Window pane=edt(() -> SwingUtilities.getWindowAncestor(content));
+                edt(() -> {ToolTipManager.sharedInstance().setEnabled(false);return null;});
+                capture(pane,"light/script-manager.png");
+                Files.writeString(OUTPUT.resolve("gallery-result.json"),"{\"scriptManagerCapture\":true,\"limitedGalleryOnly\":true}\n");
+                System.out.println("OPCODEX_GALLERY_ONLY_CAPTURED");System.exit(0);
+            }
             if(Boolean.getBoolean("opcodex.smoke.debuggerOnly")) {
                 Object debugger=edt(() -> type("ghidra.framework.model.ToolServices").getMethod("launchTool",String.class,Collection.class).invoke(services,"Debugger",java.util.List.of()));
                 Window window=(Window)debugger.getClass().getMethod("getToolFrame").invoke(debugger);

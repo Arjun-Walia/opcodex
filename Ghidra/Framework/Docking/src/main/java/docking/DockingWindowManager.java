@@ -1575,6 +1575,12 @@ public class DockingWindowManager implements PropertyChangeListener, Placeholder
 		if (newFocusComponent == null) {
 			return; // we'll get called again with the correct value
 		}
+		WindowNode windowNode = root.getNodeForWindow(win);
+		if (windowNode != null && windowNode.isToolbarTextInput(newFocusComponent)) {
+			// Keep the last provider as the action context while editing a toolbar field.
+			pendingRequestFocusComponent = null;
+			return;
+		}
 
 		DockableComponent dockableComponent =
 			getDockableComponentForFocusOwner(win, newFocusComponent);
