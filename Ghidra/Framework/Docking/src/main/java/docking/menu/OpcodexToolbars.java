@@ -102,9 +102,9 @@ final class OpcodexToolbars {
 		}
 		if (!local) {
 			List<String> order = manager != null && manager.getTool() != null &&
-				manager.getTool().getName().equals("Debugger")
+				OpcodexWorkspaceLayouts.isTraceWorkspace(manager.getTool().getName())
 				? List.of("Debug session", "Execution", "Navigate", "Project", "Edit", "Analyze")
-				: List.of("Project", "Navigate", "Analyze", "Edit", "Search", "Graph");
+				: List.of("Project", "Session", "Navigate", "Analyze", "Edit", "Search", "Graph");
 			bar.removeAll();
 			for (String group : order) if (ribbonGroups.containsKey(group)) bar.add(ribbonGroups.get(group));
 			for (var entry : ribbonGroups.entrySet()) if (!order.contains(entry.getKey())) bar.add(entry.getValue());
@@ -147,7 +147,7 @@ final class OpcodexToolbars {
 				});
 				menu.add(complete);
 				if (!local && manager != null && manager.getTool() != null &&
-					Set.of("CodeBrowser", "Debugger").contains(manager.getTool().getName())) {
+					OpcodexWorkspaceLayouts.hasDefault(manager.getTool().getName())) {
 					menu.addSeparator();
 					JMenuItem focused = new JMenuItem("Restore focused workspace");
 					focused.addActionListener(click -> OpcodexWorkspaces.focus(manager));

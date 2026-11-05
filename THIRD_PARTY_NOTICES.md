@@ -18,4 +18,9 @@ The 67 outline glyphs, their SVG sources, light/dark PNG exports and semantic ma
 
 Vector geometry generation uses FontTools 4.61.1 (MIT) during development only. Its SVG path parser converts original Opcodex glyphs into Java2D paths. FontTools and an SVG runtime are not bundled in the app.
 
+The default project file icons adapt selected filename and extension rules from
+[Better File Icons 0.6.1](https://marketplace.visualstudio.com/items?itemName=lukedavis.better-file-icons),
+Copyright (c) 2012-2024 Luke Davis and others, under the MIT License. The full notice is in
+`licenses/MIT-Better-File-Icons.txt` and the source. Opcodex renders its own glyphs for these rules.
+
 Windows MSI builds use WiX 5.0.2 and its UI/Util extensions under the Microsoft Reciprocal License (build tools only; not bundled as application runtime dependencies). Source and license: https://github.com/wixtoolset/wix/tree/v5.0.2 . The packaged Java runtime retains its original legal notices.

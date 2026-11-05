@@ -23,6 +23,8 @@ final class OpcodexRibbon {
     private record ButtonStyle(String text, int horizontal, int vertical, Font font, int gap, boolean visible) {}
     private static final String STYLE = "opcodex.ribbon.originalStyle";
     private static final Map<DockingWindowManager, String> SELECTED_TABS = new WeakHashMap<>();
+    private static final Set<String> SESSION_ACTIONS = Set.of("Create New Session", "Open Session",
+        "Add To Session", "Automatic Version Tracking");
 
     static JComponent wrap(JPanel commands, DockingWindowManager manager) {
         JPanel ribbon = new JPanel(new BorderLayout());
@@ -36,13 +38,19 @@ final class OpcodexRibbon {
         JPanel tabs = new JPanel(new FlowLayout(FlowLayout.LEADING, 2, 0));
         Map<String, JToggleButton> choices = new LinkedHashMap<>();
         ButtonGroup selection = new ButtonGroup();
-        boolean debugger = manager != null && manager.getTool() != null && "Debugger".equals(manager.getTool().getName());
-        String initial = manager == null ? "Home" : SELECTED_TABS.getOrDefault(manager, debugger ? "Debug" : "Home");
+        String tool = manager == null || manager.getTool() == null ? "" : manager.getTool().getName();
+        String task = switch (tool) {
+            case "Debugger" -> "Debug";
+            case "Emulator" -> "Emulate";
+            case "Version Tracking" -> "Session";
+            default -> "Home";
+        };
+        String initial = manager == null ? "Home" : SELECTED_TABS.getOrDefault(manager, task);
         Set<String> categories = java.util.Arrays.stream(commands.getComponents()).map(Component::getName)
             .filter(name -> name != null && name.startsWith("Ribbon group: "))
             .map(name -> name.substring("Ribbon group: ".length())).collect(Collectors.toSet());
-        for (String name : List.of("Home", "Navigate", "Analyze", "Panels", "Debug", "All tools")) {
-            if (name.equals("Debug") && !debugger) continue;
+        for (String name : List.of("Home", "Navigate", "Analyze", "Panels", "Debug", "Emulate", "Session", "All tools")) {
+            if (List.of("Debug", "Emulate", "Session").contains(name) && !name.equals(task)) continue;
             if (name.equals("Navigate") && categories.stream().noneMatch(c -> List.of("Navigate", "Selection").contains(c))) continue;
             if (name.equals("Analyze") && categories.stream().noneMatch(c -> List.of("Analyze", "Search", "Select", "Graph").contains(c))) continue;
             if (name.equals("Panels") && categories.stream().noneMatch(c -> visibleOn("Panels", c, "") && !c.equals("Workspace"))) continue;
@@ -113,11 +121,12 @@ final class OpcodexRibbon {
     private static boolean visibleOn(String tab, String category, String command) {
         if (category.equals("Workspace") || tab.equals("All tools")) return true;
         return switch (tab) {
-            case "Debug" -> category.equals("Debug session") || category.equals("Execution");
+            case "Debug", "Emulate" -> category.equals("Debug session") || category.equals("Execution");
+            case "Session" -> category.equals("Session") || category.equals("Project");
             case "Navigate" -> category.equals("Navigate") || category.equals("Selection");
             case "Analyze" -> List.of("Analyze", "Search", "Select", "Graph").contains(category);
             case "Panels" -> !List.of("Project", "Navigate", "Selection", "Edit", "Analyze", "Search", "Select", "Debug session", "Execution").contains(category);
-            default -> category.equals("Project") || category.equals("Edit") || category.equals("Analyze") ||
+            default -> category.equals("Project") || category.equals("Session") || category.equals("Edit") || category.equals("Analyze") ||
                 (category.equals("Navigate") && List.of("Previous Location in History", "Next Location in History", "Opcodex Go To").contains(command)) ||
                 List.of("Function Graph", "Script Manager").contains(command);
         };
@@ -166,6 +175,8 @@ final class OpcodexRibbon {
     }
 
     static String category(DockingActionIf action) {
+        if (SESSION_ACTIONS.contains(action.getName())) return "Session";
+        if (action.getName().equals("Emulate Program in new Trace")) return "Debug session";
         String text = (action.getName() + " " + action.getOwner()).toLowerCase(Locale.ROOT);
         if (text.contains("selected range") || text.contains("highlight")) return "Selection";
         if (text.contains("step") || text.contains("resume") || text.contains("interrupt") ||
@@ -202,6 +213,8 @@ final class OpcodexRibbon {
             case "Step Into" -> "Step into";
             case "Step Over" -> "Step over";
             case "Step Out" -> "Step out";
+            case "Emulate Program in new Trace" -> "Emulate program";
+            case "Automatic Version Tracking" -> "Automatic tracking";
             default -> name.length() <= 18 ? name : name.substring(0, 17).stripTrailing() + "…";
         };
     }

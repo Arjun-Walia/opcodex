@@ -44,7 +44,7 @@ public class FlatLookAndFeelManager extends LookAndFeelManager {
 		//
 		UIManager.put("Tree.showDefaultIcons", Boolean.TRUE);
 		// OPCODEX: apply spacing only to the product themes, before refreshing component UIs.
-		if (themeManager.getActiveTheme() instanceof generic.theme.builtin.OpcodexTheme) {
+		if (generic.theme.builtin.OpcodexUi.isModernTheme(themeManager.getActiveTheme())) {
 			generic.theme.builtin.OpcodexTheme.installComponentDefaults();
 		}
 	}

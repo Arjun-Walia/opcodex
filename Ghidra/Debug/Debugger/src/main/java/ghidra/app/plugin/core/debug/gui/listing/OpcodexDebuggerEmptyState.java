@@ -15,25 +15,33 @@ import generic.theme.builtin.OpcodexUi;
 final class OpcodexDebuggerEmptyState extends JPanel {
     OpcodexDebuggerEmptyState(Tool tool) {
         super(new GridBagLayout());
+        boolean emulator = "Emulator".equals(tool.getName());
         setName("Opcodex debugger empty session");
         setBackground(new GColor("system.color.bg.view"));
         JPanel content = new JPanel();
         content.setOpaque(false);
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-        JLabel symbol = new JLabel(OpcodexUi.sized(new GIcon("icon.opcodex.glyph.bug"), 36));
-        JLabel title = new JLabel("Ready to debug");
+        JLabel symbol = new JLabel(OpcodexUi.sized(new GIcon(emulator ? "icon.opcodex.glyph.cpu" : "icon.opcodex.glyph.bug"), 36));
+        JLabel title = new JLabel(emulator ? "Ready to emulate" : "Ready to debug");
         title.setFont(UIManager.getFont("Label.font").deriveFont(Font.BOLD, 20f));
-        JLabel detail = new JLabel("Launch a target or connect to a running process.");
+        JLabel detail = new JLabel(emulator ? "Open a program and start an emulation trace." :
+            "Launch a target or connect to a running process.");
         detail.setFont(UIManager.getFont("Label.font").deriveFont(13f));
-        JLabel hint = new JLabel("Live code appears here when a trace is active.");
+        JLabel hint = new JLabel(emulator ? "Instructions appear here when an emulation trace is active." :
+            "Live code appears here when a trace is active.");
         hint.setFont(UIManager.getFont("Label.font").deriveFont(12f));
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         actions.setOpaque(false);
-        JButton launch = action("Launch target", () -> tool.showDialog(ActionChooserDialog.forOpcodex(tool, new DefaultActionContext(), "launch")));
+        String query = emulator ? "Emulate Program in new Trace" : "launch";
+        JButton launch = action(emulator ? "Emulate program" : "Launch target", () -> {
+            ComponentProvider provider = tool.getWindowManager().getActiveComponentProvider();
+            ActionContext context = provider == null ? new DefaultActionContext() : provider.getActionContext(null);
+            tool.showDialog(ActionChooserDialog.forOpcodex(tool, context, query));
+        });
         launch.setBackground(new GColor("system.color.bg.selected.view"));
         launch.setForeground(new GColor("system.color.fg.selected.view"));
         actions.add(launch);
-        actions.add(action("Connections", () -> {
+        if (!emulator) actions.add(action("Connections", () -> {
             ComponentProvider provider = tool.getWindowManager().getComponentProvider("Connections");
             if (provider != null) { tool.getWindowManager().showComponent(provider, true); provider.requestFocus(); }
         }));
@@ -43,7 +51,7 @@ final class OpcodexDebuggerEmptyState extends JPanel {
             content.add(Box.createVerticalStrut(component == symbol ? 18 : component == detail ? 22 : 10));
         }
         add(content);
-        getAccessibleContext().setAccessibleDescription("No debugging trace is open. Launch a target or open Connections to begin.");
+        getAccessibleContext().setAccessibleDescription(detail.getText());
     }
 
     private JButton action(String name, Runnable work) {

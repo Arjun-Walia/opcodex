@@ -50,8 +50,8 @@ final class OpcodexWorkspaceRail extends JPanel {
 	}
 
 	void refresh() {
-		boolean available = OpcodexUi.active() && manager.getTool() != null &&
-			List.of("CodeBrowser", "Debugger", "Emulator").contains(manager.getTool().getName());
+		String tool = manager.getTool() == null ? "" : manager.getTool().getName();
+		boolean available = OpcodexUi.active() && OpcodexWorkspaceLayouts.hasDefault(tool);
 		setVisible(available);
 		if (!available) return;
 		String signature = providers().stream().map(provider -> provider.getOwner() + ":" + provider.getName())
@@ -59,14 +59,26 @@ final class OpcodexWorkspaceRail extends JPanel {
 		if (!signature.equals(providerSignature)) {
 			providerSignature = signature;
 			shortcuts.removeAll(); targets.clear();
-			if (manager.getTool().getName().equals("Debugger")) {
-				addShortcut("Connections", "bug", "Connections");
+			if (OpcodexWorkspaceLayouts.isTraceWorkspace(tool)) {
+				if (tool.equals("Emulator")) {
+					addShortcut("Program Trees", "folder", "Program Tree");
+					addShortcut("P-code Stepper", "cpu", "Pcode Stepper");
+				}
+				else {
+					addShortcut("Connections", "bug", "Connections");
+				}
 				addShortcut("Threads", "tree", "Threads");
 				addShortcut("Stack", "layers", "Stack");
 				addShortcut("Registers", "register-bank", "Registers");
 				addShortcut("Memory", "memory", "Memory");
 				addShortcut("Breakpoints", "breakpoint", "Breakpoints");
 				addShortcut("Debug Console", "terminal", "Debug Console");
+			}
+			else if (tool.equals("Version Tracking")) {
+				addShortcut("Matches", "compare", "Version Tracking Matches");
+				addShortcut("Markup Items", "edit", "Version Tracking Markup Items");
+				addShortcut("Implied Matches", "link", "Version Tracking Implied Matches");
+				addShortcut("Functions", "function", "Version Tracking Functions");
 			}
 			else {
 			addShortcut("Program Trees", "folder", "Program Tree");

@@ -356,6 +356,10 @@ class DetachedWindowNode extends WindowNode {
 
 		setIcon(winMgr.getRootFrame().getIconImage());
 		Container contentPane = getContentPane();
+		if (contentPane instanceof JComponent surface) {
+			surface.setBorder(generic.theme.builtin.OpcodexUi.quietBorder(
+				BorderFactory.createEmptyBorder(), new Insets(5, 5, 5, 5)));
+		}
 
 		contentPane.setLayout(new BorderLayout());
 		contentPane.add(comp, BorderLayout.CENTER);

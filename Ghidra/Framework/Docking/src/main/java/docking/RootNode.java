@@ -47,7 +47,7 @@ class RootNode extends WindowNode {
 	private JPanel childPanel;
 	// OPCODEX: product navigation is independent of saved provider geometry.
 	private OpcodexWorkspaceRail workspaceRail;
-	private OpcodexDebuggerWorkflow debuggerWorkflow;
+	private OpcodexWorkspaceWorkflow workflow;
 	private StatusBar statusBar;
 	private SwingWindowWrapper windowWrapper;
 
@@ -92,8 +92,8 @@ class RootNode extends WindowNode {
 		workspaceRail = new OpcodexWorkspaceRail(mgr);
 		workspaceRail.setVisible(false); // Providers are registered after the root is constructed.
 		c.add(workspaceRail, BorderLayout.WEST);
-		debuggerWorkflow = new OpcodexDebuggerWorkflow(mgr);
-		debuggerWorkflow.setVisible(false);
+		workflow = new OpcodexWorkspaceWorkflow(mgr);
+		workflow.setVisible(false);
 
 		if (mgr.hasStatusBar()) {
 			statusBar = new StatusBar();
@@ -307,7 +307,7 @@ class RootNode extends WindowNode {
 		}
 
 		childPanel.removeAll();
-		childPanel.add(debuggerWorkflow, BorderLayout.NORTH);
+		childPanel.add(workflow, BorderLayout.NORTH);
 		childPanel.add(comp, BorderLayout.CENTER);
 		childPanel.invalidate();
 		clearContextTypes();
@@ -337,7 +337,7 @@ class RootNode extends WindowNode {
 	 */
 	void update() {
 		workspaceRail.refresh();
-		debuggerWorkflow.refresh();
+		workflow.refresh();
 		if (invalid) {
 			clearContextTypes();
 			updateChild();

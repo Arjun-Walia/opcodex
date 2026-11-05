@@ -9,9 +9,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import org.jdom2.Element;
 import docking.DockingWindowManager;
+import docking.OpcodexWorkspaceLayouts;
 import ghidra.util.Msg;
-import ghidra.util.xml.XmlUtilities;
-import resources.ResourceManager;
 
 /** Explicit, reversible layout reset for existing projects; never rewrites program data. */
 final class OpcodexWorkspaces {
@@ -22,15 +21,16 @@ final class OpcodexWorkspaces {
 	static void focus(DockingWindowManager manager) {
 		try {
 			String tool = manager.getTool().getName();
-			var resource = ResourceManager.getResource(tool.equals("Debugger")
-				? "opcodexTools/Debugger.xml" : "defaultTools/CodeBrowser.tool");
-			if (resource == null) throw new java.io.IOException("Focused workspace resource is missing");
-			Element template = XmlUtilities.createSecureSAXBuilder(false, false).build(resource).getRootElement();
-			if (template.getName().equals("TOOL_CONFIG")) template = template.getChild("TOOL");
-			if (template == null || template.getChild("ROOT_NODE") == null)
+			Element root = OpcodexWorkspaceLayouts.readDefault(tool, false);
+			if (root == null)
 				throw new java.io.IOException("Focused workspace resource is incomplete");
-			PREVIOUS.put(manager, snapshot(manager));
-			manager.restoreWindowDataFromXml(template);
+			Element previous = snapshot(manager);
+			for (String attribute : java.util.List.of("X_POS", "Y_POS", "WIDTH", "HEIGHT", "EX_STATE")) {
+				String value = previous.getChild("ROOT_NODE").getAttributeValue(attribute);
+				if (value != null) root.setAttribute(attribute, value);
+			}
+			PREVIOUS.put(manager, previous);
+			manager.restoreWindowDataFromXml(new Element("TOOL").addContent(root.clone()));
 		} catch (Exception exception) {
 			Msg.showError(OpcodexWorkspaces.class, manager.getRootFrame(), "Workspace unavailable",
 				"Opcodex could not restore the focused workspace.", exception);

@@ -18,7 +18,20 @@ import ghidra.util.xml.XmlUtilities;
 import resources.ResourceManager;
 
 /** Keeps each layout independently so theme changes never discard the user's arrangement. */
-final class OpcodexWorkspaceLayouts {
+public final class OpcodexWorkspaceLayouts {
+    private static final Map<String, String> MODERN_DEFAULTS = Map.of(
+        "CodeBrowser", "defaultTools/CodeBrowser.tool",
+        "Debugger", "opcodexTools/Debugger.xml",
+        "Emulator", "opcodexTools/Emulator.xml",
+        "Version Tracking", "defaultTools/VersionTracking.tool");
+
+    public static boolean hasDefault(String tool) {
+        return tool != null && MODERN_DEFAULTS.containsKey(tool);
+    }
+
+    public static boolean isTraceWorkspace(String tool) {
+        return "Debugger".equals(tool) || "Emulator".equals(tool);
+    }
     private final DockingWindowManager manager;
     private final Map<String, Element> layouts = new HashMap<>();
     private final ThemeListener listener = event -> {
@@ -52,9 +65,10 @@ final class OpcodexWorkspaceLayouts {
         loaded = true;
         String savedMode = source.getAttributeValue("OPCODEX_LAYOUT_MODE", "modern");
         Element root = source.getChild("ROOT_NODE");
-        // Fresh Debugger defaults use a readable modern layout; customized saved layouts stay intact.
+        String tool = manager.getTool().getName();
+        // Substitute bundled defaults while preserving layouts that users have customized.
         if (root != null && !(source.getAttribute("OPCODEX_LAYOUT_MODE") == null &&
-                "Debugger".equals(manager.getTool().getName()) && matchesDebuggerDefault(root))) {
+                hasDefault(tool) && !"CodeBrowser".equals(tool) && matchesClassicDefault(tool, root))) {
             layouts.put(savedMode, root.clone());
         }
         for (String candidate : new String[] {"classic", "modern"}) {
@@ -71,11 +85,12 @@ final class OpcodexWorkspaceLayouts {
     }
     private Element layout(String wanted) {
         if (layouts.containsKey(wanted)) return layouts.get(wanted);
-        String tool = manager.getTool().getName();
-        if (!java.util.List.of("CodeBrowser", "Debugger").contains(tool)) return null;
-        String path = tool.equals("Debugger")
-            ? (wanted.equals("classic") ? "defaultTools/Debugger.tool" : "opcodexTools/Debugger.xml")
-            : (wanted.equals("classic") ? "classicTools/CodeBrowser.xml" : "defaultTools/CodeBrowser.tool");
+        return readDefault(manager.getTool().getName(), wanted.equals("classic"));
+    }
+
+    public static Element readDefault(String tool, boolean classic) {
+        if (!hasDefault(tool)) return null;
+        String path = classic ? classicPath(tool) : MODERN_DEFAULTS.get(tool);
         try {
             var resource = ResourceManager.getResource(path);
             if (resource == null) return null;
@@ -83,21 +98,20 @@ final class OpcodexWorkspaceLayouts {
             if (template.getName().equals("TOOL_CONFIG")) template = template.getChild("TOOL");
             return template == null ? null : template.getChild("ROOT_NODE");
         } catch (Exception error) {
-            Msg.error(this, "Unable to read " + wanted + " workspace layout", error);
+            Msg.error(OpcodexWorkspaceLayouts.class, "Unable to read workspace layout for " + tool, error);
             return null;
         }
     }
-    private boolean matchesDebuggerDefault(Element root) {
-        try {
-            var resource = ResourceManager.getResource("defaultTools/Debugger.tool");
-            if (resource == null) return false;
-            Element original = XmlUtilities.createSecureSAXBuilder(false, false).build(resource)
-                .getRootElement().getChild("TOOL").getChild("ROOT_NODE");
-            return sameStructure(root, original);
-        } catch (Exception error) {
-            Msg.error(this, "Unable to compare the default Debugger layout", error);
-            return false;
-        }
+    private static String classicPath(String tool) {
+        return switch (tool) {
+            case "CodeBrowser" -> "classicTools/CodeBrowser.xml";
+            case "Version Tracking" -> "classicTools/VersionTracking.xml";
+            default -> "defaultTools/" + tool + ".tool";
+        };
+    }
+
+    private boolean matchesClassicDefault(String tool, Element root) {
+        return sameStructure(root, readDefault(tool, true));
     }
     private static boolean sameStructure(Element a, Element b) {
         if (b == null || !a.getName().equals(b.getName()) || a.getAttributes().size() != b.getAttributes().size() ||

@@ -32,3 +32,20 @@ The modern workbench opens Program Trees beside Listing and Decompiler, with a s
 The project window puts the real Tree and Table views beside a resizable launcher. Launcher cards are the existing tool buttons, with descriptions and room for names. Custom tools remain in the launcher. The existing running-tool and workspace controls sit together below the split.
 
 The Windows development preview was exercised in Light, Dark and Classic with an isolated settings profile and a synthetic project. The captured Debugger shows its initial state without a live target. Installer verification remains a separate release check.
+
+
+## Workspace presets and project icons
+
+| Workspace | Modern starting layout |
+| --- | --- |
+| Project | Resizable Tree or Table explorer beside the tool launcher, with running tools and workspace controls below |
+| CodeBrowser | Program Trees beside Listing and Decompiler, with Console below |
+| Debugger | Session and execution controls, static and dynamic code, and separate thread and state views |
+| Emulator | Program explorer beside the main code view, with trace state on the right and output below |
+| Version Tracking | Matches alongside the Markup Items and Implied Matches tabs |
+
+The ribbon exposes a command search and keeps each page on one row. Drag the pane dividers to resize the workspace. The Layout menu can restore the tool's preset and return to the previous arrangement. Classic has its own saved layout and original icons.
+
+Project Tree and Table show vector file icons for recognized names and extensions. Unknown names keep their content icons. Checkout, link and read-only markers stay layered above the file icon. The matching rules adapt selected entries from Better File Icons 0.6.1, with its MIT notice in the distribution. The rendered glyphs are Opcodex artwork.
+
+Use **Edit → Theme → Import…** with a standalone VS Code theme JSON or JSONC file containing a `colors` object. The importer applies supported workbench colors over the Opcodex Light or Dark base and saves an optional desktop theme. It reads opaque editor, sidebar, selection, border, tooltip, cursor and focus colors. It skips token rules, extension assets and referenced files. Imported palettes use the modern layout.

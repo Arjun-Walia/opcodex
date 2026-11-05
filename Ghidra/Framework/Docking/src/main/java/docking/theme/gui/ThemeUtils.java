@@ -109,8 +109,8 @@ public class ThemeUtils {
 		chooser.setTitle("Choose Theme File");
 		chooser.setApproveButtonToolTipText("Select File");
 		chooser.setFileSelectionMode(GhidraFileChooserMode.FILES_ONLY);
-		chooser.setFileFilter(ExtensionFileFilter.forExtensions("Ghidra Theme Files",
-			GTheme.FILE_EXTENSION, GTheme.ZIP_FILE_EXTENSION));
+		chooser.setFileFilter(ExtensionFileFilter.forExtensions("Opcodex and VS Code Theme Files",
+			GTheme.FILE_EXTENSION, GTheme.ZIP_FILE_EXTENSION, "json", "jsonc"));
 
 		File file = chooser.getSelectedFile();
 		chooser.dispose();
@@ -133,7 +133,8 @@ public class ThemeUtils {
 			// by going through the usual save mechanism, only values that differ from defaults
 			// be saved.
 			//
-			GTheme imported = GTheme.loadTheme(themeFile);
+			GTheme imported = VsCodePalette.accepts(themeFile) ? VsCodePalette.read(themeFile)
+					: GTheme.loadTheme(themeFile);
 			themeManager.setTheme(imported);
 			if (!saveThemeChanges(themeManager)) {
 				themeManager.setTheme(startingTheme);

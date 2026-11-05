@@ -24,6 +24,29 @@ class WorkbenchFeatureTests(unittest.TestCase):
         self.assertEqual(identities(original), identities(modern))
         self.assertEqual(modern.get('FOCUSED_NAME'), 'Connections')
 
+    def test_emulator_and_version_tracking_layouts_keep_original_providers(self):
+        baseline = BASELINE.get('commit') or BASELINE.get('revision')
+        for module, name in [('Debug/Debugger', 'Emulator'), ('Features/VersionTracking', 'VersionTracking')]:
+            with self.subTest(tool=name):
+                resources = f'Ghidra/{module}/src/main/resources'
+                stock = f'{resources}/defaultTools/{name}.tool'
+                original = subprocess.check_output(['git', 'show', f'{baseline}:{stock}'], cwd=ROOT)
+                original_tool = ET.fromstring(original)
+                bundled = ET.parse(ROOT / stock).getroot()
+                if name == 'VersionTracking':
+                    classic = ET.parse(ROOT / f'{resources}/classicTools/{name}.xml').find('ROOT_NODE')
+                    self.assertEqual(original_tool.find('TOOL/ROOT_NODE').attrib, classic.attrib)
+                    self.assertEqual(classic.find('SPLIT_NODE').get('ORIENTATION'), 'VERTICAL')
+                    modern = bundled.find('TOOL/ROOT_NODE')
+                else:
+                    self.assertEqual(original.decode().splitlines(), (ROOT / stock).read_text(encoding='utf-8').splitlines())
+                    modern = ET.parse(ROOT / f'{resources}/opcodexTools/{name}.xml').find('ROOT_NODE')
+                def providers(layout):
+                    return sorted(tuple(panel.get(attr, '') for attr in ('NAME', 'OWNER', 'INSTANCE_ID', 'GROUP', 'ACTIVE'))
+                                  for panel in layout.iter('COMPONENT_INFO'))
+                self.assertEqual(providers(original_tool), providers(modern))
+                self.assertEqual(modern.find('SPLIT_NODE').get('ORIENTATION'), 'HORIZONTAL')
+
     def test_bundled_tools_keep_every_plugin_and_supported_data_type(self):
         baseline = BASELINE.get('commit') or BASELINE.get('revision')
         self.assertTrue(baseline, 'Pinned engine revision is required')

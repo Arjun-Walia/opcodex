@@ -12,11 +12,14 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.BorderFactory;
 import generic.theme.GColor;
+import generic.theme.GTheme;
+import generic.theme.LafType;
 import generic.theme.ThemeManager;
 import generic.theme.ApplicationThemeManager;
 
 /** Product chrome helpers; keep icon painting vector-based even for disabled controls. */
 public final class OpcodexUi {
+	public static final String IMPORTED_PALETTE = "color.opcodex.imported.palette";
 	private static final Color OUTLINE = new GColor("system.color.bg.border");
 	private static final Color FOCUS = new GColor("color.border.button.focused");
 
@@ -76,7 +79,15 @@ public final class OpcodexUi {
 	public static boolean active() {
 		// Bootstrap/headless managers deliberately do not implement desktop theme access.
 		return ThemeManager.getInstance() instanceof ApplicationThemeManager manager &&
-			manager.getActiveTheme() instanceof OpcodexTheme;
+			isModernTheme(manager.getActiveTheme());
+	}
+	public static boolean isModernTheme(GTheme theme) {
+		return theme instanceof OpcodexTheme || isImportedPalette(theme);
+	}
+	public static boolean isImportedPalette(GTheme theme) {
+		LafType laf = theme.getLookAndFeelType();
+		return (laf == LafType.FLAT_LIGHT || laf == LafType.FLAT_DARK) &&
+			theme.getColor(IMPORTED_PALETTE) != null;
 	}
 	public static Icon sized(Icon icon, int height) {
 		return icon == null ? null : new PaintedIcon(icon, height, 1f);

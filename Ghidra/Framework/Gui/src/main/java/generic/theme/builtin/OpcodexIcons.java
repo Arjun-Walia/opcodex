@@ -1156,7 +1156,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.create.manual.match", "icon.opcodex.glyph.plus"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.create.selection", "icon.opcodex.glyph.list"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.create.session", "icon.opcodex.glyph.branch"));
-			theme.addIcon(IconValue.parse("icon.version.tracking.action.edit.all.tags", "icon.opcodex.glyph.tag"));
+			theme.addIcon(IconValue.parse("icon.version.tracking.action.edit.all.tags", "icon.opcodex.glyph.rename"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.edit.markup.address", "icon.opcodex.glyph.edit"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.function.filter.not.accepted", "icon.flag{icon.opcodex.glyph.error[size(10,10)][move(6,6)]}"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.markup.reset", "icon.opcodex.glyph.undo"));
@@ -1165,7 +1165,7 @@ final class OpcodexIcons {
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.match.reject", "icon.opcodex.glyph.error"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.match.remove", "icon.opcodex.glyph.trash"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.match.select.existing", "icon.opcodex.glyph.list"));
-			theme.addIcon(IconValue.parse("icon.version.tracking.action.match.tag.remove", "icon.opcodex.glyph.tag"));
+			theme.addIcon(IconValue.parse("icon.version.tracking.action.match.tag.remove", "icon.opcodex.glyph.circle-minus"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.save.session", "icon.opcodex.glyph.save"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.show.listings", "icon.opcodex.glyph.split"));
 			theme.addIcon(IconValue.parse("icon.version.tracking.action.show.settings", "icon.opcodex.glyph.settings"));

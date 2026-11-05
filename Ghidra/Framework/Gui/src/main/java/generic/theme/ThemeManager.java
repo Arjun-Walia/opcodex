@@ -130,15 +130,7 @@ public abstract class ThemeManager {
 	 * </ul>
 	 */
 	protected void buildCurrentValues() {
-		GThemeValueMap map = new GThemeValueMap();
-		map.load(javaDefaults);
-		map.load(applicationDefaults.getLightValues());
-		if (useDarkDefaults) {
-			map.load(applicationDefaults.getDarkValues());
-		}
-		map.load(applicationDefaults.getLookAndFeelValues(getLookAndFeelType()));
-		map.load(activeTheme);
-		currentValues = map;
+		currentValues = getThemeValues();
 	}
 
 	/**
@@ -304,13 +296,7 @@ public abstract class ThemeManager {
 	 * are currently applied to the application
 	 */
 	public GThemeValueMap getThemeValues() {
-		GThemeValueMap map = new GThemeValueMap();
-		map.load(javaDefaults);
-		map.load(applicationDefaults.getLightValues());
-		if (useDarkDefaults) {
-			map.load(applicationDefaults.getDarkValues());
-		}
-		map.load(applicationDefaults.getLookAndFeelValues(getLookAndFeelType()));
+		GThemeValueMap map = getDefaults();
 		map.load(activeTheme);
 		return map;
 	}
@@ -483,7 +469,15 @@ public abstract class ThemeManager {
 			currentDefaults.load(applicationDefaults.getDarkValues());
 		}
 		currentDefaults.load(applicationDefaults.getLookAndFeelValues(getLookAndFeelType()));
+		if (OpcodexUi.isImportedPalette(activeTheme)) {
+			currentDefaults.load(useDarkDefaults ? PaletteBases.DARK : PaletteBases.LIGHT);
+		}
 		return currentDefaults;
+	}
+
+	private static class PaletteBases {
+		private static final GTheme LIGHT = new OpcodexLightTheme();
+		private static final GTheme DARK = new OpcodexDarkTheme();
 	}
 
 	/**

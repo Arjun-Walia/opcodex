@@ -209,3 +209,12 @@ See [docs/releases/VERIFICATION.md](docs/releases/VERIFICATION.md) for exact com
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/WorkspacePanel.java` | OPCODEX: Group the running tools and workspace chooser in one strip. |
 
 | `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/OpcodexProjectWorkspace.java` | OPCODEX: Arrange the real explorer and tool launcher side by side in modern themes. |
+
+
+## Workspace presets and imported palettes
+
+The shared docking layout registry, workflow, rail, ribbon and reset actions cover Emulator and Version Tracking. The original Emulator default and the stored Classic Version Tracking preset retain the original panel layout. Detached panels use the shared modern frame. Existing action and provider IDs remain in place.
+
+Project domain-file icons use name and extension rules before composing existing status badges. Rename and move operations invalidate the cached icons. The MIT rules and distribution notice accompany the source and packaged licenses.
+
+Theme Import accepts standalone VS Code palette files. The desktop theme manager composes imported color overrides on an Opcodex base theme. The built-in themes keep their existing colors and assets.
