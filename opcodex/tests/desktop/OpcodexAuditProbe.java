@@ -267,6 +267,49 @@ public final class OpcodexAuditProbe {
         edt(() -> { search.setText(""); return null; });
     }
 
+    public static void verifyFocusOnly(Object tool, Window browser, Path output, Shot shot) throws Exception {
+        theme("OpcodexLightTheme");
+        ribbonSearch(tool, browser, output, shot);
+        Object service = type("help.Help").getMethod("getHelpService").invoke(null);
+        Class<?> locationType = type("ghidra.util.HelpLocation");
+        Object location = locationType.getConstructor(String.class, String.class)
+            .newInstance("Misc", "Ghidra_Help_Contents");
+        edt(() -> {
+            type("help.HelpService").getMethod("showHelp", locationType).invoke(service, location);
+            return null;
+        });
+        Window help = waitWindow("Opcodex Help");
+        boolean hasBrand = false;
+        for (int i = 0; i < 40 && !hasBrand; i++) {
+            hasBrand = edt(() -> hasWelcomeBrand(help));
+            if (!hasBrand) Thread.sleep(100);
+        }
+        if (!hasBrand) throw new AssertionError("Help welcome did not resolve the application mark");
+        shot.take(help, "light/help-welcome.png");
+        edt(() -> { help.setVisible(false); return null; });
+        Files.writeString(output.resolve("pass3-focus-result.json"),
+            "{\"projectDirectoryTyping\":true,\"projectWindowSearch\":true," +
+            "\"codeBrowserSearch\":true,\"helpWelcomeBrand\":true}\n");
+    }
+
+    private static boolean hasWelcomeBrand(Component component) {
+        if (component instanceof JEditorPane pane && pane.isShowing() &&
+                pane.getDocument() instanceof javax.swing.text.html.HTMLDocument doc) {
+            var images = doc.getIterator(javax.swing.text.html.HTML.Tag.IMG);
+            while (images.isValid()) {
+                Object source = images.getAttributes().getAttribute(javax.swing.text.html.HTML.Attribute.SRC);
+                if ("icon.docking.application.128".equals(source)) return true;
+                images.next();
+            }
+        }
+        if (component instanceof Container parent) {
+            for (Component child : parent.getComponents()) {
+                if (hasWelcomeBrand(child)) return true;
+            }
+        }
+        return false;
+    }
+
     private static void ribbonSearch(Object tool, Window browser, Path output, Shot shot) throws Exception {
         JTextField search=edt(() -> (JTextField)named(browser,"Find a command"));
         if(search==null)throw new AssertionError("No visible command search");

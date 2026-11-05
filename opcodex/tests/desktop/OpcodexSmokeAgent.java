@@ -191,6 +191,16 @@ public class OpcodexSmokeAgent {
     private static void run() {
         try {
             Files.createDirectories(OUTPUT);
+            if (System.getProperty("os.name").equals("Linux")) {
+                // Let the product launcher initialize XToolkit and establish WM_CLASS.
+                while (Thread.getAllStackTraces().keySet().stream()
+                        .noneMatch(thread -> thread.getName().equals("AWT-XAWT"))) {
+                    if (System.currentTimeMillis() >= DEADLINE) {
+                        throw new AssertionError("The Linux application did not initialize its X11 toolkit");
+                    }
+                    Thread.sleep(100);
+                }
+            }
             boolean accepted = false;
             Window main = null;
             while (System.currentTimeMillis() < DEADLINE && main == null) {
@@ -293,6 +303,12 @@ public class OpcodexSmokeAgent {
                 .invoke(services, "CodeBrowser", files));
             if (browser == null) throw new AssertionError("CodeBrowser failed to launch");
             Window browserWindow = (Window) browser.getClass().getMethod("getToolFrame").invoke(browser);
+            if (Boolean.getBoolean("opcodex.smoke.focusOnly")) {
+                OpcodexAuditProbe.verifyFocusOnly(browser, browserWindow, OUTPUT, OpcodexSmokeAgent::capture);
+                if (unexpectedUiFailure != null) throw new AssertionError("Unexpected UI exception", unexpectedUiFailure);
+                System.out.println("OPCODEX_PASS3_FOCUS_PASS");
+                System.exit(0);
+            }
             if(Boolean.getBoolean("opcodex.smoke.galleryOnly")) {
                 Thread.sleep(1000);
                 Object manager=browser.getClass().getMethod("getWindowManager").invoke(browser);

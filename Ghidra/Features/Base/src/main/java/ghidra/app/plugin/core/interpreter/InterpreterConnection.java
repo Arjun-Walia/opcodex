@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.interpreter;
 
+// OPCODEX: Separate a visible title from the identity used by existing workspaces.
+
 import java.util.List;
 
 import javax.swing.Icon;
@@ -32,6 +34,14 @@ public interface InterpreterConnection {
 	 * @return The title of the interpreter
 	 */
 	public String getTitle();
+
+	/**
+	 * {@return the display title for the console and Window menu}
+	 * The interpreter title remains the key for saved layouts and Help.
+	 */
+	public default String getDisplayTitle() {
+		return getTitle();
+	}
 
 	/**
 	 * Gets the icon associated with the interpreter.

@@ -190,3 +190,6 @@ See [docs/releases/VERIFICATION.md](docs/releases/VERIFICATION.md) for exact com
 | `Ghidra/Framework/Project/src/main/java/ghidra/app/plugin/core/help/AboutDomainObjectUtils.java` | OPCODEX: Label the engine version in summaries while retaining stored metadata keys. |
 
 | `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/analysis/AutoAnalysisPlugin.java` | OPCODEX: Re-publish the current code location after analysis so linked panels refresh without moving the cursor. |
+
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/interpreter/InterpreterConnection.java` | OPCODEX: Give interpreter integrations an optional display label while keeping their stored title. |
+| `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/interpreter/InterpreterComponentProvider.java` | OPCODEX: Use the visible console label while retaining the provider identity and Help target. |
