@@ -83,11 +83,13 @@ final class OpcodexRibbon {
         commands.addPropertyChangeListener("opcodex.ribbon.tab", event -> update.run());
         commands.putClientProperty("opcodex.ribbon.tab", initial);
         if (manager != null && manager.getTool() != null) {
-            JPanel finder = new JPanel(new BorderLayout(0, 5));
-            finder.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-            JTextField search = new JTextField(20);
+            JPanel finder = new JPanel(new BorderLayout());
+            JTextField search = new JTextField(24);
             search.setName("Find a command");
             search.putClientProperty("JTextField.placeholderText", "Search tools and commands…");
+            search.putClientProperty("JTextField.leadingIcon", generic.theme.builtin.OpcodexUi.sized(
+                new generic.theme.GIcon("icon.opcodex.glyph.search"), 16));
+            search.putClientProperty("JComponent.roundRect", true);
             search.getAccessibleContext().setAccessibleName("Search tools and commands");
             search.setToolTipText("Type a name or purpose, then press Enter. Search includes menu and panel commands.");
             search.addActionListener(event -> {
@@ -100,6 +102,7 @@ final class OpcodexRibbon {
             header.add(finder, BorderLayout.EAST);
         }
         ribbon.add(header, BorderLayout.NORTH);
+        ribbon.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         return ribbon;
     }
 
@@ -129,7 +132,8 @@ final class OpcodexRibbon {
         JPanel row = new JPanel(new FlowLayout(FlowLayout.LEADING, 3, 0));
         row.setName("Ribbon commands: " + name);
         group.add(row, BorderLayout.CENTER);
-        JLabel label = new JLabel(name, SwingConstants.CENTER);
+        JLabel label = new JLabel(name, SwingConstants.LEADING);
+        label.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 0));
         label.setFont(label.getFont().deriveFont(Math.max(10f, label.getFont().getSize2D() - 2)));
         group.add(label, BorderLayout.SOUTH);
         return group;

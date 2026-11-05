@@ -77,7 +77,6 @@ public class StatusBar extends JPanel {
 		super(new BorderLayout());
 
 		int borderPadding = STATUS_BAR_GAP;
-		setBorder(BorderFactory.createEmptyBorder(borderPadding, 0, 0, 0));
 
 		homeButtonPanel = new JPanel(new BorderLayout());
 		add(homeButtonPanel, BorderLayout.WEST);
@@ -101,6 +100,16 @@ public class StatusBar extends JPanel {
 		Dimension size = statusLabel.getPreferredSize();
 		int topAndBottomPadding = STATUS_BAR_GAP * 2;
 		minHeight = size.height + borderPadding + topAndBottomPadding;
+	}
+
+	@Override
+	public void updateUI() {
+		super.updateUI();
+		setBorder(generic.theme.builtin.OpcodexUi.active() ?
+			BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0,
+				new generic.theme.GColor("system.color.bg.border")),
+				BorderFactory.createEmptyBorder(2, 5, 2, 5)) :
+			BorderFactory.createEmptyBorder(STATUS_BAR_GAP, 0, 0, 0));
 	}
 
 	/** The east panel contains the status panel and a spacer */

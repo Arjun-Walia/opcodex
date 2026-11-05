@@ -10,11 +10,37 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
+import javax.swing.BorderFactory;
+import generic.theme.GColor;
 import generic.theme.ThemeManager;
 import generic.theme.ApplicationThemeManager;
 
 /** Product chrome helpers; keep icon painting vector-based even for disabled controls. */
 public final class OpcodexUi {
+	private static final Color OUTLINE = new GColor("system.color.bg.border");
+	private static final Color FOCUS = new GColor("color.border.button.focused");
+
+	/** Inset surface frame using the current theme's existing outline and focus colors. */
+	public static Border surfaceBorder(int radius, int padding) {
+		return BorderFactory.createCompoundBorder(new AbstractBorder() {
+			@Override public Insets getBorderInsets(Component c, Insets insets) {
+				insets.set(1, 1, 1, 1);
+				return insets;
+			}
+
+			@Override public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+				Graphics2D canvas = (Graphics2D) g.create();
+				try {
+					canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					canvas.setColor(c.isFocusOwner() ? FOCUS : OUTLINE);
+					canvas.drawRoundRect(x, y, w - 1, h - 1, radius, radius);
+				}
+				finally {
+					canvas.dispose();
+				}
+			}
+		}, BorderFactory.createEmptyBorder(padding, padding, padding, padding));
+	}
 	/** Bundled resource callers keep their dimensions, animation/custom images and other themes. */
 	public static ImageIcon resourceIcon(String path, ImageIcon legacy) {
 		if (!(legacy instanceof resources.icons.UrlImageIcon url) || legacy instanceof OpcodexResourceIcon ||

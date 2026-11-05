@@ -20,6 +20,7 @@ import java.awt.dnd.*;
 import java.awt.event.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -32,13 +33,22 @@ import help.HelpService;
  * functionality.
  */
 public class DockableComponent extends JPanel implements ContainerListener {
+	private static final Border SURFACE_FRAME = generic.theme.builtin.OpcodexUi.surfaceBorder(9, 3);
+	private Border classicFrame;
+
 	// OPCODEX: inset each provider as a distinct workspace surface without replacing its content.
 	@Override public void updateUI() {
 		super.updateUI();
-		setBorder(generic.theme.builtin.OpcodexUi.active() ?
-			BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(
-				new generic.theme.GColor("system.color.bg.border")),
-				BorderFactory.createEmptyBorder(0, 3, 3, 3)) : BorderFactory.createEmptyBorder());
+		applyFrame();
+	}
+
+	void setClassicFrame(Border border) {
+		classicFrame = border;
+		applyFrame();
+	}
+
+	private void applyFrame() {
+		setBorder(generic.theme.builtin.OpcodexUi.active() ? SURFACE_FRAME : classicFrame);
 	}
 	private static final int DROP_EDGE_OFFSET = 20;
 

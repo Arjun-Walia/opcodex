@@ -58,6 +58,7 @@ class ProjectDataPanel extends JSplitPane implements ProjectViewListener {
 	private ProjectDataTreePanel treePanel;
 	private ProjectDataTablePanel tablePanel;
 	private JPanel bugFixPanel;
+	private String borderProjectName = "";
 
 	ProjectDataPanel(FrontEndPlugin plugin, ProjectDataTreePanel activePanel,
 			ProjectDataTablePanel tablePanel, String projectName) {
@@ -72,7 +73,6 @@ class ProjectDataPanel extends JSplitPane implements ProjectViewListener {
 
 		projectTab = new JTabbedPane(SwingConstants.BOTTOM);
 		projectTab.setName("PROJECT_TABBED_PANE");
-		projectTab.setBorder(BorderFactory.createTitledBorder(BORDER_PREFIX));
 		projectTab.addChangeListener(e -> frontEndPlugin.getTool().contextChanged(null));
 
 		projectTab.addTab("Tree View", activePanel);
@@ -88,7 +88,7 @@ class ProjectDataPanel extends JSplitPane implements ProjectViewListener {
 		JPanel leftPanel = new JPanel(new BorderLayout());
 		leftPanel.add(projectTab);
 		this.add(leftPanel, JSplitPane.LEFT);
-		projectTab.setBorder(BorderFactory.createTitledBorder(BORDER_PREFIX));
+		updateProjectBorder();
 
 		// initialize the read-only project view tabbed pane
 		// create a container panel just to have a title border because of a bug in
@@ -366,8 +366,24 @@ class ProjectDataPanel extends JSplitPane implements ProjectViewListener {
 	}
 
 	void setBorder(String projectName) {
-		projectTab.setBorder(BorderFactory.createTitledBorder(BORDER_PREFIX + projectName));
+		borderProjectName = projectName;
+		updateProjectBorder();
 		treePanel.updateProjectName(projectName);
+	}
+
+	@Override
+	public void updateUI() {
+		super.updateUI();
+		if (projectTab != null) {
+			updateProjectBorder();
+		}
+	}
+
+	private void updateProjectBorder() {
+		boolean modern = generic.theme.builtin.OpcodexUi.active();
+		projectTab.setBorder(modern ? BorderFactory.createEmptyBorder() :
+			BorderFactory.createTitledBorder(BORDER_PREFIX + borderProjectName));
+		projectTab.setTabPlacement(modern ? SwingConstants.TOP : SwingConstants.BOTTOM);
 	}
 
 	ActionContext getActionContext(ComponentProvider provider, MouseEvent e) {

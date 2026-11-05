@@ -23,3 +23,12 @@ Check first run, empty data, disabled controls, progress, cancellation, failure 
 Record changed upstream files and preserve their original notices. Keep packaged source identity and checksums tied to the exact artifact. Verify fresh and upgraded installations, shortcuts, Linux desktop identity, full action/menu continuity and theme/layout restoration. Label development overlays explicitly.
 
 Publish user guides on the website and keep engineering evidence and handoff state in the Opcodex Obsidian project. Clearly separate implemented features, installed-package evidence, independent audit results and open release checks. Never convert a focused UI pass into a claim that the broad upstream suite or live debugger backends passed.
+
+
+## Workspace layout from the November 5 references
+
+The modern workbench opens Program Trees beside Listing and Decompiler, with a short Console dock below the code panes. Provider tabs are at the top. Existing saved arrangements are available until the user chooses the focused layout reset. The dock frames, grouped ribbon and search field share the same spacing in the modern tools. Light and Dark retain their existing palettes. Classic retains the prior workspace structure.
+
+The project window puts the real Tree and Table views beside a resizable launcher. Launcher cards are the existing tool buttons, with descriptions and room for names. Custom tools remain in the launcher. The existing running-tool and workspace controls sit together below the split.
+
+The Windows development preview was exercised in Light, Dark and Classic with an isolated settings profile and a synthetic project. The captured Debugger shows its initial state without a live target. Installer verification remains a separate release check.

@@ -74,12 +74,12 @@ public class OpcodexSmokeAgent {
     private static int verifyToolIcons(Component component) throws Exception {
         int count=0;
         if(component instanceof Container bar && component.getClass().getName().equals("ghidra.framework.main.ProjectToolBar")) {
-            Integer baseline=null;
+            Integer height=null;
             for(Component child:bar.getComponents())if(child instanceof AbstractButton tile) {
-                if(tile.getText()==null || tile.getText().isBlank() || tile.getHeight()!=72)
+                if(tile.getAccessibleContext().getAccessibleName()==null || tile.getHeight()<64)
                     throw new AssertionError("Startup tools need aligned, labelled tiles");
-                if(baseline!=null && baseline!=tile.getY())throw new AssertionError("Startup tool baselines differ");
-                baseline=tile.getY();
+                if(height!=null && height!=tile.getHeight())throw new AssertionError("Startup cards differ in height");
+                height=tile.getHeight();
             }
         }
         if(component instanceof AbstractButton button && component.isShowing() &&

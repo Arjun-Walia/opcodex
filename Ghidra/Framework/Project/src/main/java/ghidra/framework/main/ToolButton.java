@@ -57,6 +57,36 @@ import utility.function.Dummy;
  * template, or to represent a running tool.
  */
 class ToolButton extends EmptyBorderButton implements Draggable, Droppable {
+	private static final javax.swing.border.Border LAUNCHER_FRAME =
+		generic.theme.builtin.OpcodexUi.surfaceBorder(12, 0);
+	private static final String LAUNCHER_CARD = "opcodex.launcherCard";
+
+	@Override
+	public Insets getInsets() {
+		return Boolean.TRUE.equals(getClientProperty(LAUNCHER_CARD)) ?
+			new Insets(10, 14, 10, 14) : super.getInsets();
+	}
+
+	@Override
+	public Insets getInsets(Insets insets) {
+		if (Boolean.TRUE.equals(getClientProperty(LAUNCHER_CARD))) {
+			if (insets == null) {
+				return getInsets();
+			}
+			insets.set(10, 14, 10, 14);
+			return insets;
+		}
+		return super.getInsets(insets);
+	}
+
+	@Override
+	protected void paintBorder(Graphics graphics) {
+		if (Boolean.TRUE.equals(getClientProperty(LAUNCHER_CARD))) {
+			LAUNCHER_FRAME.paintBorder(this, graphics, 0, 0, getWidth(), getHeight());
+			return;
+		}
+		super.paintBorder(graphics);
+	}
 
 	private DropTarget dropTarget;
 	private DropTgtAdapter dropTargetAdapter;

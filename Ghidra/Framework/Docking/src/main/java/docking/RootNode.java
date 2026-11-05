@@ -86,7 +86,8 @@ class RootNode extends WindowNode {
 		c.setLayout(new BorderLayout());
 
 		childPanel = new JPanel(new BorderLayout());
-		childPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
+		childPanel.setBorder(generic.theme.builtin.OpcodexUi.quietBorder(
+			BorderFactory.createEmptyBorder(3, 0, 0, 0), new Insets(5, 5, 6, 6)));
 		c.add(childPanel, BorderLayout.CENTER);
 		workspaceRail = new OpcodexWorkspaceRail(mgr);
 		workspaceRail.setVisible(false); // Providers are registered after the root is constructed.

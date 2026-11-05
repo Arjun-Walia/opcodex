@@ -876,12 +876,11 @@ public class FrontEndPlugin extends Plugin
 		// construct the main panel to contain the toolbar and
 		// data tree panels (active and read-only views)
 		JPanel mainPanel = new JPanel(new BorderLayout());
-		mainPanel.add(toolBar, BorderLayout.NORTH);
 		projectContent = new JPanel(new CardLayout());
 		// OPCODEX: resolve project actions on activation; the manager initializes after the GUI.
 		projectContent.add(new OpcodexWelcomePanel(() -> fileActionManager.newProject(),
 			() -> fileActionManager.openProject()), "welcome");
-		projectContent.add(projectDataPanel, "project");
+		projectContent.add(new OpcodexProjectWorkspace(projectDataPanel, toolBar), "project");
 		mainPanel.add(projectContent, BorderLayout.CENTER);
 
 		JPanel bottomPane = new JPanel();

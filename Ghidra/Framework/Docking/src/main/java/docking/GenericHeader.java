@@ -199,7 +199,7 @@ public class GenericHeader extends JPanel {
             JPanel clippedTitle = new JPanel(new BorderLayout()) {
                 @Override public Dimension getPreferredSize() {
                     Dimension size = titlePanel.getPreferredSize();
-                    return new Dimension(Math.min(size.width, Math.min(420, Math.max(100, GenericHeader.this.getWidth()*2/5))), size.height);
+                    return new Dimension(Math.min(size.width, Math.min(420, Math.max(118, GenericHeader.this.getWidth()*9/20))), size.height);
                 }
             };
             clippedTitle.setOpaque(false);
@@ -418,7 +418,7 @@ public class GenericHeader extends JPanel {
 				g.fillRect(0, 0, getWidth(), getHeight());
 				if (isSelected) {
 					g.setColor(new GColor("color.border.button.focused"));
-					g.fillRect(0, 8, 2, Math.max(0, getHeight() - 16));
+					g.fillRect(8, getHeight() - 2, Math.max(0, getWidth() - 16), 2);
 				}
 				return;
 			}
@@ -461,8 +461,9 @@ public class GenericHeader extends JPanel {
 		void setIcon(Icon icon) {
             originalIcon = icon;
 			if (OpcodexUi.active()) {
-				titleLabel.setIcon(null);
-				titleLabel.setBorder(BorderFactory.createEmptyBorder(7, 10, 7, 8));
+				titleLabel.setIcon(OpcodexUi.isVector(icon) ? OpcodexUi.sized(icon, 16) : null);
+				titleLabel.setIconTextGap(7);
+				titleLabel.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 8));
 				return;
 			}
 

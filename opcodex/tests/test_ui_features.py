@@ -46,6 +46,14 @@ class WorkbenchFeatureTests(unittest.TestCase):
             return sorted(tuple(node.get(attr, '') for attr in ['NAME', 'OWNER', 'INSTANCE_ID', 'GROUP'])
                           for node in root.iter('COMPONENT_INFO'))
         self.assertEqual(identities(original), identities(current))
+        workspace = current.find('TOOL/ROOT_NODE/SPLIT_NODE/SPLIT_NODE')
+        navigator = workspace.find('COMPONENT_NODE')
+        selected = navigator.findall('COMPONENT_INFO')[int(navigator.get('TOP_INFO'))]
+        self.assertEqual((selected.get('NAME'), selected.get('ACTIVE')), ('Program Tree', 'true'))
+        code_and_output = workspace.find('SPLIT_NODE')
+        self.assertEqual(code_and_output.get('ORIENTATION'), 'VERTICAL')
+        console = code_and_output.find("COMPONENT_NODE/COMPONENT_INFO[@NAME='Console']")
+        self.assertEqual(console.get('ACTIVE'), 'true')
 
     def test_classic_layout_is_the_original_stable_layout(self):
         baseline = BASELINE.get('commit') or BASELINE.get('revision')

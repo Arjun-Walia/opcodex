@@ -15,25 +15,33 @@
  */
 package ghidra.framework.main;
 
+import java.awt.*;
 import java.util.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.JToolBar;
+import javax.swing.*;
 
+import generic.theme.builtin.OpcodexUi;
 import ghidra.framework.model.*;
+import ghidra.util.HTMLUtilities;
 
 /**
  * Toolbar that shows icons for the tools in the user's tool chest.
  */
-class ProjectToolBar extends JToolBar implements ToolChestChangeListener {
+class ProjectToolBar extends JToolBar implements ToolChestChangeListener, Scrollable {
 	private final static int TYPICAL_NUM_TOOLS = 5;
 
 	private Map<String, ToolButton> toolButtonMap;
 	private FrontEndPlugin plugin;
 	private FrontEndTool tool;
+	private LayoutManager classicLayout;
+	private final GridLayout cardLayout = new GridLayout(0, 2, 10, 10);
 
 	ProjectToolBar(FrontEndPlugin plugin) {
 		super();
+		classicLayout = getLayout();
+		if (OpcodexUi.active()) {
+			setLayout(cardLayout);
+		}
 		this.plugin = plugin;
 		tool = ((FrontEndTool) plugin.getTool());
 		toolButtonMap = new HashMap<>(TYPICAL_NUM_TOOLS);
@@ -109,8 +117,7 @@ class ProjectToolBar extends JToolBar implements ToolChestChangeListener {
 	 * Redo the tool bar.
 	 */
 	private void populateToolBar() {
-		removeAll();
-		toolButtonMap.clear();
+		clear();
 		ToolChest tc = plugin.getActiveProject().getLocalToolChest();
 		ToolTemplate[] templates = tc.getToolTemplates();
 		for (ToolTemplate element : templates) {
@@ -135,12 +142,18 @@ class ProjectToolBar extends JToolBar implements ToolChestChangeListener {
     @Override public void updateUI() {
         super.updateUI();
         if (toolButtonMap == null) return;
+        setLayout(OpcodexUi.active() ? cardLayout : classicLayout);
         toolButtonMap.forEach((name, button) -> styleButton(button, name));
         revalidate();
     }
 
     private void styleButton(ToolButton button, String name) {
-        if (!generic.theme.builtin.OpcodexUi.active()) {
+        boolean modern = OpcodexUi.active();
+        button.putClientProperty("opcodex.launcherCard", modern);
+        button.setHorizontalAlignment(modern ? SwingConstants.LEADING : SwingConstants.CENTER);
+        button.setHorizontalTextPosition(modern ? SwingConstants.TRAILING : SwingConstants.CENTER);
+        button.setVerticalTextPosition(modern ? SwingConstants.CENTER : SwingConstants.BOTTOM);
+        if (!modern) {
             button.setText(null);
             button.setPreferredSize(null); button.setMinimumSize(null); button.setMaximumSize(null);
             button.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -151,16 +164,38 @@ class ProjectToolBar extends JToolBar implements ToolChestChangeListener {
 			case "VersionTracking" -> "Version Tracking";
 			default -> name;
 		};
-		button.setText(label);
-		button.setIconTextGap(8);
+		String description = switch (name) {
+			case "CodeBrowser" -> "Inspect code and symbols";
+			case "Debugger" -> "Inspect a running target";
+			case "Emulator" -> "Explore execution in isolation";
+			case "VersionTracking", "Version Tracking" -> "Compare program versions";
+			default -> "Open this workspace tool";
+		};
+		button.setText("<html><b>" + HTMLUtilities.escapeHTML(label) +
+			"</b><br><small>" + description + "</small></html>");
+		button.setIconTextGap(12);
 		button.getAccessibleContext().setAccessibleName(label);
-		button.setMargin(new java.awt.Insets(6, 8, 6, 8));
-		java.awt.Dimension tile = new java.awt.Dimension(Math.max(128,
-			button.getFontMetrics(button.getFont()).stringWidth(label) + 24), 72);
-		button.setPreferredSize(tile);
-		button.setMinimumSize(tile);
-		button.setMaximumSize(tile);
+		button.getAccessibleContext().setAccessibleDescription(description);
+		button.setMargin(new Insets(10, 14, 10, 14));
+		button.setPreferredSize(new Dimension(208, 78));
 	}
+
+	@Override public void doLayout() {
+		if (getLayout() == cardLayout) {
+			int columns = getWidth() < 434 ? 1 : 2;
+			if (cardLayout.getColumns() != columns) {
+				cardLayout.setColumns(columns);
+				revalidate();
+			}
+		}
+		super.doLayout();
+	}
+
+	@Override public Dimension getPreferredScrollableViewportSize() { return getPreferredSize(); }
+	@Override public int getScrollableUnitIncrement(Rectangle visible, int axis, int direction) { return 24; }
+	@Override public int getScrollableBlockIncrement(Rectangle visible, int axis, int direction) { return Math.max(24, visible.height - 24); }
+	@Override public boolean getScrollableTracksViewportWidth() { return true; }
+	@Override public boolean getScrollableTracksViewportHeight() { return false; }
 
 	public ToolButton getToolButtonForToolConfig(ToolTemplate toolTemplate) {
 		return toolButtonMap.get(toolTemplate.getName());

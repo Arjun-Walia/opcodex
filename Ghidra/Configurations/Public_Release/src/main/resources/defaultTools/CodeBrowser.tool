@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OPCODEX: focused workspace with a tabbed navigator, balanced code panes and optional console; preserve provider and plugin identities. -->
+<!-- OPCODEX: project navigation, paired code panes and an open output dock; preserve provider and plugin identities. -->
 <TOOL_CONFIG CONFIG_NAME="NO_LONGER_USED">
     <SUPPORTED_DATA_TYPE CLASS_NAME="ghidra.program.model.listing.Program" />
     <SUPPORTED_DATA_TYPE CLASS_NAME="ghidra.program.model.listing.DataTypeArchive" />
@@ -19,13 +19,13 @@
                 </COMPONENT_NODE>
                 <SPLIT_NODE WIDTH="1500" HEIGHT="800" DIVIDER_LOCATION="200" ORIENTATION="HORIZONTAL">
                     <COMPONENT_NODE TOP_INFO="0">
+                        <COMPONENT_INFO NAME="Program Tree" OWNER="ProgramTreePlugin" TITLE="Program Trees" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819926581772895" />
                         <COMPONENT_INFO NAME="Functions Window" OWNER="FunctionWindowPlugin" TITLE="Functions" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819980101091906" />
                         <COMPONENT_INFO NAME="Symbol Tree" OWNER="SymbolTreePlugin" TITLE="Symbol Tree" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819977680978496" />
                         <COMPONENT_INFO NAME="DataTypes Provider" OWNER="DataTypeManagerPlugin" TITLE="Data Type Manager" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819978370941521" />
-                        <COMPONENT_INFO NAME="Program Tree" OWNER="ProgramTreePlugin" TITLE="Program Trees" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772895" />
                     </COMPONENT_NODE>
-                    <SPLIT_NODE WIDTH="1200" HEIGHT="800" DIVIDER_LOCATION="780" ORIENTATION="VERTICAL">
-                        <SPLIT_NODE WIDTH="1244" HEIGHT="800" DIVIDER_LOCATION="500" ORIENTATION="HORIZONTAL">
+                    <SPLIT_NODE WIDTH="1200" HEIGHT="800" DIVIDER_LOCATION="810" ORIENTATION="VERTICAL">
+                        <SPLIT_NODE WIDTH="1244" HEIGHT="800" DIVIDER_LOCATION="565" ORIENTATION="HORIZONTAL">
                             <COMPONENT_NODE TOP_INFO="0">
                                 <COMPONENT_INFO NAME="Listing" OWNER="CodeBrowserPlugin" TITLE="Listing: " ACTIVE="true" GROUP="Core" INSTANCE_ID="3207819926581772881" />
                             </COMPONENT_NODE>
@@ -42,7 +42,7 @@
                             </COMPONENT_NODE>
                         </SPLIT_NODE>
                         <COMPONENT_NODE TOP_INFO="0">
-                            <COMPONENT_INFO NAME="Console" OWNER="ConsolePlugin" TITLE="Console" ACTIVE="false" GROUP="Default" INSTANCE_ID="3207819926581772894" />
+                            <COMPONENT_INFO NAME="Console" OWNER="ConsolePlugin" TITLE="Console" ACTIVE="true" GROUP="Default" INSTANCE_ID="3207819926581772894" />
                             <COMPONENT_INFO NAME="Bookmarks" OWNER="BookmarkPlugin" TITLE="Bookmarks" ACTIVE="false" GROUP="Core.Bookmarks" INSTANCE_ID="3207819977680978500" />
                         </COMPONENT_NODE>
                     </SPLIT_NODE>

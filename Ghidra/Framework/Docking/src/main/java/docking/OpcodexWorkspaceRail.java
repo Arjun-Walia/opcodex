@@ -69,6 +69,7 @@ final class OpcodexWorkspaceRail extends JPanel {
 				addShortcut("Debug Console", "terminal", "Debug Console");
 			}
 			else {
+			addShortcut("Program Trees", "folder", "Program Tree");
 			addShortcut("Listing", "listing", "Listing");
 			addShortcut("Functions", "function", "Functions Window");
 			addShortcut("Symbols", "tree", "Symbol Tree");

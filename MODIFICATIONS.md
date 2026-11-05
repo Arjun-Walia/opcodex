@@ -193,3 +193,19 @@ See [docs/releases/VERIFICATION.md](docs/releases/VERIFICATION.md) for exact com
 
 | `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/interpreter/InterpreterConnection.java` | OPCODEX: Give interpreter integrations an optional display label while keeping their stored title. |
 | `Ghidra/Features/Base/src/main/java/ghidra/app/plugin/core/interpreter/InterpreterComponentProvider.java` | OPCODEX: Use the visible console label while retaining the provider identity and Help target. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/OpcodexWorkspaceRail.java` | OPCODEX: Expose Program Trees directly in the workbench navigation. |
+
+| `Ghidra/Framework/Docking/src/main/java/docking/menu/OpcodexRibbon.java` | OPCODEX: Keep command search distinct and align the ribbon group labels. |
+
+| `Ghidra/Framework/Gui/src/main/java/generic/theme/builtin/OpcodexUi.java` | OPCODEX: Paint rounded panel outlines using existing theme tokens. |
+
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/LogPanel.java` | OPCODEX: Use a flat status presentation in the modern themes. |
+
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/ProjectDataPanel.java` | OPCODEX: Place the existing explorer views inside the project workspace frame. |
+
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/ToolButton.java` | OPCODEX: Frame the existing launch buttons without replacing their commands or drag behavior. |
+
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/WorkspacePanel.java` | OPCODEX: Group the running tools and workspace chooser in one strip. |
+
+| `Ghidra/Framework/Project/src/main/java/ghidra/framework/main/OpcodexProjectWorkspace.java` | OPCODEX: Arrange the real explorer and tool launcher side by side in modern themes. |
