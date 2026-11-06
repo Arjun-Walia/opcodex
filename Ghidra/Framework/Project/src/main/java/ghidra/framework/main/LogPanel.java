@@ -76,7 +76,7 @@ public class LogPanel extends JPanel implements LogListener {
 
 		Border b = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5),
 			BorderFactory.createLoweredBevelBorder());
-		label.setBorder(b);
+		label.setBorder(generic.theme.builtin.OpcodexUi.quietBorder(b, new java.awt.Insets(3, 8, 3, 8)));
 
 		addLogAppender();
 		add(panel, BorderLayout.NORTH);

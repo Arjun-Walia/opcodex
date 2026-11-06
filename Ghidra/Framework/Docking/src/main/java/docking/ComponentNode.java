@@ -268,13 +268,18 @@ class ComponentNode extends Node {
 		if (count == 1) {
 			top = activeComponents.get(0);
 			comp = top.getComponent();
-			comp.setBorder(BorderFactory.createRaisedBevelBorder());
+			top.getComponent().setClassicFrame(BorderFactory.createRaisedBevelBorder());
 
 			installRenameMenu(top);
 		}
 		else if (count > 1) {
-			JTabbedPane tabbedPane =
-				new JTabbedPane(SwingConstants.BOTTOM, JTabbedPane.SCROLL_TAB_LAYOUT);
+			int placement = generic.theme.builtin.OpcodexUi.active() ? SwingConstants.TOP : SwingConstants.BOTTOM;
+			JTabbedPane tabbedPane = new JTabbedPane(placement, JTabbedPane.SCROLL_TAB_LAYOUT) {
+				@Override public void updateUI() {
+					super.updateUI();
+					setTabPlacement(generic.theme.builtin.OpcodexUi.active() ? TOP : BOTTOM);
+				}
+			};
 			setupFocusUpdateListeners(tabbedPane);
 			comp = tabbedPane;
 
@@ -308,7 +313,7 @@ class ComponentNode extends Node {
 			installRenameMenu(placeholder);
 
 			DockableComponent c = placeholder.getComponent();
-			c.setBorder(BorderFactory.createEmptyBorder());
+			c.setClassicFrame(BorderFactory.createEmptyBorder());
 
 			// The renderer uses use the full title as the tooltip for the tab
 			String fullTitle = placeholder.getFullTitle();

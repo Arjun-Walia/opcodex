@@ -55,9 +55,20 @@ public class GTabPanelTest extends AbstractDockingTest {
 			parentFrame = new JFrame(GTabPanel.class.getName());
 			parentFrame.getContentPane().add(panel);
 			parentFrame.pack();
+			// OPCODEX: Size from the tabs, independent of the active text area's font metrics.
+			int frameInsets = parentFrame.getInsets().left + parentFrame.getInsets().right;
+			int tabWidth = List.of("One", "Two", "Three Three Three").stream()
+				.mapToInt(value -> new GTab<>(gTabPanel, value, false).getPreferredSize().width)
+				.sum();
+			int overflowWidth = new HiddenValuesButton(gTabPanel).getPreferredWidth();
+			parentFrame.setSize(tabWidth + overflowWidth + 20 + frameInsets,
+				parentFrame.getHeight());
 			parentFrame.setVisible(true);
 			parentFrame.setLocation(1000, 200);
 		});
+        // OPCODEX: settle native resize/validation before testing which tabs fit in the viewport.
+        waitForSwing();
+        runSwing(() -> parentFrame.validate());
 	}
 
 	@After

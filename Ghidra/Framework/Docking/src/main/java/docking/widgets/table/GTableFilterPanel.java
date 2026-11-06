@@ -114,6 +114,8 @@ public class GTableFilterPanel<ROW_OBJECT> extends JPanel {
 
 	private static final FilterOptions DEFAULT_OPTIONS = new FilterOptions();
 	private FilterOptions filterOptions = DEFAULT_OPTIONS;
+    private java.util.function.Function<FilterOptions, Icon> filterOptionsIconFactory =
+        FilterOptions::getFilterStateIcon;
 	private TableTextFilterFactory<ROW_OBJECT> filterFactory =
 		new DefaultTableTextFilterFactory<>(filterOptions);
 	private RowFilterTransformer<ROW_OBJECT> transformer;
@@ -393,6 +395,12 @@ public class GTableFilterPanel<ROW_OBJECT> extends JPanel {
 		return filterOptions;
 	}
 
+    /** OPCODEX: specialize a table's filter symbol without changing match or inversion behavior. */
+    public void setFilterOptionsIconFactory(java.util.function.Function<FilterOptions, Icon> factory) {
+        filterOptionsIconFactory = java.util.Objects.requireNonNull(factory);
+        updateFilterFactory();
+    }
+
 	/**
 	 * Activates this filter by showing it, if not visible, and then requesting focus in the filter
 	 * text field. 
@@ -468,7 +476,7 @@ public class GTableFilterPanel<ROW_OBJECT> extends JPanel {
 	}
 
 	private JComponent buildFilterStateButton() {
-		filterStateButton = new EmptyBorderButton(filterOptions.getFilterStateIcon());
+		filterStateButton = new EmptyBorderButton(filterOptionsIconFactory.apply(filterOptions));
 		filterStateButton.addActionListener(e -> {
 			FilterOptionsEditorDialog dialog = new FilterOptionsEditorDialog(filterOptions);
 			DockingWindowManager.showDialog(GTableFilterPanel.this, dialog);
@@ -488,7 +496,7 @@ public class GTableFilterPanel<ROW_OBJECT> extends JPanel {
 	}
 
 	private void updateFilterFactory() {
-		filterStateButton.setIcon(filterOptions.getFilterStateIcon());
+		filterStateButton.setIcon(filterOptionsIconFactory.apply(filterOptions));
 		filterStateButton.setToolTipText(filterOptions.getFilterDescription());
 		filterFactory = new DefaultTableTextFilterFactory<>(filterOptions);
 	}
@@ -943,7 +951,9 @@ public class GTableFilterPanel<ROW_OBJECT> extends JPanel {
 				WrappingTableModel tableModelWrapper = (WrappingTableModel) rowObjectFilterModel;
 				tableModelWrapper.wrappedModelChangedFromTableChangedEvent();
 			}
-			filterField.alert();
+            // OPCODEX: don't rely on a transient flash to communicate an empty filtered table.
+            filterField.setNoMatches(!filterField.getText().isBlank() && rowObjectFilterModel.getRowCount() == 0);
+            filterField.alert();
 			isUpdatingModel = false;
 		}
 	}

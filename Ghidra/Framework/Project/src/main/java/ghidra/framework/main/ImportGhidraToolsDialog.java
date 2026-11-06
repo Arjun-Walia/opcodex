@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main;
 
+// OPCODEX: product-facing UI wording; compatibility identifiers and help anchors are retained.
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -50,13 +52,13 @@ class ImportGhidraToolsDialog extends DialogComponentProvider {
 	 */
 	ImportGhidraToolsDialog(FrontEndTool tool) {
 
-		super("Import Ghidra Tools", true);
+		super("Import Bundled Tools", true);
 		setHelpLocation(new HelpLocation(ToolConstants.TOOL_HELP_TOPIC, "Import Ghidra Tools"));
 
 		this.tool = tool;
 
 		mainPanel = createPanel();
-		mainPanel.getAccessibleContext().setAccessibleName("Import Ghidra Tools");
+		mainPanel.getAccessibleContext().setAccessibleName("Import Bundled Tools");
 		addWorkPanel(mainPanel);
 
 		addOKButton();
@@ -109,7 +111,7 @@ class ImportGhidraToolsDialog extends DialogComponentProvider {
 		availableToolsPanel.getAccessibleContext().setAccessibleName("Available Toolse");
 
 		panel.add(availableToolsPanel, BorderLayout.CENTER);
-		panel.getAccessibleContext().setAccessibleName("Import Ghidra Tools");
+		panel.getAccessibleContext().setAccessibleName("Import Bundled Tools");
 		return panel;
 	}
 

@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main;
 
+// OPCODEX: product-facing UI wording; compatibility identifiers and help anchors are retained.
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -60,7 +62,7 @@ public class AcceptUrlContentTask extends GhidraURLQueryTask {
 
 		Project activeProject = AppInfo.getActiveProject();
 		if (activeProject == null) {
-			Msg.showError(this, null, "Ghidra Error",
+			Msg.showError(this, null, "Opcodex Error",
 				"Unable to accept URL without active project open");
 			return;
 		}
@@ -96,7 +98,7 @@ public class AcceptUrlContentTask extends GhidraURLQueryTask {
 
 		Project activeProject = AppInfo.getActiveProject();
 		if (activeProject == null) {
-			Msg.showError(this, null, "Ghidra Error",
+			Msg.showError(this, null, "Opcodex Error",
 				"Unable to accept URL without active project open");
 			return;
 		}

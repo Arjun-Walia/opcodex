@@ -71,7 +71,22 @@ public class SetVertexMostRecentColorAction extends MultiActionDockingAction {
 		translateIcon = new TranslateIcon(scaledBrush, point.x, point.y);
 		multiIcon.addIcon(translateIcon);
 
-		colorIcon = multiIcon;
+		// OPCODEX: a live outline glyph with a thin current-color indicator replaces the raised swatch.
+		colorIcon = new Icon() {
+			@Override public int getIconWidth() { return multiIcon.getIconWidth(); }
+			@Override public int getIconHeight() { return multiIcon.getIconHeight(); }
+			@Override public void paintIcon(Component component, Graphics graphics, int x, int y) {
+				if (!generic.theme.builtin.OpcodexUi.active()) {
+					multiIcon.paintIcon(component, graphics, x, y); return;
+				}
+				scaledBrush.paintIcon(component, graphics, x, y);
+				Graphics2D canvas = (Graphics2D) graphics.create();
+				try {
+					canvas.setColor(controller.getMostRecentColor());
+					canvas.fillRoundRect(x + 3, y + 14, 10, 2, 2, 2);
+				} finally { canvas.dispose(); }
+			}
+		};
 
 		setToolBarData(new ToolBarData(colorIcon));
 

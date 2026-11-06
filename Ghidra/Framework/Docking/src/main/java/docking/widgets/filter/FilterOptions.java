@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// OPCODEX: distinguish tree/category filtering from table filtering without changing filter state.
 package docking.widgets.filter;
 
 import java.util.*;
@@ -31,6 +32,10 @@ public class FilterOptions {
 	private static final Icon STARTS_WITH_ICON = new GIcon("icon.filter.options.starts.with");
 	private static final Icon EXACT_MATCH_ICON = new GIcon("icon.filter.options.exact");
 	private static final Icon REG_EX_ICON = new GIcon("icon.filter.options.regex");
+	private static final Icon TREE_CONTAINS_ICON = new GIcon("icon.filter.tree.contains");
+	private static final Icon TREE_EXACT_ICON = new GIcon("icon.filter.tree.exact");
+	private static final Icon TREE_STARTS_ICON = new GIcon("icon.filter.tree.starts");
+	private static final Icon TREE_REGEX_ICON = new GIcon("icon.filter.tree.regex");
 	private static final Icon NOT_ICON = new GIcon("icon.filter.options.not");
 
 	final static Map<Character, String> DELIMITER_NAME_MAP = new HashMap<>(20);
@@ -245,7 +250,22 @@ public class FilterOptions {
 	}
 
 	public Icon getFilterStateIcon() {
-		Icon icon = getIcon(textFilterStrategy);
+		return getFilterStateIcon(false);
+	}
+
+	/** Uses a tree-specific symbol, preserving the match mode and inversion indicator. */
+	public Icon getFilterStateIcon(boolean tree) {
+		Icon icon = tree ? switch (textFilterStrategy) {
+			case CONTAINS -> TREE_CONTAINS_ICON;
+			case MATCHES_EXACTLY -> TREE_EXACT_ICON;
+			case STARTS_WITH -> TREE_STARTS_ICON;
+			case REGULAR_EXPRESSION -> TREE_REGEX_ICON;
+		} : getIcon(textFilterStrategy);
+        return getFilterStateIcon(icon);
+    }
+
+    /** OPCODEX: retain the inversion indicator when a table supplies a contextual match icon. */
+    public Icon getFilterStateIcon(Icon icon) {
 		if (inverted) {
 			int width = icon.getIconWidth();
 			int height = icon.getIconHeight();

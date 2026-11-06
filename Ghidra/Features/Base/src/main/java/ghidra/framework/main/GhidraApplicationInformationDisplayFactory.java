@@ -70,6 +70,11 @@ public class GhidraApplicationInformationDisplayFactory
 	}
 
 	@Override
+	protected JComponent doCreateAboutComponent() {
+		return new InfoPanel(true);
+	}
+
+	@Override
 	public Icon doGetHomeIcon() {
 		return new GIcon("icon.base.application.home");
 	}

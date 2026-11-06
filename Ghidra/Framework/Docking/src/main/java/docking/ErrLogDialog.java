@@ -96,7 +96,15 @@ public class ErrLogDialog extends AbstractErrDialog {
 		sb.append(EOL);
 		sb.append(Application.getName());
 		sb.append(" Version: ");
+		// OPCODEX: bug reports must identify the product and compatible engine separately.
+		var properties = Application.getApplicationLayout().getApplicationProperties();
+		sb.append(properties.getProperty("opcodex.version", Application.getApplicationVersion()));
+		sb.append(EOL);
+		sb.append("Engine Compatibility: ");
 		sb.append(Application.getApplicationVersion());
+		sb.append(EOL);
+		sb.append("Source Revision: ");
+		sb.append(properties.getSourceRevision());
 		sb.append(EOL);
 		sb.append("Java Home: ");
 		sb.append(System.getProperty("java.home"));

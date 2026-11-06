@@ -49,9 +49,27 @@ public class ActionsModel extends DefaultSearchListModel<DockingActionIf> {
 	private Comparator<DockingActionIf> nameComparator = new ActionNameComparator();
 	private Comparator<DockingActionIf> menuPathComparator = new ActionMenuPathComparator();
 	private Comparator<DockingActionIf> popupPathComparator = new ActionPopupPathComparator();
+	// OPCODEX: the ribbon finder lists an action once, even when it has several entry points.
+	private boolean uniqueActions;
+	private final Map<DockingActionIf, ActionContext> actionContexts = new IdentityHashMap<>();
+
+	void captureContexts(java.util.function.Function<DockingActionIf, ActionContext> resolver) {
+		for (DockingActionIf action : globalActions) actionContexts.put(action, resolver.apply(action));
+		for (DockingActionIf action : localActions) actionContexts.put(action, resolver.apply(action));
+	}
+
+	ActionContext getContext(DockingActionIf action) {
+		return actionContexts.getOrDefault(action, context);
+	}
 
 	ActionsModel(Set<DockingActionIf> localActions, Set<DockingActionIf> globalActions,
 			ActionContext context) {
+		this(localActions, globalActions, context, false);
+	}
+
+	ActionsModel(Set<DockingActionIf> localActions, Set<DockingActionIf> globalActions,
+			ActionContext context, boolean uniqueActions) {
+		this.uniqueActions = uniqueActions;
 		this.context = context;
 		this.localActions = localActions;
 		this.globalActions = globalActions;
@@ -79,6 +97,7 @@ public class ActionsModel extends DefaultSearchListModel<DockingActionIf> {
 
 	@Override
 	public void dispose() {
+		actionContexts.clear();
 		localActions.clear();
 		globalActions.clear();
 		context = null;
@@ -90,6 +109,21 @@ public class ActionsModel extends DefaultSearchListModel<DockingActionIf> {
 
 	private void populateActions() {
 		clearData();
+		if (uniqueActions && displayLevel == ActionDisplayLevel.ALL) {
+			Set<DockingActionIf> remaining = new HashSet<>(globalActions);
+			remaining.addAll(localActions);
+			for (ActionGroup group : List.of(GLOBAL_MENU, GLOBAL_TOOLBAR, POPUP, KEYBINDING_ONLY)) {
+				List<DockingActionIf> entries = remaining.stream().filter(action -> switch (group) {
+					case GLOBAL_MENU -> isMenu(action);
+					case GLOBAL_TOOLBAR -> isToolbar(action);
+					case POPUP -> isPopup(action);
+					default -> true;
+				}).sorted(getSorter(group)).toList();
+				add(group.getDisplayName(), entries);
+				remaining.removeAll(entries);
+			}
+			return;
+		}
 		switch (displayLevel) {
 			case LOCAL:
 				addLocalActions(LOCAL_TOOLBAR, a -> isValidToolbar(a));

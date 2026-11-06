@@ -1,3 +1,4 @@
+##OPCODEX: original product/outline artwork exported from SVG sources.
 ##VERSION: 2.0
 ##MODULE IP: Apache License 2.0
 ##MODULE IP: Copyright Distribution Permitted
@@ -29,4 +30,4 @@ Linux/support/jshellRun||GHIDRA||||END|
 Linux/support/pyghidraRun||GHIDRA||||END|
 Linux/support/sleigh||GHIDRA||||END|
 Windows/support/README_createPdbXmlFiles.txt||GHIDRA||||END|
-Windows/support/ghidra.ico||GHIDRA||||END|
+Windows/support/ghidra.ico||Apache License 2.0||||END|

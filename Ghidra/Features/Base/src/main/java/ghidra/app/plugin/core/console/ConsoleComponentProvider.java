@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.console;
 
+// OPCODEX: expose selected console text Copy in the context menu with platform shortcut.
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -173,7 +175,14 @@ public class ConsoleComponentProvider extends ComponentProviderAdapter implement
 		scrollAction.setSelected(scrollLock);
 
 		//@formatter:off
-		new ActionBuilder("Find", getOwner())
+        new ActionBuilder("Copy", getOwner())
+            .popupMenuPath("Copy")
+            .keyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()))
+            .enabledWhen(context -> textPane.getSelectionStart() != textPane.getSelectionEnd())
+            .onAction(context -> textPane.copy())
+            .buildAndInstallLocal(this);
+
+        new ActionBuilder("Find", getOwner())
 			.keyBinding("Ctrl F")
 			.sharedKeyBinding()
 			.helpLocation(new HelpLocation(HelpTopics.CONSOLE, "Console_Find"))

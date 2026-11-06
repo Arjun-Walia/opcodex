@@ -23,6 +23,8 @@ import javax.swing.*;
 import docking.widgets.EmptyBorderButton;
 import docking.widgets.label.GDLabel;
 import generic.theme.CloseIcon;
+import generic.theme.GIcon;
+import generic.theme.builtin.OpcodexUi;
 
 /**
  * A widget that can be used to render an icon, title and close button for JTabbedPane.  You would 
@@ -35,6 +37,7 @@ public class DockingTabRenderer extends JPanel {
 
 	private JLabel titleLabel;
 	private JLabel iconLabel;
+    private Icon originalIcon;
 	private JButton closeButton;
 
 	private HierarchyListener hierarchyListener;
@@ -50,6 +53,11 @@ public class DockingTabRenderer extends JPanel {
 		titleLabel = new GDLabel();
 		iconLabel = new GDLabel();
 		closeButton = new EmptyBorderButton();
+		// OPCODEX: compact vector tab controls; provider names already identify each tab.
+		if (OpcodexUi.active()) {
+			CLOSE_ICON = new GIcon("icon.widget.tabs.close");
+			closeButton.putClientProperty("opcodex.compact", true);
+		}
 
 		setTitle(tabText, fullTitle);
 		closeButton.setToolTipText("Close " + tabText);
@@ -130,8 +138,14 @@ public class DockingTabRenderer extends JPanel {
 		this.popupMenu = popupMenu;
 	}
 
-	public void setIcon(Icon icon) {
-		iconLabel.setIcon(icon);
+    @Override public void updateUI() {
+        super.updateUI();
+        if (iconLabel != null) iconLabel.setIcon(OpcodexUi.active() ? null : originalIcon);
+    }
+
+    public void setIcon(Icon icon) {
+        originalIcon = icon;
+		iconLabel.setIcon(OpcodexUi.active() ? null : icon);
 	}
 
 	public void setTitle(String tabText, String fullTitle) {

@@ -1,12 +1,14 @@
 """Release-boundary tests use tiny synthetic distributions; they run no binaries."""
 # Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import json
+import hashlib
 import stat
 import struct
 import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from zipfile import ZipFile, ZipInfo
 
 from opcodex.package_release import ROOT, checked_members, digest, package_release, properties
@@ -52,6 +54,7 @@ class ReleaseTests(unittest.TestCase):
 
     def test_package_preserves_payload_notices_modes_and_records_real_checksum(self):
         result = self.package()
+        self.assertNotIn('ghidra', result.name.lower())
         with ZipFile(result) as archive:
             prefix = result.stem + '/'
             self.assertEqual(archive.read(prefix + 'preserved.jar'), b'unchanged-engine-payload')
@@ -63,6 +66,8 @@ class ReleaseTests(unittest.TestCase):
             self.assertEqual((archive.getinfo(prefix + 'preserved.jar').external_attr >> 16) & 0o777, 0o755)
             manifest = json.loads(archive.read(prefix + 'opcodex-release.json'))
             self.assertEqual(manifest['sourceRevision'], 'a' * 40)
+            bundled = properties(archive.read(prefix + 'Ghidra/application.properties').decode())
+            self.assertEqual(bundled['opcodex.source.revision'], manifest['sourceRevision'])
             self.assertEqual(manifest['upstream']['version'], '12.1.4')
             self.assertEqual(manifest['sourceArchiveSha256'], digest(self.source))
         self.assertEqual(result.with_suffix('.zip.sha256').read_text().split()[0], digest(result))
@@ -73,6 +78,29 @@ class ReleaseTests(unittest.TestCase):
         self.entries[key] = self.entries[key].replace(b'application.name=Opcodex', b'application.name=Ghidra')
         with self.assertRaisesRegex(ValueError, 'identity differs'):
             self.package()
+
+    def test_eclipse_archives_are_verified_and_overlaid(self):
+        directory = self.directory / 'staged-eclipse'
+        name = 'Plugin/Plugin-1.0.zip'
+        staged = directory / name
+        staged.parent.mkdir(parents=True)
+        staged.write_bytes(b'verified plugin payload')
+        package_path = f'Extensions/Eclipse/{name}'
+        self.entries[f'engine/{package_path}'] = b'old payload'
+        with patch.dict('opcodex.package_release.ECLIPSE_EXTENSIONS',
+                        {name: digest(staged)}, clear=True):
+            def package():
+                return package_release(self.archive(), self.directory / 'output',
+                                       'linux_x86_64', self.repository, 'a' * 40,
+                                       eclipse_dir=directory)
+
+            result = package()
+            with ZipFile(result) as archive:
+                self.assertEqual(archive.read(f'{result.stem}/{package_path}'),
+                                 b'verified plugin payload')
+            staged.write_bytes(b'changed payload')
+            with self.assertRaisesRegex(ValueError, 'invalid pinned Eclipse extension'):
+                package()
 
     def test_rejects_incorrect_platform_instead_of_mislabelling_native_binaries(self):
         with self.assertRaisesRegex(ValueError, 'missing a required distribution file'):
@@ -142,6 +170,24 @@ class ReleaseTests(unittest.TestCase):
 
 
 class BrandingContracts(unittest.TestCase):
+    def test_product_presentation_does_not_reintroduce_upstream_branding(self):
+        for name in ('README.md', 'CONTRIBUTING.md', 'opcodex/DISTRIBUTION_README.md',
+                     '.github/ISSUE_TEMPLATE/bug_report.md'):
+            self.assertNotIn('ghidra', (ROOT / name).read_text(encoding='utf-8').lower(), name)
+
+    def test_modern_icon_exports_are_complete_with_transparent_capability(self):
+        catalog = json.loads((ROOT / 'ui-assets/icons/catalog.json').read_text())
+        self.assertEqual(catalog['license'], 'Apache-2.0')
+        resources = ROOT / 'Ghidra/Framework/Gui/src/main/resources/images/opcodex/ui'
+        for glyph in set(catalog['mappings'].values()):
+            self.assertIn(glyph, catalog['glyphs'])
+            for theme in ('light', 'dark'):
+                for size in (16, 20, 24, 32, 48, 64):
+                    data = (resources / theme / f'{glyph}-{size}.png').read_bytes()
+                    self.assertEqual(data[:8], b'\x89PNG\r\n\x1a\n')
+                    self.assertEqual(struct.unpack('>II', data[16:24]), (size, size))
+                    self.assertIn(data[25], (4, 6), 'Glyph must retain an alpha channel')
+
     def test_engine_and_licenses_remain_at_the_pinned_stable_baseline(self):
         upstream = json.loads((ROOT / 'opcodex/upstream.json').read_text())
         config = properties((ROOT / 'Ghidra/application.properties').read_text())
@@ -151,9 +197,13 @@ class BrandingContracts(unittest.TestCase):
         result = subprocess.run(['git', 'diff', '--exit-code', upstream['commit'], '--',
                                  'LICENSE', 'NOTICE', 'licenses', 'GPL',
                                  'Ghidra/Features/Decompiler', 'Ghidra/Processors',
-                                 'Ghidra/Framework/DB', 'Ghidra/Framework/SoftwareModeling'],
+                                 'Ghidra/Framework/DB', 'Ghidra/Framework/SoftwareModeling',
+                                 ':(exclude)licenses/MIT-Better-File-Icons.txt'],
                                 cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout)
+        notice = (ROOT / 'licenses/MIT-Better-File-Icons.txt').read_text(encoding='utf-8')
+        self.assertEqual(hashlib.sha256(notice.encode()).hexdigest(),
+                         'a5f897696018eec8497035cbdd3fe52d0f6d3fdf301ecd19f097aa7cf62924d1')
 
     def test_app_icon_sizes_are_correct_and_upstream_changes_are_documented(self):
         for theme in ('light', 'dark'):

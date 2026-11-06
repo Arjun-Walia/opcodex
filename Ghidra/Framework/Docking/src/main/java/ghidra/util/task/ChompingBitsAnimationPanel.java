@@ -17,35 +17,20 @@ package ghidra.util.task;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.List;
-
 import javax.swing.*;
 
-import docking.util.AnimatedIcon;
-import generic.theme.GIcon;
-
-/**
- * Panel that displays an animation of the Ghidra dragon eating bits.
- */
+/** Indeterminate task progress. The historical class name remains for extension compatibility. */
 public class ChompingBitsAnimationPanel extends JPanel {
-
-	//@formatter:off
-	private static final List<Icon> ICONS = List.of(
-		new GIcon("icon.task.progress.1"),
-		new GIcon("icon.task.progress.2"),
-		new GIcon("icon.task.progress.3"),
-		new GIcon("icon.task.progress.4"),
-		new GIcon("icon.task.progress.5"),
-		new GIcon("icon.task.progress.6"),
-		new GIcon("icon.task.progress.7")
-		);
-	//@formatter:on
-
 	public ChompingBitsAnimationPanel() {
-		setLayout(new BorderLayout());
-
-		AnimatedIcon icon = new AnimatedIcon(ICONS, 200, 0);
-		setSize(new Dimension(200, 100));
-		add(new JLabel(icon));
+		// OPCODEX: remove the inherited animated mascot; retain progress and cancellation behavior.
+		super(new BorderLayout());
+		setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
+		JProgressBar progress = new JProgressBar();
+		progress.setName("Task activity");
+		progress.getAccessibleContext().setAccessibleName("Task in progress");
+		progress.setIndeterminate(true);
+		progress.setBorderPainted(false);
+		progress.setPreferredSize(new Dimension(260, 4));
+		add(progress, BorderLayout.CENTER);
 	}
 }

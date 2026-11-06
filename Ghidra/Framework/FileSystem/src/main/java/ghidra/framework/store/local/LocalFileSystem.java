@@ -15,6 +15,8 @@
  */
 package ghidra.framework.store.local;
 
+// OPCODEX: consistent product wording; retain engine identifiers and integration names.
+
 import java.io.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -757,7 +759,7 @@ public abstract class LocalFileSystem implements FileSystem {
 		}
 
 		if (!isPath && name.length() > getMaxNameLength()) {
-			throw new InvalidNameException("Project file names within Ghidra must be less than " +
+			throw new InvalidNameException("Project file names within Opcodex must be less than " +
 				getMaxNameLength() + " characters in length.");
 		}
 

@@ -67,6 +67,7 @@ src/main/help/help/topics/VersionTrackingPlugin/providers/VT_Related_Association
 src/main/resources/Version Tracking (DESTINATION TOOL).tool||GHIDRA||||END|
 src/main/resources/Version Tracking (SOURCE TOOL).tool||GHIDRA||||END|
 src/main/resources/defaultTools/VersionTracking.tool||GHIDRA||||END|
+src/main/resources/classicTools/VersionTracking.xml||GHIDRA||||END|
 src/main/resources/defaultTools/images/start-here.png||Tango Icons - Public Domain|||6d887d8980624122a0c763dd863c29df|END|
 src/main/resources/images/accept.png||FAMFAMFAM Icons - CC 2.5||||END|
 src/main/resources/images/application_tile_horizontal.png||FAMFAMFAM Icons - CC 2.5|||fam fam|END|

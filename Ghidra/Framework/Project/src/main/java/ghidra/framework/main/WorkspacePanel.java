@@ -41,6 +41,7 @@ class WorkspacePanel extends JPanel implements WorkspaceChangeListener {
 	private final static String NO_ACTIVE_WORKSPACE = "INACTIVE";
 	private final static Border INACTIVE_BORDER =
 		BorderFactory.createTitledBorder(RUNNING_TOOLS_TITLE + ": " + NO_ACTIVE_WORKSPACE);
+	private static final Border MODERN_BORDER = generic.theme.builtin.OpcodexUi.surfaceBorder(10, 4);
 
 	final static int TYPICAL_NUM_RUNNING_TOOLS = 3;
 
@@ -49,11 +50,31 @@ class WorkspacePanel extends JPanel implements WorkspaceChangeListener {
 	private CardLayout workspaceManager;
 	private JPanel inactivePanel;
 	private JPanel runningToolsCardPanel;
+	private final JLabel runningToolsLabel = new JLabel(RUNNING_TOOLS_TITLE);
 	private HashMap<String, RunningToolsPanel> runningToolsMap;
 	private Workspace activeWorkspace;
 	private FrontEndPlugin plugin;
 	private Project activeProject;
 	private boolean valueIsAdjusting;
+
+	@Override
+	public void updateUI() {
+		super.updateUI();
+		if (runningToolsLabel != null) {
+			updateFrame();
+		}
+	}
+
+	private void updateFrame() {
+		boolean modern = generic.theme.builtin.OpcodexUi.active();
+		if (modern) {
+			setBorder(MODERN_BORDER);
+		}
+		else {
+			setBorder(activeWorkspace == null ? INACTIVE_BORDER : ACTIVE_WORKSPACE_BORDER);
+		}
+		runningToolsLabel.setVisible(modern);
+	}
 
 	WorkspacePanel(FrontEndPlugin plugin) {
 		super(new BorderLayout(0, 0));
@@ -80,7 +101,9 @@ class WorkspacePanel extends JPanel implements WorkspaceChangeListener {
 		wcPanel.add(workspaceChooser);
 		add(wcPanel, BorderLayout.EAST);
 		add(runningToolsCardPanel, BorderLayout.CENTER);
-		setBorder(INACTIVE_BORDER);
+		runningToolsLabel.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 10));
+		add(runningToolsLabel, BorderLayout.WEST);
+		updateFrame();
 
 	}
 
@@ -166,7 +189,7 @@ class WorkspacePanel extends JPanel implements WorkspaceChangeListener {
 		workspaceManager.show(runningToolsCardPanel, workspaceName);
 		setPanelEnabled(true);
 
-		setBorder(ACTIVE_WORKSPACE_BORDER);
+		updateFrame();
 
 		validate();
 		repaint();
@@ -449,7 +472,7 @@ class WorkspacePanel extends JPanel implements WorkspaceChangeListener {
 
 		setPanelEnabled(false);
 		workspaceManager.show(runningToolsCardPanel, NO_ACTIVE_WORKSPACE);
-		setBorder(INACTIVE_BORDER);
+		updateFrame();
 	}
 
 	private void removeTool(String workspaceName, PluginTool tool) {

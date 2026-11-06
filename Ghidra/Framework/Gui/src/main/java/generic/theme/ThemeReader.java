@@ -16,20 +16,23 @@
 package generic.theme;
 
 import java.io.*;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 
 import ghidra.framework.Application;
-import ghidra.util.Msg;
 import utilities.util.FileUtilities;
 
 /**
  * Reads Themes from a file or {@link Reader}
  */
 class ThemeReader extends AbstractThemeReader {
+
+	private static final int MAX_ZIP_ENTRIES = 2048;
+	private static final int MAX_ZIP_ENTRY_BYTES = 8 * 1024 * 1024;
+	private static final long MAX_ZIP_TOTAL_BYTES = 64L * 1024 * 1024;
 
 	private File file;
 	private GTheme theme;
@@ -71,21 +74,55 @@ class ThemeReader extends AbstractThemeReader {
 
 	private GTheme readZipTheme() throws IOException {
 		try (ZipFile zipFile = new ZipFile(file)) {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			while (entries.hasMoreElements()) {
-				ZipEntry entry = entries.nextElement();
+			if (zipFile.size() > MAX_ZIP_ENTRIES) {
+				throw new IOException("Theme archive contains too many entries");
+			}
+			List<? extends ZipEntry> entries =
+				zipFile.stream().filter(entry -> !entry.isDirectory()).toList();
+			validateEntries(entries);
+			for (ZipEntry entry : entries) {
 				String name = entry.getName();
+				int size = (int) entry.getSize();
 				try (InputStream is = zipFile.getInputStream(entry)) {
+					byte[] contents = is.readNBytes(size + 1);
+					if (contents.length != size) {
+						throw new IOException("Invalid size for theme archive entry: " + name);
+					}
+					InputStream data = new ByteArrayInputStream(contents);
 					if (name.endsWith(".theme")) {
-						processThemeData(name, is);
+						read(new InputStreamReader(data));
 					}
 					else {
-						processIconFile(name, is);
+						FileUtils.copyInputStreamToFile(data, iconDestination(name));
 					}
 				}
 			}
 		}
+		if (theme == null) {
+			throw new IOException("Invalid Theme file: " + file);
+		}
 		return theme;
+	}
+
+	private void validateEntries(List<? extends ZipEntry> entries) throws IOException {
+		long total = 0;
+		int themeFiles = 0;
+		for (ZipEntry entry : entries) {
+			long size = entry.getSize();
+			if (size < 0 || size > MAX_ZIP_ENTRY_BYTES || total + size > MAX_ZIP_TOTAL_BYTES) {
+				throw new IOException("Theme archive exceeds the extraction size limit");
+			}
+			total += size;
+			if (entry.getName().endsWith(".theme")) {
+				themeFiles++;
+			}
+			else {
+				iconDestination(entry.getName());
+			}
+		}
+		if (themeFiles != 1) {
+			throw new IOException("Theme archive must contain exactly one .theme file");
+		}
 	}
 
 	// for testing
@@ -131,23 +168,24 @@ class ThemeReader extends AbstractThemeReader {
 			"Custom sections not allowed in theme files! " + section.getName());
 	}
 
-	private void processIconFile(String path, InputStream is) throws IOException {
-		int indexOf = path.indexOf("images/");
-		if (indexOf < 0) {
-			Msg.error(this, "Unknown file: " + path);
+	private File iconDestination(String path) throws IOException {
+		String archivePath = "/" + path;
+		String imageFolder = "/images/";
+		int index = archivePath.indexOf(imageFolder);
+		if (index < 0 || path.indexOf('\\') >= 0 || path.indexOf(':') >= 0) {
+			throw new IOException("Invalid icon path in theme archive: " + path);
 		}
-		String relativePath = path.substring(indexOf, path.length());
-		File dir = Application.getUserSettingsDirectory();
-		File iconFile = new File(dir, relativePath);
-		if (!FileUtilities.isPathContainedWithin(dir, iconFile)) {
-			throw new IOException("Zip entry escapes target directory: " + relativePath);
+		String relative = archivePath.substring(index + imageFolder.length());
+		File settings = Application.getUserSettingsDirectory();
+		File images = new File(settings, "images");
+		File destination = new File(images, relative);
+		if (relative.isBlank() ||
+			!FileUtilities.isPathContainedWithin(settings, images) ||
+			!FileUtilities.isPathContainedWithin(images, destination) ||
+			destination.getCanonicalFile().equals(images.getCanonicalFile())) {
+			throw new IOException("Icon path escapes the theme images directory: " + path);
 		}
-		FileUtils.copyInputStreamToFile(is, iconFile);
-	}
-
-	private void processThemeData(String name, InputStream is) throws IOException {
-		InputStreamReader reader = new InputStreamReader(is);
-		read(reader);
+		return destination;
 	}
 
 }

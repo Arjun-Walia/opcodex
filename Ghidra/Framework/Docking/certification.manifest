@@ -132,3 +132,4 @@ src/test.slow/resources/docking/widgets/table/threaded/threaded.table.test.csv.t
 ##OPCODEX: original artwork and theme resources licensed under Apache License 2.0.
 src/main/resources/images/opcodex-framework-dark-256.png||Apache License 2.0||||END|
 src/main/resources/images/opcodex-framework-light-256.png||Apache License 2.0||||END|
+data/opcodex.theme.properties||Apache License 2.0||||END|

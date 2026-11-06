@@ -15,6 +15,8 @@
  */
 package docking.widgets.tree;
 
+// OPCODEX: retain expanded paths, selection and scroll state when refreshing themed renderers.
+
 import static docking.action.MenuData.*;
 import static docking.widgets.tree.support.GTreeSelectionEvent.EventOrigin.*;
 import static ghidra.util.SystemUtilities.*;
@@ -103,7 +105,9 @@ public class GTree extends JPanel implements BusyListener {
 	private boolean isFilteringEnabled = true;
 	private ThemeListener themeListener = e -> {
 		if (e.isLookAndFeelChanged()) {
-			model.fireNodeStructureChanged(getModelRoot());
+            GTreeState state = getTreeState();
+            model.fireNodeStructureChanged(getModelRoot());
+            if (state != null) restoreTreeState(state);
 		}
 	};
 

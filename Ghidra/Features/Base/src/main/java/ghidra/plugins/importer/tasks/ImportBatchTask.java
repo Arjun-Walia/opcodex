@@ -15,6 +15,8 @@
  */
 package ghidra.plugins.importer.tasks;
 
+// OPCODEX: show progress and Cancel throughout the batch import phase.
+
 import java.io.IOException;
 import java.util.List;
 
@@ -78,7 +80,7 @@ public class ImportBatchTask extends Task {
 	public ImportBatchTask(BatchInfo batchInfo, DomainFolder destFolder,
 			ProgramManager programManager, boolean stripLeading, boolean stripAllContainerPath,
 			boolean mirrorFs) {
-		super("Batch Import Task", true, true, false, false);
+		super("Batch Import Task", true, true, true, false);
 
 		this.batchInfo = batchInfo;
 		this.destFolder = destFolder;

@@ -62,6 +62,12 @@ public class ThemeUtilsTest extends AbstractDockingTest {
 	}
 
 	@Test
+	public void testRejectsThemeNameContainingPath() {
+		assertFalse(ThemeUtils.canSaveToName(themeManager, "../other"));
+		assertFalse(ThemeUtils.canSaveToName(themeManager, "C:\\other"));
+	}
+
+	@Test
 	public void testImportThemeNonZip() throws IOException {
 		assertEquals("Nimbus Theme", themeManager.getActiveTheme().getName());
 		File themeFile = createThemeFile("Bob");

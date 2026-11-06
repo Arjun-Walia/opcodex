@@ -19,6 +19,7 @@ package ghidra.framework.main;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
+import java.awt.Dimension;
 import java.io.InputStream;
 
 import javax.swing.*;
@@ -44,9 +45,10 @@ public class UserAgreementDialog extends DialogComponentProvider {
 	private boolean exitOnCancel;
 
 	public UserAgreementDialog(boolean showAgreementChoices, boolean exitOnCancel) {
-		super("", true, false, true, false);
+		super("Opcodex User Agreement", true, false, true, false);
 		this.exitOnCancel = exitOnCancel;
-		addWorkPanel(buildWorkPanel());
+		JComponent work = buildWorkPanel();
+		addWorkPanel(work);
 		addOKButton();
 		if (showAgreementChoices) {
 			setOkButtonText("I Agree");
@@ -56,7 +58,8 @@ public class UserAgreementDialog extends DialogComponentProvider {
 		else {
 			setOkButtonText("OK");
 		}
-		setPreferredSize(1000, 500);
+		// Let packing include the dialog's own insets/buttons as well as the measured document.
+		setRememberSize(false);
 	}
 
 	private JComponent buildWorkPanel() {
@@ -66,7 +69,7 @@ public class UserAgreementDialog extends DialogComponentProvider {
 		label.getAccessibleContext().setAccessibleName("Opcodex User Agreement");
 		Gui.registerFont(label, FONT_ID);
 		panel.add(label, BorderLayout.NORTH);
-		panel.setBorder(BorderFactory.createEmptyBorder(10, 40, 40, 40));
+		panel.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
 		JEditorPane editorPane = new JEditorPane();
 		editorPane.setEditorKit(new HTMLEditorKit());
 		editorPane.setMargin(new Insets(10, 10, 10, 10));
@@ -76,6 +79,9 @@ public class UserAgreementDialog extends DialogComponentProvider {
 		editorPane.setEditable(false);
 
 		JScrollPane scrollPane = new JScrollPane(editorPane);
+		// OPCODEX: measure wrapped legal text; a fixed compact height can clip its last lines.
+		editorPane.setSize(740, Short.MAX_VALUE);
+		scrollPane.setPreferredSize(new Dimension(760, editorPane.getPreferredSize().height + 8));
 		scrollPane.getAccessibleContext().setAccessibleName("Editor");
 		panel.add(scrollPane, BorderLayout.CENTER);
 		JPanel checkBoxPanel = new JPanel(new VerticalLayout(10));
@@ -88,15 +94,7 @@ public class UserAgreementDialog extends DialogComponentProvider {
 
 	private String getUserAgreementText() {
 		try (InputStream in = ResourceManager.getResourceAsStream(USER_AGREEMENT_FILENAME)) {
-			String text = FileUtilities.getText(in);
-			if (!HTMLUtilities.isHTML(text)) {
-				// our labels to not render correctly when not using HTML
-				text = HTMLUtilities.toHTML(text);
-			}
-
-			text = text.replace('\n', ' ');
-
-			return text;
+            return prepareAgreementText(FileUtilities.getText(in));
 		}
 		catch (Exception e) {
 			// use default splash screen info
@@ -105,8 +103,15 @@ public class UserAgreementDialog extends DialogComponentProvider {
 		}
 	}
 
-	@Override
-	protected void okCallback() {
+    // OPCODEX: source comments are metadata, not visible paragraphs in the legal document.
+    static String prepareAgreementText(String source) {
+        String text = source.replaceFirst("(?s)^\\s*(?:<!--.*?-->\\s*)+", "");
+        if (!HTMLUtilities.isHTML(text)) text = HTMLUtilities.toHTML(text);
+        return text.replace('\n', ' ');
+    }
+
+    @Override
+    protected void okCallback() {
 		close();
 	}
 

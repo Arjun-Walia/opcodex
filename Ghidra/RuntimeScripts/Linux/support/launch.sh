@@ -222,7 +222,8 @@ else
 fi
 
 if [ "${BACKGROUND}" = true ]; then
-	"${JAVA_CMD}" "${VMARGS_FROM_LAUNCH_PROPS[@]}" "${VMARGS_FROM_LAUNCH_SH[@]}" ${VMARGS_FROM_CALLER} -showversion -cp "${CPATH}" ghidra.Ghidra ${CLASSNAME} "${ARGS[@]}" &>/dev/null &
+	# OPCODEX: use the product entry point for X11 window/launcher identity.
+	"${JAVA_CMD}" "${VMARGS_FROM_LAUNCH_PROPS[@]}" "${VMARGS_FROM_LAUNCH_SH[@]}" ${VMARGS_FROM_CALLER} -showversion -cp "${CPATH}" opcodex.Opcodex ${CLASSNAME} "${ARGS[@]}" &>/dev/null &
 	
 	# If our process dies immediately, output something so the user knows to run in debug mode.
 	# Otherwise they'll never see any error output from background mode.
@@ -235,7 +236,7 @@ if [ "${BACKGROUND}" = true ]; then
 	fi
 	exit 0
 else
-	set -o noglob; "${JAVA_CMD}" "${VMARGS_FROM_LAUNCH_PROPS[@]}" "${VMARGS_FROM_LAUNCH_SH[@]}" ${VMARGS_FROM_CALLER} -showversion -cp "${CPATH}" ghidra.Ghidra ${CLASSNAME} "${ARGS[@]}"
+	set -o noglob; "${JAVA_CMD}" "${VMARGS_FROM_LAUNCH_PROPS[@]}" "${VMARGS_FROM_LAUNCH_SH[@]}" ${VMARGS_FROM_CALLER} -showversion -cp "${CPATH}" opcodex.Opcodex ${CLASSNAME} "${ARGS[@]}"
 	exit $?
 fi
 

@@ -84,7 +84,8 @@ public class TipOfTheDayPlugin extends Plugin implements ApplicationLevelOnlyPlu
 	private List<String> loadTips() throws IOException {
 		try (InputStream in = getClass().getResourceAsStream("tips.txt")) {
 			List<String> tips = in == null ? Collections.emptyList() : FileUtilities.getLines(in);
-			return tips.stream().filter(s -> s.length() > 0).collect(Collectors.toList());
+			// OPCODEX: skip optional resource comments in the product tips.
+            return tips.stream().filter(s -> !s.isBlank() && !s.startsWith("#")).collect(Collectors.toList());
 		}
 	}
 
@@ -98,7 +99,8 @@ public class TipOfTheDayPlugin extends Plugin implements ApplicationLevelOnlyPlu
 
 	private void readPreferences() {
 		String tipIndexStr = Preferences.getProperty(TIP_INDEX, "0", true);
-		String showTipsStr = Preferences.getProperty(SHOW_TIPS, "true", true);
+		// OPCODEX: the welcome screen is the first-run surface; preserve saved tip preferences.
+		String showTipsStr = Preferences.getProperty(SHOW_TIPS, "false", true);
 
 		int tipIndex = Integer.parseInt(tipIndexStr);
 		final boolean showTips = Boolean.parseBoolean(showTipsStr);

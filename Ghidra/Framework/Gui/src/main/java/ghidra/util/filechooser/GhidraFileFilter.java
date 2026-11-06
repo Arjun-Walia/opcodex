@@ -24,10 +24,20 @@ import java.io.File;
  * Windows and Unix boxes, but not on Macinthosh. Case is ignored.
  */
 public interface GhidraFileFilter {
+	/**
+	 * OPCODEX: Exact shell patterns for the native picker, or an empty list when this
+	 * filter needs the application's custom file model. Existing filters keep their behavior.
+	 * @return immutable shell patterns such as {@code *.exe}
+	 */
+	default java.util.List<String> getNativePatterns() {
+		return java.util.List.of();
+	}
     /**
      * A default implementation that shows all files.
      */
     public final static GhidraFileFilter ALL = new GhidraFileFilter() {
+		@Override
+		public java.util.List<String> getNativePatterns() { return java.util.List.of("*.*"); }
         @Override
 		public String getDescription() {
             return "All Files (*.*)";

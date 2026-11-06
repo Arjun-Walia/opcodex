@@ -21,6 +21,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.Icon;
 
@@ -71,6 +74,40 @@ public class GThemeTest extends AbstractGenericTest {
 	public void testSetIconPath() {
 		theme.setIcon("icon.a.1", ICON1);
 		assertEquals(ICON1, theme.getIcon("icon.a.1").get(null));
+	}
+
+	@Test
+	public void testReadsNativeThemeArchive() throws IOException {
+		File file = createTempFile("theme", ".theme.zip");
+		new ThemeWriter(theme).writeThemeToZipFile(file);
+		assertEquals(theme.getName(), GTheme.loadTheme(file).getName());
+	}
+
+	@Test
+	public void testRejectsOversizedThemeArchiveEntry() throws IOException {
+		File file = createTempFile("largeTheme", ".theme.zip");
+		try (ZipOutputStream archive = new ZipOutputStream(Files.newOutputStream(file.toPath()))) {
+			archive.putNextEntry(new ZipEntry("large.theme"));
+			byte[] block = new byte[1024 * 1024];
+			for (int i = 0; i < 9; i++) {
+				archive.write(block);
+			}
+			archive.closeEntry();
+		}
+		IOException failure = assertThrows(IOException.class, () -> GTheme.loadTheme(file));
+		assertTrue(failure.getMessage().contains("size limit"));
+	}
+
+	@Test
+	public void testRejectsArchiveFileOutsideImages() throws IOException {
+		File file = createTempFile("unknownEntry", ".theme.zip");
+		try (ZipOutputStream archive = new ZipOutputStream(Files.newOutputStream(file.toPath()))) {
+			archive.putNextEntry(new ZipEntry("preferences"));
+			archive.write(1);
+			archive.closeEntry();
+		}
+		IOException failure = assertThrows(IOException.class, () -> GTheme.loadTheme(file));
+		assertTrue(failure.getMessage().contains("Invalid icon path"));
 	}
 
 	@Test

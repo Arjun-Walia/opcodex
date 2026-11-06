@@ -25,6 +25,7 @@ import docking.DockingWindowManager;
 import docking.action.DockingActionIf;
 import docking.action.ToolBarData;
 import docking.widgets.VariableHeightPanel;
+import generic.theme.builtin.OpcodexUi;
 
 /**
  * Manages the actions to be displayed in the toolbar.  Organizes them by group.
@@ -37,9 +38,29 @@ public class ToolBarManager {
 
 	private volatile JComponent toolBar;
 	private final DockingWindowManager windowManager;
+	// OPCODEX: keep secondary commands in an accessible overflow instead of crowding chrome.
+	private final boolean local;
+    // OPCODEX: adapt both geometry and icons live when moving to/from Classic.
+    private final generic.theme.ThemeListener themeListener = event -> {
+        if (!event.isLookAndFeelChanged()) return;
+        ghidra.util.Swing.runLater(() -> {
+            JComponent old = toolBar;
+            if (old == null) return;
+            for (var group : groupToItemsMap.values()) for (var item : group) item.refreshTheme();
+            old.removeAll();
+            old.add(buildToolbarContents(), java.awt.BorderLayout.CENTER);
+            old.revalidate(); old.repaint();
+        });
+    };
 
 	public ToolBarManager(DockingWindowManager windowManager) {
+		this(windowManager, false);
+	}
+
+	public ToolBarManager(DockingWindowManager windowManager, boolean local) {
 		this.windowManager = windowManager;
+		this.local = local;
+        generic.theme.Gui.addThemeListener(themeListener);
 	}
 
 	public void clearActions() {
@@ -83,6 +104,7 @@ public class ToolBarManager {
 	 * Releases all resources.  Makes this object unusable.
 	 */
 	public void dispose() {
+        generic.theme.Gui.removeThemeListener(themeListener);
 		Set<Entry<String, List<ToolBarItemManager>>> entrySet = groupToItemsMap.entrySet();
 		for (Entry<String, List<ToolBarItemManager>> entry : entrySet) {
 			List<ToolBarItemManager> items = entry.getValue();
@@ -114,6 +136,17 @@ public class ToolBarManager {
 	}
 
 	private JComponent buildToolbar() {
+        // OPCODEX: a stable host permits live switching between single-row and Classic layouts.
+        JPanel host = new JPanel(new java.awt.BorderLayout());
+        host.add(buildToolbarContents(), java.awt.BorderLayout.CENTER);
+        return host;
+    }
+
+    private JComponent buildToolbarContents() {
+		if (OpcodexUi.active()) {
+			return OpcodexToolbars.create(groupToItemsMap.values().stream()
+				.flatMap(Collection::stream).toList(), windowManager, local);
+		}
 		JComponent newToolBar = new VariableHeightPanel(true, 0, 0);
 		newToolBar.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 

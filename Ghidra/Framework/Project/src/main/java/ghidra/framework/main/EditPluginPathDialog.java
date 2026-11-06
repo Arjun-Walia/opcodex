@@ -17,6 +17,8 @@
 
 package ghidra.framework.main;
 
+// OPCODEX: product-facing UI wording; compatibility identifiers and help anchors are retained.
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -372,8 +374,8 @@ class EditPluginPathDialog extends DialogComponentProvider {
 			// indicate to user all changes have been applied
 			setApplyEnabled(false);
 
-			Msg.showInfo(getClass(), rootPanel, "Restart Ghidra",
-				"You must restart Ghidra in order\n" + "for path changes to take effect.");
+			Msg.showInfo(getClass(), rootPanel, "Restart Opcodex",
+				"You must restart Opcodex in order\n" + "for path changes to take effect.");
 		}
 		else {
 			setStatusMessage("");

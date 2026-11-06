@@ -1,0 +1,12 @@
+{
+  "uniqueIconIds": 886,
+  "explicitOriginalMappings": 194,
+  "explicitThemeBindings": 886,
+  "originalGlyphs": 149,
+  "coveredIncludingPlainAliases": 886,
+  "missingCount": 0,
+  "missingIconIds": [],
+  "assetErrors": [],
+  "complete": true,
+  "scope": "Declared theme IDs, paired composed bindings and original exports. Empty layout placeholders and product artwork retain their intended dimensions. Raw-path adapters and specialized workflows also require visual review."
+}
