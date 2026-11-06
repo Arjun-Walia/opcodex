@@ -6,7 +6,7 @@
 |---|---|---|
 | First run | Empty project surface with no clear next action | Create/Open Project welcome screen using existing commands and keyboard shortcuts. |
 | Startup noise | Tip and release popups interrupt a fresh workspace | New profiles open the welcome screen directly; existing saved preferences and Help actions remain available. |
-| Appearance | Platform-dependent default, saturated active headers | Matched Opcodex Light/Dark with black/neutral-light surfaces, quiet selection and readable syntax; saved user themes remain respected. Ghidra Classic retains the original layout and assets. |
+| Appearance | Platform-dependent default, saturated active headers | Matched Opcodex Light/Dark with black/neutral-light surfaces, quiet selection and readable syntax; saved user themes remain respected. Opcodex Classic retains the original layout and assets. |
 | Icons | Mixed small raster styles across common actions and trees | 145 original outline glyphs map to 882 declared IDs; direct Java2D painting preserves sharp geometry at fractional display scales, including disabled controls. |
 | Workspace | Three stacked navigator panels, uneven code panes and a blank console | Tabbed function/symbol/type navigator, balanced disassembly/pseudocode panes, console opens in its own lower panel on demand; overview/entropy retain a separate header area. Existing saved layouts remain respected. |
 | Toolbar | Dozens of tiny actions visible at once | All original actions are visible by default; More offers an optional compact arrangement. Split controls retain every original dropdown choice. Original menus, context handling and shortcuts remain intact. |

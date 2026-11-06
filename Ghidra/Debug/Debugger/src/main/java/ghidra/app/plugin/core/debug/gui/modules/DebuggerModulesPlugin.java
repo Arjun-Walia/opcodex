@@ -51,17 +51,12 @@ import ghidra.framework.plugintool.util.PluginStatus;
 	})
 public class DebuggerModulesPlugin extends AbstractDebuggerPlugin {
 
-	@AutoServiceProvided(iface = DebuggerAutoMappingService.class)
-	protected DebuggerModulesProvider provider;
+	protected final DebuggerModulesProvider provider;
 
 	public DebuggerModulesPlugin(PluginTool tool) {
 		super(tool);
-	}
-
-	@Override
-	protected void init() {
 		provider = new DebuggerModulesProvider(this);
-		super.init();
+		registerServiceProvided(DebuggerAutoMappingService.class, provider);
 	}
 
 	@Override

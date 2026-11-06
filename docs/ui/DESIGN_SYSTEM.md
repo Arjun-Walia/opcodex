@@ -50,7 +50,7 @@ A tabbed function list, symbols and types navigator occupies 20% of the default 
 
 ## First-run behavior
 
-New profiles start with **Opcodex Dark**. **Opcodex Light** and **Ghidra Classic** are available in Edit > Theme > Switch. Classic restores the stable palette, original assets and original docking arrangement; modern and Classic arrangements are saved separately. Retired built-in theme preferences migrate to Classic; imported themes remain supported. Saved themes take precedence. Follow-system behavior is deferred; it is not inferred from native window colors.
+New profiles start with **Opcodex Dark**. **Opcodex Light** and **Opcodex Classic** are available in Edit > Theme > Switch. Classic restores the stable palette, original assets and original docking arrangement; modern and Classic arrangements are saved separately. Retired built-in theme preferences migrate to Classic; imported themes remain supported. Saved themes take precedence. Follow-system behavior is deferred; it is not inferred from native window colors.
 
 The project welcome screen provides Create Project and Open Project through the existing commands, preserving Ctrl+N/Ctrl+O and adding accessible button labels/mnemonics. Opening a project restores the existing project views. Each startup tool has an aligned vector icon, caption and consistent tile size.
 

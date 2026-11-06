@@ -250,7 +250,17 @@ public final class OpcodexAuditProbe {
     public static void verifyProjectDirectory(Window wizard) throws Exception {
         JTextField directory = edt(() -> (JTextField) named(wizard, "Project Directory"));
         JTextField name = edt(() -> (JTextField) named(wizard, "Project Name"));
+        Robot robot = new Robot();
+        for (int attempt = 0; attempt < 20 && !edt(name::isFocusOwner); attempt++) {
+            Thread.sleep(50);
+        }
+        assertFocus(name);
+        key(robot, KeyEvent.VK_Z);
+        robot.waitForIdle();
         String initialName = edt(name::getText);
+        if (!"z".equals(initialName)) {
+            throw new AssertionError("Project Name did not receive typing after Next");
+        }
         edt(() -> { directory.setText(""); return null; });
         typeIn(wizard, directory, "focusprobe");
         if (!"focusprobe".equals(edt(directory::getText)) || !initialName.equals(edt(name::getText))) {

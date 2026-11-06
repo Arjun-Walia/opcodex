@@ -55,7 +55,11 @@ class InfoPanel extends JPanel {
 	private int imageWidth;
 
 	InfoPanel() {
-		getAboutInfo();
+		this(false);
+	}
+
+	InfoPanel(boolean includeProvenance) {
+		getAboutInfo(includeProvenance);
 		bgColor = new GColor("color.bg.splash.infopanel");
 		create();
 	}
@@ -177,7 +181,7 @@ class InfoPanel extends JPanel {
 	/**
 	 * Read the version information from the resource file.
 	 */
-	private void getAboutInfo() {
+	private void getAboutInfo(boolean includeProvenance) {
 
 		String releaseName = Application.getApplicationReleaseName();
 		String buildInfo = "";
@@ -191,6 +195,11 @@ class InfoPanel extends JPanel {
 			(SystemUtilities.isInDevelopmentMode() ? " - DEVELOPMENT" : "") + buildInfo + "\n" +
 			Application.getBuildDate() + "\n" +
 			"Java Version " + System.getProperty("java.version");
+		if (includeProvenance) {
+			var properties = Application.getApplicationLayout().getApplicationProperties();
+			version += "\nEngine Compatibility: " + Application.getApplicationVersion() +
+				"\nSource Revision: " + properties.getSourceRevision();
+		}
 
 		marking =
 			Application.getApplicationProperty(ApplicationProperties.RELEASE_MARKING_PROPERTY);

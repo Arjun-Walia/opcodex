@@ -218,3 +218,11 @@ The shared docking layout registry, workflow, rail, ribbon and reset actions cov
 Project domain-file icons use name and extension rules before composing existing status badges. Rename and move operations invalidate the cached icons. The MIT rules and distribution notice accompany the source and packaged licenses.
 
 Theme Import accepts standalone VS Code palette files. The desktop theme manager composes imported color overrides on an Opcodex base theme. The built-in themes keep their existing colors and assets.
+
+## Fourth-audit follow-up
+
+The project wizard honors the step's preferred focus field. Listing comments wrap by default and retain the existing display option. About shows engine compatibility and source revision. The Debugger publishes its module mapping service through the normal plugin registration path. Opcodex Classic retains the original palette, assets and layout under the product name.
+
+The release build stages both checksum-pinned Eclipse plugin archives from the matching upstream binary distribution. The Java launcher regression test builds its own sample class.
+
+The SSH GDB launcher incorporates the upstream GP-7332 correction for escaping the target image passed to the remote command. [Upstream fix](https://github.com/NationalSecurityAgency/ghidra/commit/3468bc5120e30e05a99d3e2eff2c6ef2a3911abc)

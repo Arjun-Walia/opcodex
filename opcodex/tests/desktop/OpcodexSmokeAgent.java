@@ -253,7 +253,7 @@ public class OpcodexSmokeAgent {
                 .getMethod("getAllThemes").invoke(themeManager);
             Set<String> names = new HashSet<>();
             for (Object entry : themes) names.add((String) type("generic.theme.GTheme").getMethod("getName").invoke(entry));
-            if (!names.equals(Set.of("Opcodex Light", "Opcodex Dark", "Ghidra Classic")))
+            if (!names.equals(Set.of("Opcodex Light", "Opcodex Dark", "Opcodex Classic")))
                 throw new AssertionError("Product themes are not discoverable");
             SwingUtilities.invokeLater(() -> button(mainWindow(), "Create Project").doClick());
             Window wizard = waitFor("New Project");
@@ -485,7 +485,7 @@ public class OpcodexSmokeAgent {
             edt(() -> { debuggerWindow.setVisible(false); return null; });
             OpcodexAuditProbe.verify(browser, browserWindow, main, OUTPUT, OpcodexSmokeAgent::capture);
             if(unexpectedUiFailure!=null)throw new AssertionError("Unexpected event-dispatch exception",unexpectedUiFailure);
-            Files.writeString(OUTPUT.resolve("result.json"), "{\"startup\":true,\"isolatedProfile\":true,\"agreement\":" + accepted + ",\"codeBrowser\":true,\"welcome\":true,\"focusedToolbar\":true,\"workspaceResetAndUndo\":true,\"overflowCommand\":true,\"goTo\":true,\"themeDiscovery\":true,\"themes\":[\"Opcodex Light\",\"Opcodex Dark\",\"Ghidra Classic\"],\"about\":true,\"cleanTaskProgress\":true,\"startupVectorIcons\":true,\"multiplePanels\":true,\"resizableDividers\":true,\"menuAndToolbarParity\":true}\n");
+            Files.writeString(OUTPUT.resolve("result.json"), "{\"startup\":true,\"isolatedProfile\":true,\"agreement\":" + accepted + ",\"codeBrowser\":true,\"welcome\":true,\"focusedToolbar\":true,\"workspaceResetAndUndo\":true,\"overflowCommand\":true,\"goTo\":true,\"themeDiscovery\":true,\"themes\":[\"Opcodex Light\",\"Opcodex Dark\",\"Opcodex Classic\"],\"about\":true,\"cleanTaskProgress\":true,\"startupVectorIcons\":true,\"multiplePanels\":true,\"resizableDividers\":true,\"menuAndToolbarParity\":true}\n");
             Files.writeString(OUTPUT.resolve("display.txt"), "Java=" + System.getProperty("java.version") + "\nOS=" + System.getProperty("os.name") + "\nNativeLauncher=" + System.getProperty("jpackage.app-path") + "\nScale=" + GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform().getScaleX() + "\n");
             System.out.println("OPCODEX_SMOKE_PASS");
             System.exit(0);

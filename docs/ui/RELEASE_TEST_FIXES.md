@@ -22,7 +22,7 @@ The external Linux audit tested alpha.2 source `56e307ed43`. The following corre
 
 ## Themes and responsiveness
 
-Bundled choices are Opcodex Dark, Opcodex Light and Ghidra Classic. Opcodex Light is the default. Retired built-in preferences migrate to Light; explicit Classic selections remain Classic. User-imported themes and the theme editor remain supported. Classic uses the original stable palette/resource mappings and original CodeBrowser docking layout; other tools already retain their stable layouts. Modern and Classic arrangements are retained separately in saved tool state. Dark/Light switching preserves positions without changing layout.
+Bundled choices are Opcodex Dark, Opcodex Light and Opcodex Classic. Opcodex Light is the default. Retired built-in preferences migrate to Light; explicit Classic selections remain Classic. User-imported themes and the theme editor remain supported. Classic uses the original stable palette/resource mappings and original CodeBrowser docking layout; other tools already retain their stable layouts. Modern and Classic arrangements are retained separately in saved tool state. Dark/Light switching preserves positions without changing layout.
 
 Icon measurement uses fixed logical dimensions; vector painting avoids bitmap decoding. Transparent themed icons preserve their live source instead of flattening to a small bitmap. Raw-resource vector painters and solid strokes are reused. The native smoke records actual event-dispatch response samples after settling, without promising a frame rate on untested hardware.
 

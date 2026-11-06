@@ -5,7 +5,7 @@ Opcodex owns its product identity, workspace organization and command discovery.
 ## Design contract
 
 - Use a quiet, precise desktop workspace. Give code and investigation data most of the screen. Prefer clear hierarchy and useful defaults over decoration.
-- Keep Opcodex Light as the fresh-profile default, a black Opcodex Dark, and one original Ghidra Classic. Modern themes share an arrangement; Classic retains its own layout and original assets.
+- Keep Opcodex Light as the fresh-profile default, a black Opcodex Dark, and one original Opcodex Classic. Modern themes share an arrangement; Classic retains its own layout and original assets.
 - Use a compact ribbon with task tabs, short labels and visibly separated groups. Home contains common work; All tools retains every original toolbar control. Keep the original menus. A visible command finder searches names, menu paths and purposes and explains availability.
 - Keep one row of action icons in a ribbon page or provider header. Use scrolling when necessary. Retain original split controls, enablement rules, shortcuts and action dispatch.
 - Treat Debugger as a session workflow: session and execution commands first, clear dynamic/static code roles, useful state and thread panes, and an actionable no-trace state. Never simulate a connected target or hide real trace data behind a placeholder.

@@ -1,6 +1,7 @@
 """Release-boundary tests use tiny synthetic distributions; they run no binaries."""
 # Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import json
+import hashlib
 import stat
 import struct
 import subprocess
@@ -172,9 +173,13 @@ class BrandingContracts(unittest.TestCase):
         result = subprocess.run(['git', 'diff', '--exit-code', upstream['commit'], '--',
                                  'LICENSE', 'NOTICE', 'licenses', 'GPL',
                                  'Ghidra/Features/Decompiler', 'Ghidra/Processors',
-                                 'Ghidra/Framework/DB', 'Ghidra/Framework/SoftwareModeling'],
+                                 'Ghidra/Framework/DB', 'Ghidra/Framework/SoftwareModeling',
+                                 ':(exclude)licenses/MIT-Better-File-Icons.txt'],
                                 cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout)
+        notice = (ROOT / 'licenses/MIT-Better-File-Icons.txt').read_text(encoding='utf-8')
+        self.assertEqual(hashlib.sha256(notice.encode()).hexdigest(),
+                         'a5f897696018eec8497035cbdd3fe52d0f6d3fdf301ecd19f097aa7cf62924d1')
 
     def test_app_icon_sizes_are_correct_and_upstream_changes_are_documented(self):
         for theme in ('light', 'dark'):

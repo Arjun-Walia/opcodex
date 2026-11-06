@@ -18,14 +18,17 @@ package ghidra.app.plugin.core.debug.gui.tracermi.launcher;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 
+import javax.tools.ToolProvider;
+
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import db.Transaction;
-import generic.jar.ResourceFile;
 import ghidra.app.plugin.core.analysis.AnalysisBackgroundCommand;
 import ghidra.app.plugin.core.analysis.AutoAnalysisManager;
 import ghidra.app.plugin.core.debug.gui.AbstractGhidraHeadedDebuggerTest;
@@ -35,7 +38,6 @@ import ghidra.app.util.opinion.LoadResults;
 import ghidra.debug.api.ValStr;
 import ghidra.debug.api.tracermi.TraceRmiLaunchOffer;
 import ghidra.debug.api.tracermi.TraceRmiLaunchOffer.*;
-import ghidra.framework.Application;
 import ghidra.framework.OperatingSystem;
 import ghidra.framework.cmd.Command;
 import ghidra.framework.plugintool.AutoConfigState.PathIsFile;
@@ -44,6 +46,9 @@ import ghidra.util.task.ConsoleTaskMonitor;
 
 public class TraceRmiLauncherServicePluginTest extends AbstractGhidraHeadedDebuggerTest {
 	TraceRmiLauncherService launcherService;
+
+	@Rule
+	public TemporaryFolder javaFixture = new TemporaryFolder();
 
 	@Before
 	public void setupRmiLauncherTest() throws Exception {
@@ -77,9 +82,13 @@ public class TraceRmiLauncherServicePluginTest extends AbstractGhidraHeadedDebug
 
 	@Test
 	public void testGetClassName() throws Exception {
-		ResourceFile rf = Application.getModuleDataFile("TestResources", "HelloWorld.class");
+		Path directory = javaFixture.newFolder().toPath();
+		Path source = Files.writeString(directory.resolve("HelloWorld.java"),
+			"public class HelloWorld { public static void main(String[] args) {} }");
+		assertEquals(0, ToolProvider.getSystemJavaCompiler()
+			.run(null, null, null, "--release", "8", "-d", directory.toString(), source.toString()));
 		try (LoadResults<Program> results = ProgramLoader.builder()
-				.source(rf.getFile(false))
+				.source(directory.resolve("HelloWorld.class").toFile())
 				.project(env.getProject())
 				.monitor(monitor)
 				.load()) {

@@ -10,5 +10,5 @@ import generic.theme.LafType;
 
 /** Original stable workbench palette, assets and docking layout. */
 public final class GhidraClassicTheme extends DiscoverableGTheme {
-    public GhidraClassicTheme() { super("Ghidra Classic", LafType.FLAT_LIGHT); }
+    public GhidraClassicTheme() { super("Opcodex Classic", LafType.FLAT_LIGHT); }
 }

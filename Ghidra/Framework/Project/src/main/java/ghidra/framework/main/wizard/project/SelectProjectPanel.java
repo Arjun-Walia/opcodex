@@ -81,6 +81,10 @@ public class SelectProjectPanel extends JPanel {
 		return directoryField.getText().trim();
 	}
 
+	JTextField getLocationFocusField() {
+		return getDirectoryName().isBlank() ? directoryField : projectNameField;
+	}
+
 	private void buildMainPanel() {
 		DocumentListener documentListener = createDocumentListener();
 
