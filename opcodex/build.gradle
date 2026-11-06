@@ -8,15 +8,13 @@ tasks.register('testOpcodex', Exec) {
     commandLine opcodexPython, '-m', 'unittest', 'discover', '-s', 'opcodex/tests', '-v'
 }
 
+def opcodexEclipseDir = layout.buildDirectory.dir('opcodex-eclipse')
 def stageOpcodexEclipse = tasks.register('stageOpcodexEclipse', Exec) {
     group = 'distribution'
     description = 'Stage the pinned upstream Eclipse plugin archives.'
     commandLine opcodexPython, 'opcodex/stage_eclipse.py',
-        '--destination', file("${BIN_REPO}/GhidraBuild/EclipsePlugins"),
+        '--destination', opcodexEclipseDir.get().asFile,
         '--archive', layout.buildDirectory.file('stock-12.1.4.zip').get().asFile
-}
-tasks.named('assembleDistribution') {
-    mustRunAfter stageOpcodexEclipse
 }
 
 tasks.register('buildOpcodex', Exec) {
@@ -27,6 +25,7 @@ tasks.register('buildOpcodex', Exec) {
         commandLine opcodexPython, 'opcodex/package_release.py',
             '--input', tasks.named('createInstallationZip').get().archiveFile.get().asFile,
             '--platform', getCurrentPlatformName(),
+            '--eclipse-dir', opcodexEclipseDir.get().asFile,
             '--output-dir', layout.buildDirectory.dir('releases').get().asFile
     }
 }

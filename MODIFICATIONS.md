@@ -226,3 +226,7 @@ The project wizard honors the step's preferred focus field. Listing comments wra
 The release build stages both checksum-pinned Eclipse plugin archives from the matching upstream binary distribution. The Java launcher regression test builds its own sample class.
 
 The SSH GDB launcher incorporates the upstream GP-7332 correction for escaping the target image passed to the remote command. [Upstream fix](https://github.com/NationalSecurityAgency/ghidra/commit/3468bc5120e30e05a99d3e2eff2c6ef2a3911abc)
+
+Native theme ZIP import validates entry counts, uncompressed sizes and icon destinations before extraction. Theme names are checked before creating a settings file. This protects the theme import path. Extension extraction and shared-server TLS still require their own security review.
+
+The BSim query tests generate two x86 functions and keep the existing query assertions. Surface colors initialize on first use so headless resource loading can complete without re-entering theme initialization.

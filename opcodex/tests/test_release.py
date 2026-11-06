@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from zipfile import ZipFile, ZipInfo
 
 from opcodex.package_release import ROOT, checked_members, digest, package_release, properties
@@ -77,6 +78,29 @@ class ReleaseTests(unittest.TestCase):
         self.entries[key] = self.entries[key].replace(b'application.name=Opcodex', b'application.name=Ghidra')
         with self.assertRaisesRegex(ValueError, 'identity differs'):
             self.package()
+
+    def test_eclipse_archives_are_verified_and_overlaid(self):
+        directory = self.directory / 'staged-eclipse'
+        name = 'Plugin/Plugin-1.0.zip'
+        staged = directory / name
+        staged.parent.mkdir(parents=True)
+        staged.write_bytes(b'verified plugin payload')
+        package_path = f'Extensions/Eclipse/{name}'
+        self.entries[f'engine/{package_path}'] = b'old payload'
+        with patch.dict('opcodex.package_release.ECLIPSE_EXTENSIONS',
+                        {name: digest(staged)}, clear=True):
+            def package():
+                return package_release(self.archive(), self.directory / 'output',
+                                       'linux_x86_64', self.repository, 'a' * 40,
+                                       eclipse_dir=directory)
+
+            result = package()
+            with ZipFile(result) as archive:
+                self.assertEqual(archive.read(f'{result.stem}/{package_path}'),
+                                 b'verified plugin payload')
+            staged.write_bytes(b'changed payload')
+            with self.assertRaisesRegex(ValueError, 'invalid pinned Eclipse extension'):
+                package()
 
     def test_rejects_incorrect_platform_instead_of_mislabelling_native_binaries(self):
         with self.assertRaisesRegex(ValueError, 'missing a required distribution file'):

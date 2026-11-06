@@ -15,6 +15,11 @@ import tempfile
 from pathlib import Path, PurePosixPath
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
+if __package__:
+    from .stage_eclipse import EXTENSIONS as ECLIPSE_EXTENSIONS
+else:
+    from stage_eclipse import EXTENSIONS as ECLIPSE_EXTENSIONS
+
 ROOT = Path(__file__).resolve().parents[1]
 PLATFORMS = ('linux_x86_64', 'linux_arm_64', 'win_x86_64', 'mac_x86_64', 'mac_arm_64')
 
@@ -52,7 +57,8 @@ def checked_members(archive: ZipFile) -> tuple[str, list[ZipInfo]]:
 
 
 def package_release(source: Path, destination: Path, platform: str,
-                    repository: Path = ROOT, revision: str | None = None) -> Path:
+                    repository: Path = ROOT, revision: str | None = None,
+                    eclipse_dir: Path | None = None) -> Path:
     if platform not in PLATFORMS:
         raise ValueError(f'Unsupported platform: {platform}')
     upstream = json.loads((repository / 'opcodex/upstream.json').read_text(encoding='utf-8'))
@@ -89,6 +95,12 @@ def package_release(source: Path, destination: Path, platform: str,
         'opcodexRun.bat': repository / 'opcodexRun.bat',
         'support/opcodex.ico': repository / 'opcodex/branding/opcodex.ico',
     }
+    if eclipse_dir is not None:
+        for extension_name, checksum in ECLIPSE_EXTENSIONS.items():
+            extension = eclipse_dir / extension_name
+            if not extension.is_file() or digest(extension) != checksum:
+                raise ValueError(f'Missing or invalid pinned Eclipse extension: {extension_name}')
+            additions[f'Extensions/Eclipse/{extension_name}'] = extension
     replaced = {name.casefold() for name in additions}
     replaced.update(('ghidrarun', 'ghidrarun.bat', 'opcodex-release.json'))
     with ZipFile(source) as incoming:
@@ -154,8 +166,9 @@ def main() -> None:
     parser.add_argument('--input', required=True, type=Path)
     parser.add_argument('--output-dir', required=True, type=Path)
     parser.add_argument('--platform', required=True, choices=PLATFORMS)
+    parser.add_argument('--eclipse-dir', type=Path)
     args = parser.parse_args()
-    print(package_release(args.input, args.output_dir, args.platform))
+    print(package_release(args.input, args.output_dir, args.platform, eclipse_dir=args.eclipse_dir))
 
 
 if __name__ == '__main__':

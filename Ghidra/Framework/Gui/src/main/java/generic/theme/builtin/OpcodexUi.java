@@ -20,8 +20,10 @@ import generic.theme.ApplicationThemeManager;
 /** Product chrome helpers; keep icon painting vector-based even for disabled controls. */
 public final class OpcodexUi {
 	public static final String IMPORTED_PALETTE = "color.opcodex.imported.palette";
-	private static final Color OUTLINE = new GColor("system.color.bg.border");
-	private static final Color FOCUS = new GColor("color.border.button.focused");
+	private static class SurfaceColors {
+		private static final Color OUTLINE = new GColor("system.color.bg.border");
+		private static final Color FOCUS = new GColor("color.border.button.focused");
+	}
 
 	/** Inset surface frame using the current theme's existing outline and focus colors. */
 	public static Border surfaceBorder(int radius, int padding) {
@@ -35,7 +37,7 @@ public final class OpcodexUi {
 				Graphics2D canvas = (Graphics2D) g.create();
 				try {
 					canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-					canvas.setColor(c.isFocusOwner() ? FOCUS : OUTLINE);
+					canvas.setColor(c.isFocusOwner() ? SurfaceColors.FOCUS : SurfaceColors.OUTLINE);
 					canvas.drawRoundRect(x, y, w - 1, h - 1, radius, radius);
 				}
 				finally {
