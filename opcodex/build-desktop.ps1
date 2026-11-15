@@ -107,6 +107,10 @@ $opcodexClasspath = @(Get-Content -LiteralPath $opcodexConfigPath | Where-Object
 if ($opcodexClasspath.Count -ne 1 -or $opcodexClasspath[0] -ne $opcodexBootstrap) {
     throw 'Native launcher differs from the supported module bootstrap.'
 }
+# The opcodex CLI and MCP server sit next to Opcodex.exe so they find the bundled runtime.
+$opcodexCli = Join-Path $opcodexImage 'app/support/opcodex.exe'
+if (-not (Test-Path -LiteralPath $opcodexCli)) { throw 'The package is missing the opcodex CLI.' }
+Copy-Item -LiteralPath $opcodexCli -Destination (Join-Path $opcodexImage 'opcodex.exe') -Force
 
 if ($Installer) {
     $opcodexInstallerConfig = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'windows-installer.json') -Raw | ConvertFrom-Json

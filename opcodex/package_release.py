@@ -58,7 +58,7 @@ def checked_members(archive: ZipFile) -> tuple[str, list[ZipInfo]]:
 
 def package_release(source: Path, destination: Path, platform: str,
                     repository: Path = ROOT, revision: str | None = None,
-                    eclipse_dir: Path | None = None) -> Path:
+                    eclipse_dir: Path | None = None, cli: Path | None = None) -> Path:
     if platform not in PLATFORMS:
         raise ValueError(f'Unsupported platform: {platform}')
     upstream = json.loads((repository / 'opcodex/upstream.json').read_text(encoding='utf-8'))
@@ -101,6 +101,12 @@ def package_release(source: Path, destination: Path, platform: str,
             if not extension.is_file() or digest(extension) != checksum:
                 raise ValueError(f'Missing or invalid pinned Eclipse extension: {extension_name}')
             additions[f'Extensions/Eclipse/{extension_name}'] = extension
+    if cli is not None:
+        if not cli.is_file():
+            raise ValueError(f'Missing release overlay: {cli.name} (the opcodex CLI)')
+        cli_name = 'support/opcodex.exe' if platform.startswith('win') else 'support/opcodex'
+        additions[cli_name] = cli
+        manifest['cliSha256'] = digest(cli)
     replaced = {name.casefold() for name in additions}
     replaced.update(('ghidrarun', 'ghidrarun.bat', 'opcodex-release.json'))
     with ZipFile(source) as incoming:
@@ -149,7 +155,7 @@ def package_release(source: Path, destination: Path, platform: str,
                 for relative, path in additions.items():
                     entry = ZipInfo(f'{name}/{relative}')
                     entry.create_system = 3
-                    mode = 0o755 if relative == 'opcodexRun' else 0o644
+                    mode = 0o755 if relative in ('opcodexRun', 'support/opcodex') else 0o644
                     entry.external_attr = (stat.S_IFREG | mode) << 16
                     outgoing.writestr(entry, path.read_bytes(), compress_type=ZIP_DEFLATED)
                 outgoing.writestr(f'{name}/opcodex-release.json', json.dumps(manifest, indent=2) + '\n')
@@ -167,8 +173,10 @@ def main() -> None:
     parser.add_argument('--output-dir', required=True, type=Path)
     parser.add_argument('--platform', required=True, choices=PLATFORMS)
     parser.add_argument('--eclipse-dir', type=Path)
+    parser.add_argument('--cli', type=Path, help='The built opcodex CLI executable to include.')
     args = parser.parse_args()
-    print(package_release(args.input, args.output_dir, args.platform, eclipse_dir=args.eclipse_dir))
+    print(package_release(args.input, args.output_dir, args.platform, eclipse_dir=args.eclipse_dir,
+                          cli=args.cli))
 
 
 if __name__ == '__main__':
