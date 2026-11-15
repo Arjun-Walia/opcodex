@@ -182,14 +182,19 @@ fn run_operation(global: &Global, command: &str, args: &[String]) -> Result<()> 
         print!("{}", catalog::help(op));
         return Ok(());
     }
-    let params = catalog::parse_params(op, args)?;
+    let (format_flag, args) = catalog::take_output_flags(op, args);
+    let output = match format_flag {
+        Some(name) => Format::parse(&name)?,
+        None => global.format,
+    };
+    let params = catalog::parse_params(op, &args)?;
     if (command.starts_with("job.") || (command == "program.analyze" && params["background"] == true))
         && !client.is_shared()
     {
         bail!("Background jobs need a shared engine. Run `opcodex serve` in another terminal.");
     }
     let result = client.call(command, params)?;
-    println!("{}", format::render(&result, global.format));
+    println!("{}", format::render(&result, output));
     Ok(())
 }
 

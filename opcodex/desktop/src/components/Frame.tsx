@@ -1,6 +1,6 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import type { ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, Bot, House, LayoutGrid, Search, Settings } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bot, House, LayoutGrid, Search, Settings, SquareTerminal } from 'lucide-react';
 import { usePrefs } from '../state/prefs';
 import { useSession } from '../state/session';
 import { Logo } from './Logo';
@@ -11,6 +11,8 @@ interface FrameProps {
   screen: Screen;
   onNavigate: (screen: Screen) => void;
   onPalette: () => void;
+  terminalOpen: boolean;
+  onTerminal: () => void;
   children: ReactNode;
 }
 
@@ -40,7 +42,7 @@ function RailButton(props: {
   );
 }
 
-export function Frame({ screen, onNavigate, onPalette, children }: FrameProps) {
+export function Frame({ screen, onNavigate, onPalette, terminalOpen, onTerminal, children }: FrameProps) {
   const session = useSession();
   const prefs = usePrefs();
   const program = session.programs.find((p) => p.programId === session.programId);
@@ -69,6 +71,9 @@ export function Frame({ screen, onNavigate, onPalette, children }: FrameProps) {
         </RailButton>
         <RailButton label="Agents" current={screen === 'agents'} onClick={() => onNavigate('agents')}>
           <Bot size={18} />
+        </RailButton>
+        <RailButton label="Terminal" shortcut="Ctrl `" current={terminalOpen} onClick={onTerminal}>
+          <SquareTerminal size={18} />
         </RailButton>
         <div className="rail-spacer" />
         <RailButton label="Settings" shortcut="Ctrl ," current={screen === 'settings'} onClick={() => onNavigate('settings')}>
