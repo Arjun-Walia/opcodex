@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none" role="img" aria-labelledby="opcodex-title">
+  <!-- Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0 -->
+  <title id="opcodex-title">Opcodex</title>
+  <path d="M104 113 189 66 250 100 195 132v113l-91-61Z" fill="#f3f3ec"/>
+  <path d="m104 184 91-52v113Z" fill="#c4c8c6"/>
+  <path d="m196 62 24-14h71l117 65v71l-91 61V135Z" fill="#f3f3ec"/>
+  <path d="m317 135 91 49-91 61Z" fill="#c4c8c6"/>
+  <path d="m258 108 52 32v31l-51-32Z" fill="#f3f3ec"/>
+  <path d="M408 194v150l-28 24-116-93Z" fill="#f3f3ec"/>
+  <path d="m408 194-30 89-76 57" fill="none" stroke="#00cddd" stroke-width="5" stroke-linejoin="miter"/>
+  <path d="M104 263v81l24 24 66-41 63 57 34-33Z" fill="#c4c8c6"/>
+  <path d="m194 327 13 11-88 67 39 59 99-80Z" fill="#f3f3ec"/>
+  <path d="m194 327 63 57-19 16-44-45-62 60-13-10 88-67Z" fill="#c4c8c6"/>
+  <path d="m104 194 289 211-39 59-250-201Z" fill="#f3f3ec"/>
+  <path d="m104 263 250 201 24-37Z" fill="#c4c8c6"/>
+  <path d="m105 263 273 164" fill="none" stroke="#00cddd" stroke-width="5" stroke-linecap="butt"/>
+</svg>

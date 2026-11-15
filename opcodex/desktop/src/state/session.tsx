@@ -4,7 +4,7 @@ import { call, EngineError } from '../engine/client';
 import type { Job, ProgramEntry } from '../engine/types';
 import { addRecent, loadRecent, saveRecent, type RecentProject } from '../lib/recent';
 
-export type Tab = 'overview' | 'decompile' | 'disassembly' | 'hex';
+export type Tab = 'overview' | 'decompile' | 'disassembly' | 'hex' | 'strings';
 
 interface Activity {
   title: string;
@@ -32,6 +32,8 @@ interface SessionState {
 interface SessionApi extends SessionState {
   openProject(dir: string, name: string): Promise<void>;
   openBinary(path: string): Promise<void>;
+  /** Opens a file's contents (used when a browser can't see the file's path). */
+  openBytes(name: string, bytesBase64: string): Promise<void>;
   selectProgram(programId: string): void;
   goTo(entry: string): void;
   goBack(): void;
@@ -40,6 +42,7 @@ interface SessionApi extends SessionState {
   closeProject(): Promise<void>;
   cancelActivity(): Promise<void>;
   dismissError(): void;
+  showError(message: string): void;
   bump(): void;
 }
 
@@ -137,10 +140,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [patch, remember, showProgram],
   );
 
-  const openBinary = useCallback(
-    async (path: string) => {
+  const openSource = useCallback(
+    async (file: string, source: { path: string } | { bytesBase64: string }) => {
       cancelled.current = false;
-      const file = baseName(path);
       patch({ error: undefined, activity: { title: `Opening ${file}`, detail: 'Creating a project' } });
       try {
         const dir = await call<string>('__desktop.defaultProjectsDir').catch(() => '');
@@ -156,7 +158,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           }
         }
         patch({ project: { dir, name }, activity: { title: `Opening ${file}`, detail: 'Importing the file' } });
-        const imported = await call<{ programId: string }>('program.import', { path, name: file });
+        const imported = await call<{ programId: string }>('program.import', { ...source, name: file });
         const started = await call<{ jobId: string }>('program.analyze', {
           programId: imported.programId,
           background: true,
@@ -173,23 +175,30 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [patch, remember, showProgram, waitForJob],
   );
 
+  const openBinary = useCallback((path: string) => openSource(baseName(path), { path }), [openSource]);
+  const openBytes = useCallback(
+    (name: string, bytesBase64: string) => openSource(baseName(name), { bytesBase64 }),
+    [openSource],
+  );
+
   const api = useMemo<SessionApi>(
     () => ({
       ...state,
       openProject,
       openBinary,
+      openBytes,
       selectProgram: (programId) =>
         patch({ programId, location: undefined, back: [], forward: [], tab: 'overview' }),
       goTo: (entry) =>
         setState((s) =>
           s.location === entry
-            ? { ...s, tab: s.tab === 'overview' ? 'decompile' : s.tab }
+            ? { ...s, tab: s.tab === 'disassembly' ? s.tab : 'decompile' }
             : {
                 ...s,
                 location: entry,
                 back: s.location ? [...s.back, s.location].slice(-100) : s.back,
                 forward: [],
-                tab: s.tab === 'overview' || s.tab === 'hex' ? 'decompile' : s.tab,
+                tab: s.tab === 'disassembly' ? s.tab : 'decompile',
               },
         ),
       goBack: () =>
@@ -225,9 +234,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         if (jobId) await call('job.cancel', { jobId }).catch(() => undefined);
       },
       dismissError: () => patch({ error: undefined }),
+      showError: (error) => patch({ error }),
       bump: () => setState((s) => ({ ...s, revision: s.revision + 1 })),
     }),
-    [state, openProject, openBinary, patch],
+    [state, openProject, openBinary, openBytes, patch],
   );
 
   return <SessionContext.Provider value={api}>{children}</SessionContext.Provider>;
