@@ -14,6 +14,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.util.Msg;
 import ghidra.util.task.TaskMonitor;
 import io.opcodex.engine.journal.Journal;
+import io.opcodex.engine.jobs.JobManager;
 import io.opcodex.engine.rpc.ErrorCode;
 import io.opcodex.engine.rpc.RpcException;
 
@@ -43,6 +44,7 @@ public final class Workspace implements AutoCloseable {
 	}
 
 	private final Map<String, ProgramHandle> open = new ConcurrentHashMap<>();
+	private final JobManager jobs = new JobManager();
 	private GhidraProject project;
 	private Path projectDir;
 	private String projectName;
@@ -115,6 +117,9 @@ public final class Workspace implements AutoCloseable {
 	/** Closes every program after its queued writes finish, then the project. */
 	@Override
 	public synchronized void close() {
+		if (journal != null) {
+			jobs.cancelProject(journal);
+		}
 		for (ProgramHandle handle : open.values()) {
 			handle.shutdown();
 			handle.program().release(this);
@@ -146,6 +151,10 @@ public final class Workspace implements AutoCloseable {
 	public synchronized Journal journal() throws RpcException {
 		project();
 		return journal;
+	}
+
+	public JobManager jobs() {
+		return jobs;
 	}
 
 	public synchronized String projectName() throws RpcException {
@@ -227,7 +236,12 @@ public final class Workspace implements AutoCloseable {
 	 */
 	public <T> Written<T> write(String programId, String txName, Precheck precheck,
 			WriteBody<T> body) throws RpcException {
-		ProgramHandle handle = get(programId);
+		return write(get(programId), txName, precheck, body);
+	}
+
+	/** Uses the captured handle so a queued job cannot write to a reopened project. */
+	public <T> Written<T> write(ProgramHandle handle, String txName, Precheck precheck,
+			WriteBody<T> body) throws RpcException {
 		Future<Written<T>> future;
 		try {
 			future = handle.writer().submit(() -> {

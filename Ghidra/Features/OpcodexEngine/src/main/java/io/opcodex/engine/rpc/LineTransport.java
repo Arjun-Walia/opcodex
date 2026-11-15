@@ -61,7 +61,7 @@ public final class LineTransport {
 			if (text.isEmpty()) {
 				continue;
 			}
-			String response = dispatcher.handleLine(text);
+			String response = dispatcher.handleLine(text, this::sendEvent);
 			if (response != null) {
 				writeLine(response);
 			}

@@ -28,7 +28,9 @@ Exit codes:
 ## Finding an engine
 
 1. If `engine.json` in the session folder points at a running engine (the desktop or `opcodex serve`), the CLI connects to it.
-2. Otherwise it starts a private engine over stdio, using `OPCODEX_ENGINE_CMD`. That variable holds the full command, for example `"C:/Program Files/Java/jdk-25.0.2/bin/java.exe" @D:/opcodex/Ghidra/Features/OpcodexEngine/build/engine.args io.opcodex.engine.EngineMain`.
+2. Otherwise it starts a private engine over stdio. It uses `OPCODEX_ENGINE_CMD` when set, the bundled runtime from a Windows installation, or Java from `JAVA_HOME` or `PATH` for a portable distribution.
+
+On Windows, the installed CLI is `app/support/opcodex.exe` under the installation folder. On a portable distribution it is under `support`.
 
 `OPCODEX_SESSION_DIR` overrides the session folder.
 
@@ -46,7 +48,11 @@ To register it with an agent app, run for example:
 claude mcp add opcodex -- <path>/opcodex mcp
 ```
 
-`opcodex setup` will do this for each installed agent app in milestone 2.
+`opcodex setup --dry-run` previews the registrations. Run `opcodex setup` to apply them after confirmation, or use `--only codex,claude-code` to select apps. Setup saves one backup alongside each modified file. `opcodex setup --uninstall` removes the entries created by setup. Non-interactive use requires `--yes`. `opcodex doctor --format text` checks the engine connection and shows which agent apps point at this executable.
+
+## Background analysis
+
+Keep `opcodex serve` running in another terminal. Open a project and run `program.analyze --program-id PROGRAM_ID --background true`. Use the returned `jobId` with `job.get --job-id JOB_ID`, `job.list` or `job.cancel --job-id JOB_ID`. The project approval policy applies to starting or cancelling a job.
 
 ## Tests
 

@@ -111,7 +111,7 @@ pub fn resolve_engine_from(
         return Ok(split_command(&line));
     }
     let dir = exe.parent().map(PathBuf::from).unwrap_or_default();
-    // Installed: <root>/opcodex.exe or <root>/app/support/opcodex.exe, runtime in <root>/runtime.
+    // Installed: the CLI is in <root>/app/support on Windows, with runtime in <root>/runtime.
     let mut roots = vec![dir.clone()];
     if let Some(root) = dir.parent().and_then(|app| app.parent()) {
         roots.push(root.to_path_buf());
@@ -166,6 +166,10 @@ fn launch(java: &std::path::Path, utility_jar: &std::path::Path) -> Vec<String> 
 }
 
 impl Client {
+    pub fn is_shared(&self) -> bool {
+        matches!(self.link, Link::Tcp { .. })
+    }
+
     /// Uses a running host if one answers; otherwise starts a private one over stdio.
     pub fn connect(actor: &str) -> Result<Client> {
         if let Some(client) = Self::connect_running(actor)? {

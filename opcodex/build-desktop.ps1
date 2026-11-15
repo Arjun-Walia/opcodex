@@ -78,6 +78,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'Opcodex.exe'))) {
         '--main-jar','Ghidra/Framework/Utility/lib/Utility.jar',
         '--main-class','ghidra.Ghidra','--arguments','ghidra.GhidraRun',
         '--add-modules',($opcodexModules -join ','),
+        '--jlink-options','--strip-debug --no-man-pages --no-header-files',
         '--icon',(Join-Path $opcodexRepository 'opcodex/branding/opcodex.ico')
     )
     foreach ($opcodexLine in Get-Content -LiteralPath (Join-Path $opcodexPayload 'support/launch.properties')) {
@@ -107,10 +108,12 @@ $opcodexClasspath = @(Get-Content -LiteralPath $opcodexConfigPath | Where-Object
 if ($opcodexClasspath.Count -ne 1 -or $opcodexClasspath[0] -ne $opcodexBootstrap) {
     throw 'Native launcher differs from the supported module bootstrap.'
 }
-# The opcodex CLI and MCP server sit next to Opcodex.exe so they find the bundled runtime.
+# Windows treats Opcodex.exe and opcodex.exe as the same name. Keep the CLI in app/support.
 $opcodexCli = Join-Path $opcodexImage 'app/support/opcodex.exe'
 if (-not (Test-Path -LiteralPath $opcodexCli)) { throw 'The package is missing the opcodex CLI.' }
-Copy-Item -LiteralPath $opcodexCli -Destination (Join-Path $opcodexImage 'opcodex.exe') -Force
+if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'runtime/bin/java.exe') -PathType Leaf)) {
+    throw 'Native app image is missing the bundled Java command required by the Opcodex CLI.'
+}
 
 if ($Installer) {
     $opcodexInstallerConfig = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'windows-installer.json') -Raw | ConvertFrom-Json

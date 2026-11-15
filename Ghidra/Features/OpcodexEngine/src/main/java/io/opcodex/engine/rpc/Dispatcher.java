@@ -4,6 +4,7 @@ package io.opcodex.engine.rpc;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import com.google.gson.*;
@@ -52,6 +53,10 @@ public final class Dispatcher {
 
 	/** Handles one request line; returns the response line, or null for a notification. */
 	public String handleLine(String line) {
+		return handleLine(line, event -> {});
+	}
+
+	public String handleLine(String line, Consumer<JsonObject> events) {
 		JsonObject request;
 		try {
 			JsonElement parsed = JsonParser.parseString(line);
@@ -65,11 +70,11 @@ public final class Dispatcher {
 			return error(JsonNull.INSTANCE, PARSE_ERROR, "Invalid JSON.", null, null).toString();
 		}
 		JsonElement id = request.has("id") ? request.get("id") : null;
-		JsonObject response = dispatch(request, id == null ? JsonNull.INSTANCE : id);
+		JsonObject response = dispatch(request, id == null ? JsonNull.INSTANCE : id, events);
 		return id == null ? null : response.toString();
 	}
 
-	private JsonObject dispatch(JsonObject request, JsonElement id) {
+	private JsonObject dispatch(JsonObject request, JsonElement id, Consumer<JsonObject> events) {
 		if (!"2.0".equals(stringOrNull(request, "jsonrpc"))) {
 			return error(id, INVALID_REQUEST, "jsonrpc must be \"2.0\".", null, null);
 		}
@@ -96,7 +101,7 @@ public final class Dispatcher {
 			if (!params.isJsonObject()) {
 				throw new RpcException(ErrorCode.INVALID_PARAMS, "params must be an object.");
 			}
-			CallContext ctx = new CallContext(credential.kind(), actor, services);
+			CallContext ctx = new CallContext(credential.kind(), actor, services, events);
 			JsonObject paramObject = params.getAsJsonObject();
 			SchemaValidator.validate(op.paramsSchema(), paramObject);
 			gate.check(ctx, op, paramObject);

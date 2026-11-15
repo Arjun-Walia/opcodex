@@ -5,8 +5,10 @@
 
 mod catalog;
 mod client;
+mod doctor;
 mod format;
 mod mcp;
+mod setup;
 
 use anyhow::{anyhow, bail, Result};
 use client::{Client, EngineError};
@@ -23,6 +25,8 @@ Commands:
   <operation> ...       Run an operation, for example: opcodex program.list
   serve                 Run a shared engine in this terminal for the desktop, CLI and agents
   mcp                   Run the MCP server on stdin/stdout
+  setup                 Register Opcodex with local agent apps (setup --help for options)
+  doctor                Check the CLI, engine connection and agent registrations
 
 --project PATH opens <PATH>.gpr first (PATH without the .gpr extension).
 Environment: OPCODEX_ENGINE_CMD starts an engine when none is running;
@@ -85,6 +89,8 @@ fn run() -> Result<()> {
             Ok(())
         }
         "serve" => serve(),
+        "setup" => setup::run(args),
+        "doctor" => doctor::run(args, global.format),
         "mcp" => {
             let project = global.project.as_deref().map(project_location).transpose()?;
             mcp::serve(project)
@@ -177,6 +183,11 @@ fn run_operation(global: &Global, command: &str, args: &[String]) -> Result<()> 
         return Ok(());
     }
     let params = catalog::parse_params(op, args)?;
+    if (command.starts_with("job.") || (command == "program.analyze" && params["background"] == true))
+        && !client.is_shared()
+    {
+        bail!("Background jobs need a shared engine. Run `opcodex serve` in another terminal.");
+    }
     let result = client.call(command, params)?;
     println!("{}", format::render(&result, global.format));
     Ok(())

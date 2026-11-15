@@ -19,6 +19,9 @@ import ghidra.util.Msg;
 import ghidra.util.task.TaskMonitor;
 import io.opcodex.engine.catalog.*;
 import io.opcodex.engine.rpc.ErrorCode;
+import io.opcodex.engine.jobs.Job;
+import io.opcodex.engine.jobs.JobMonitor;
+import io.opcodex.engine.journal.Journal;
 import io.opcodex.engine.journal.JournalEntry;
 import io.opcodex.engine.rpc.RpcException;
 import io.opcodex.engine.session.CallContext;
@@ -53,6 +56,8 @@ final class ImportOps {
 
 		JsonObject programRef = Schemas.object();
 		Schemas.property(programRef, "programId", Schemas.string("Program id."), true);
+		Schemas.property(programRef, "background", Schemas.bool("Return a cancellable job."),
+			false);
 
 		return List.of(
 			new Operation("program.import",
@@ -64,7 +69,7 @@ final class ImportOps {
 				"Runs auto-analysis on a program: finds functions, references, strings and " +
 					"types.",
 				OperationClass.WRITE, programRef, Schemas.any("Analysis result."),
-				(ctx, params) -> analyze(services, ctx, Params.requireString(params, "programId"))));
+				(ctx, params) -> analyze(services, ctx, params)));
 	}
 
 	private static JsonObject importProgram(EngineServices services, CallContext ctx,
@@ -141,24 +146,53 @@ final class ImportOps {
 		}
 	}
 
-	private static JsonObject analyze(EngineServices services, CallContext ctx, String programId)
+	private static JsonObject analyze(EngineServices services, CallContext ctx, JsonObject params)
 			throws RpcException {
-		Workspace.Written<JsonObject> written = services.workspace().write(programId,
+		String programId = Params.requireString(params, "programId");
+		Workspace workspace = services.workspace();
+		ProgramHandle handle;
+		Journal journal;
+		synchronized (workspace) {
+			handle = workspace.get(programId);
+			journal = workspace.journal();
+			if (params.has("background") && params.get("background").getAsBoolean()) {
+				JobOps.requireWrite(ctx);
+				Job job = workspace.jobs().start(journal, "program.analyze", programId, ctx.events(),
+					monitor -> analyze(workspace, handle, journal, ctx.actor(), monitor));
+				JsonObject result = new JsonObject();
+				result.addProperty("jobId", job.id());
+				return result;
+			}
+		}
+		return analyze(workspace, handle, journal, ctx.actor(), TaskMonitor.DUMMY);
+	}
+
+	private static JsonObject analyze(Workspace workspace, ProgramHandle handle, Journal journal,
+			String actor, TaskMonitor monitor) throws RpcException {
+		String programId = handle.id();
+		Workspace.Written<JsonObject> written = workspace.write(handle,
 			"Auto-analysis", (program, revision) -> {
+				if (monitor.isCancelled()) {
+					throw new RpcException(ErrorCode.CANCELLED, "Analysis was cancelled.");
+				}
 			}, program -> {
 			AutoAnalysisManager manager = AutoAnalysisManager.getAnalysisManager(program);
 			manager.initializeOptions();
 			manager.reAnalyzeAll(null);
-			manager.startAnalysis(TaskMonitor.DUMMY);
+			manager.startAnalysis(monitor);
+			if (monitor instanceof JobMonitor background) {
+				background.beginCommit();
+			}
 			JsonObject out = new JsonObject();
 			out.addProperty("programId", programId);
 			out.addProperty("functionCount", program.getFunctionManager().getFunctionCount());
 			return out;
 		});
 		JsonObject out = written.value();
-		journal(services, ctx, "program.analyze", programId, written.revisionBefore(),
-			written.revisionAfter(), new JsonObject(),
-			"auto-analysis: " + out.get("functionCount").getAsInt() + " functions");
+		EditOps.append(journal, new JournalEntry(JournalEntry.newId(), JournalEntry.now(),
+			actor, "program.analyze", programId, written.revisionBefore(), written.revisionAfter(),
+			new JsonObject(), JsonNull.INSTANCE, JsonNull.INSTANCE, null,
+			"auto-analysis: " + out.get("functionCount").getAsInt() + " functions"));
 		out.addProperty("revision", written.revisionAfter());
 		return out;
 	}

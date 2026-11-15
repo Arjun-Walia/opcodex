@@ -131,8 +131,13 @@ final class EditOps {
 
 	/** Appends a journal entry for a change that has already been applied. */
 	static void append(EngineServices services, JournalEntry entry) throws RpcException {
+		append(services.journal(), entry);
+	}
+
+	static void append(io.opcodex.engine.journal.Journal journal, JournalEntry entry)
+			throws RpcException {
 		try {
-			services.journal().append(entry);
+			journal.append(entry);
 		}
 		catch (IOException e) {
 			Msg.error(EditOps.class, "Change applied but not journaled: " + entry.toJson(), e);

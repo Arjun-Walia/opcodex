@@ -140,6 +140,7 @@ public final class EngineCore implements AutoCloseable {
 
 	@Override
 	public void close() {
+		services.workspace().jobs().close();
 		services.workspace().close();
 	}
 

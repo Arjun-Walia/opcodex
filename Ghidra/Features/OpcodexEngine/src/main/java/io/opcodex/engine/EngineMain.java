@@ -136,6 +136,23 @@ public final class EngineMain {
 		}
 
 		@Override
+		public int read(byte[] bytes, int offset, int length) throws IOException {
+			java.util.Objects.checkFromIndexSize(offset, length, bytes.length);
+			int count = 0;
+			while (count < length) {
+				int value = read();
+				if (value == -1) {
+					return count == 0 ? -1 : count;
+				}
+				bytes[offset + count++] = (byte) value;
+				if (value == '\n') {
+					break;
+				}
+			}
+			return count;
+		}
+
+		@Override
 		public int read() throws IOException {
 			while (index >= pending.length) {
 				int c = reader.read();

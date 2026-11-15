@@ -39,11 +39,13 @@ Every request is checked against its operation's schema. Unknown parameters, mis
 | `CANCELLED` | Timed out or interrupted. |
 | `ENGINE_ERROR` | The engine failed. Details are in the engine log, never in the response. |
 
-## Operations (milestone 1)
+## Operations
 
 `engine.info`, `catalog.list`, `project.create` (refuses to replace an existing project), `project.open`, `project.close`, `program.list`, `program.info`, `program.import`, `program.analyze`, `program.functions.list`, `function.get`, `code.decompile`, `code.disassemble`, `xrefs.to`, `xrefs.from`, `program.strings.list`, `symbol.rename`, `comment.set`, `history.list`, `history.revert`, `policy.get`, `policy.set` (desktop only), `policy.requestChange` and `policy.confirmChange` (terminal confirmation; not offered to agents).
 
 `catalog.list` returns each operation's description, class (`read`, `write`, `run` or `system`) and JSON Schema.
+
+Set `background: true` in `program.analyze` to get a `jobId` immediately. The initiating connection receives `job.progress` notifications with the job state, message, progress and maximum. Poll `job.get` for the result or error and use `job.list` to see recent jobs in the open project. `job.cancel` requests cooperative cancellation before the transaction commits. Jobs belong to the open project and last for the lifetime of the engine session.
 
 ## Edits, history and approvals
 
