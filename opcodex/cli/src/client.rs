@@ -81,17 +81,88 @@ pub fn new_token() -> Result<String> {
     Ok(bytes.iter().map(|b| format!("{b:02x}")).collect())
 }
 
-/// The command that starts an engine host, from OPCODEX_ENGINE_CMD.
+const ENGINE_MAIN: &str = "io.opcodex.engine.EngineMain";
+const UTILITY_JAR: &str = "Ghidra/Framework/Utility/lib/Utility.jar";
+
+fn java_file() -> &'static str {
+    if cfg!(windows) { "java.exe" } else { "java" }
+}
+
+/// The command that starts an engine host for this executable and environment.
 pub fn engine_command() -> Result<Vec<String>> {
-    let line = std::env::var("OPCODEX_ENGINE_CMD").unwrap_or_default();
-    let parts = split_command(&line);
-    if parts.is_empty() {
-        bail!(
-            "No Opcodex engine is running. Start the Opcodex desktop or `opcodex serve`, or set \
-             OPCODEX_ENGINE_CMD to the engine command."
-        );
+    let exe = std::env::current_exe().context("can't find the opcodex executable")?;
+    resolve_engine_from(
+        &exe,
+        std::env::var("OPCODEX_ENGINE_CMD").ok(),
+        std::env::var_os("JAVA_HOME").filter(|h| !h.is_empty()).map(PathBuf::from),
+        std::env::var_os("PATH"),
+    )
+}
+
+/// Finds how to start the engine: OPCODEX_ENGINE_CMD, then an installed Opcodex next to this
+/// executable (bundled runtime), then a portable distribution (JAVA_HOME or java on PATH).
+pub fn resolve_engine_from(
+    exe: &std::path::Path,
+    env_command: Option<String>,
+    java_home: Option<PathBuf>,
+    path: Option<std::ffi::OsString>,
+) -> Result<Vec<String>> {
+    if let Some(line) = env_command.filter(|l| !l.trim().is_empty()) {
+        return Ok(split_command(&line));
     }
-    Ok(parts)
+    let dir = exe.parent().map(PathBuf::from).unwrap_or_default();
+    // Installed: <root>/opcodex.exe or <root>/app/support/opcodex.exe, runtime in <root>/runtime.
+    let mut roots = vec![dir.clone()];
+    if let Some(root) = dir.parent().and_then(|app| app.parent()) {
+        roots.push(root.to_path_buf());
+    }
+    for root in roots {
+        let java = root.join("runtime").join("bin").join(java_file());
+        let jar = root.join("app").join(UTILITY_JAR);
+        if java.is_file() && jar.is_file() {
+            return Ok(launch(&java, &jar));
+        }
+    }
+    // Portable: <dist>/support/opcodex(.exe) with <dist>/Ghidra/...
+    if let Some(dist) = dir.parent() {
+        let jar = dist.join(UTILITY_JAR);
+        if jar.is_file() {
+            let java = java_home
+                .map(|home| home.join("bin").join(java_file()))
+                .filter(|java| java.is_file())
+                .or_else(|| {
+                    path.as_ref().and_then(|p| {
+                        std::env::split_paths(p).map(|d| d.join(java_file())).find(|j| j.is_file())
+                    })
+                });
+            let Some(java) = java else {
+                bail!(
+                    "This Opcodex distribution needs Java 21 or later. Set JAVA_HOME or put java \
+                     on PATH."
+                );
+            };
+            return Ok(launch(&java, &jar));
+        }
+    }
+    bail!(
+        "No Opcodex engine is running and none was found next to this opcodex executable. Start \
+         the Opcodex desktop or `opcodex serve`, reinstall Opcodex, or set OPCODEX_ENGINE_CMD to \
+         the engine command."
+    )
+}
+
+fn launch(java: &std::path::Path, utility_jar: &std::path::Path) -> Vec<String> {
+    vec![
+        java.to_string_lossy().to_string(),
+        "-Djava.system.class.loader=ghidra.GhidraClassLoader".into(),
+        "-Djava.awt.headless=true".into(),
+        "-Dfile.encoding=UTF8".into(),
+        "-Xshare:off".into(),
+        "-cp".into(),
+        utility_jar.to_string_lossy().to_string(),
+        "ghidra.Ghidra".into(),
+        ENGINE_MAIN.into(),
+    ]
 }
 
 impl Client {
@@ -212,3 +283,7 @@ impl Drop for Client {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "client_tests.rs"]
+mod tests;
