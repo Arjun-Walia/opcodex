@@ -26,6 +26,16 @@ class DesktopShellPackagingTest(unittest.TestCase):
         self.assertRegex(GRADLE, r"dependsOn tasks\.named\('buildOpcodex'\), buildOpcodexDesktopShell")
         self.assertIn("'-DesktopShellPath'", GRADLE)
 
+    def test_script_runs_on_the_windows_powershell_that_ships_with_windows(self):
+        # Windows PowerShell 5.1 has no utf8NoBOM encoding, no $IsWindows and no overwrite overload.
+        self.assertNotIn("utf8NoBOM", SCRIPT)
+        self.assertNotRegex(SCRIPT, r"if \(-not \$IsWindows\)")
+        self.assertNotRegex(SCRIPT, r"ExtractToDirectory\([^)]*,\s*\$true\)")
+
+    def test_gradle_falls_back_to_windows_powershell_when_pwsh_is_missing(self):
+        self.assertIn("powershell.exe", GRADLE)
+        self.assertIn("'-ExecutionPolicy', 'Bypass'", GRADLE)
+
     def test_installer_version_upgrades_the_installed_preview(self):
         config = json.loads((ROOT / "opcodex" / "windows-installer.json").read_text(encoding="utf-8"))
         version = tuple(int(p) for p in config["installerVersion"].split("."))
