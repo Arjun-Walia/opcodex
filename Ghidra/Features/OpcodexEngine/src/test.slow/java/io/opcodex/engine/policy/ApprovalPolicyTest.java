@@ -79,6 +79,23 @@ public class ApprovalPolicyTest extends AbstractGhidraHeadlessIntegrationTest {
 	}
 
 	@Test
+	public void terminalConfirmedChangeSetsPolicyForClients() {
+		String code = engine.client("policy.requestChange", params("mode", "allow-writes"))
+				.getAsJsonObject().get("challenge").getAsString();
+		JsonObject wrong = engine.raw(EngineHarness.CLIENT, null, "policy.confirmChange",
+			params("challenge", code, "typed", code.equals("000000") ? "111111" : "000000"));
+		assertEquals("FORBIDDEN", EngineHarness.errorCode(wrong));
+		assertEquals("ask", engine.client("policy.get", new JsonObject()).getAsJsonObject()
+				.get("mode").getAsString());
+
+		String again = engine.client("policy.requestChange", params("mode", "allow-writes"))
+				.getAsJsonObject().get("challenge").getAsString();
+		engine.client("policy.confirmChange", params("challenge", again, "typed", again));
+		assertEquals("allow-writes", engine.client("policy.get", new JsonObject())
+				.getAsJsonObject().get("mode").getAsString());
+	}
+
+	@Test
 	public void policyPersistsWithTheProject() throws Exception {
 		engine.desktop("policy.set", params("mode", "allow-writes"));
 		engine.close();

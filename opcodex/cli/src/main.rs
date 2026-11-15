@@ -89,7 +89,55 @@ fn run() -> Result<()> {
             let project = global.project.as_deref().map(project_location).transpose()?;
             mcp::serve(project)
         }
+        "policy" => policy(&global, args),
+        "policy.requestChange" | "policy.confirmChange" => {
+            bail!("Change the approval policy with `opcodex policy set <mode>` in a terminal.")
+        }
         _ => run_operation(&global, &command, args),
+    }
+}
+
+const MODES: [&str; 3] = ["ask", "allow-writes", "allow-all"];
+
+/// `opcodex policy get` and `opcodex policy set <mode>`. Setting needs a person at a terminal.
+fn policy(global: &Global, args: &[String]) -> Result<()> {
+    use std::io::IsTerminal;
+    match args.first().map(String::as_str) {
+        Some("get") => {
+            let mut client = connect(global)?;
+            let result = client.call("policy.get", json!({}))?;
+            println!("{}", format::render(&result, global.format));
+            Ok(())
+        }
+        Some("set") => {
+            let mode = args.get(1).map(String::as_str).unwrap_or("");
+            if !MODES.contains(&mode) {
+                bail!("Choose a mode: {}.", MODES.join(", "));
+            }
+            if !std::io::stdin().is_terminal() || !std::io::stderr().is_terminal() {
+                bail!(
+                    "`opcodex policy set` must be typed by a person in a terminal, so agents \
+                     can't raise their own permissions. Or change it in the Opcodex desktop."
+                );
+            }
+            let mut client = connect(global)?;
+            let request = client.call("policy.requestChange", json!({"mode": mode}))?;
+            let code = request["challenge"].as_str().unwrap_or("").to_string();
+            let project = request["project"].as_str().unwrap_or("this project");
+            let meaning = match mode {
+                "allow-writes" => "let agents make changes",
+                "allow-all" => "let agents make changes and run code",
+                _ => "require approval for every agent change",
+            };
+            eprint!("Type {code} to {meaning} in {project}: ");
+            let mut typed = String::new();
+            std::io::stdin().read_line(&mut typed)?;
+            let result = client.call("policy.confirmChange",
+                json!({"challenge": code, "typed": typed.trim()}))?;
+            eprintln!("Approval policy is now {}.", result["mode"].as_str().unwrap_or(mode));
+            Ok(())
+        }
+        _ => bail!("Usage: opcodex policy get | opcodex policy set <{}>", MODES.join("|")),
     }
 }
 
