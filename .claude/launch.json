@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "opcodex-desktop-ui",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "opcodex/desktop", "run", "dev"],
+      "port": 1420
+    }
+  ]
+}

@@ -59,3 +59,6 @@ src/test.slow/java/io/opcodex/engine/ops/HistoryOpsTest.java||Apache License 2.0
 src/test.slow/java/io/opcodex/engine/ops/JobsTest.java||Apache License 2.0||||END|
 src/test.slow/java/io/opcodex/engine/ops/ProjectOpsTest.java||Apache License 2.0||||END|
 src/test.slow/java/io/opcodex/engine/policy/ApprovalPolicyTest.java||Apache License 2.0||||END|
+src/main/java/io/opcodex/engine/ops/SummaryOps.java||Apache License 2.0||||END|
+src/main/resources/io/opcodex/engine/risky-apis.json||Apache License 2.0||||END|
+src/test.slow/java/io/opcodex/engine/ops/SummaryOpsTest.java||Apache License 2.0||||END|

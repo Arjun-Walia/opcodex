@@ -185,7 +185,7 @@ final class ImportOps {
 			}
 			JsonObject out = new JsonObject();
 			out.addProperty("programId", programId);
-			out.addProperty("functionCount", program.getFunctionManager().getFunctionCount());
+			out.addProperty("functionCount", SummaryOps.internalFunctionCount(program));
 			return out;
 		});
 		JsonObject out = written.value();

@@ -283,3 +283,26 @@ Community defines these, and only these. Community code never imports Pro.
 ## 13. Left to the builder
 
 UI library choices within §5.4, exact screen layouts within the design contract, internal module structure of the engine host, and the CLI argument style. Also deciding whether the triage risk categories come from a shipped rules file (preferred, so they can be edited and tested).
+
+## 14. Edition split, revised by the owner (16 November 2026)
+
+The owner clarified that **most features are open source**. Only work that is genuinely advanced goes to the paid tiers. This replaces the earlier split.
+
+**Community (free, Apache 2.0)** contains everything in §6, plus:
+
+- library function recognition, with community signature databases built from open-source libraries;
+- vulnerability-pattern scanning with SARIF output, using rules that can be read and extended;
+- triage and findings reports in Markdown, HTML and PDF;
+- headless batch analysis and CI use, with the CLI and MCP controlling every operation;
+- source skeleton export;
+- agent chat using any local model, the user's own key, or an agent app.
+
+**Pro (paid)** covers only the advanced, compute-heavy or service-backed work:
+
+- autonomous whole-program recovery, where coordinated agents rebuild names, types and structures bottom-up across thousands of functions;
+- translating decompiled C into Rust or Go;
+- interprocedural taint analysis with exploitability triage;
+- the hosted shared function-knowledge service and premium signature packs;
+- large CI fleets with many parallel agents.
+
+**Enterprise** adds team server collaboration, SSO, an audit log, seat management and the offline license.
