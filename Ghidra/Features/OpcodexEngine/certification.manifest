@@ -1,3 +1,4 @@
 ##VERSION: 2.0
-Module.manifest||Opcodex||||END|
-README.md||Opcodex||||END|
+Module.manifest||Apache License 2.0||||END|
+README.md||Apache License 2.0||||END|
+src/main/resources/META-INF/services/io.opcodex.engine.spi.OperationProvider||Apache License 2.0||||END|
