@@ -2,9 +2,7 @@
 package io.opcodex.engine;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.JsonObject;
 
@@ -30,7 +28,6 @@ public final class EngineCore implements AutoCloseable {
 		private final Catalog catalog = new Catalog();
 		private final Workspace workspace = new Workspace();
 		private final EntitlementProvider entitlements;
-		private final Map<Path, Journal> journals = new ConcurrentHashMap<>();
 
 		Services(EntitlementProvider entitlements) {
 			this.entitlements = entitlements;
@@ -53,7 +50,7 @@ public final class EngineCore implements AutoCloseable {
 
 		@Override
 		public Journal journal() throws RpcException {
-			return journals.computeIfAbsent(workspace.opcodexDataDir(), Journal::new);
+			return workspace.journal();
 		}
 
 		@Override

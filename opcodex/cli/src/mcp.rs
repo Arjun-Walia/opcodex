@@ -9,8 +9,9 @@ use std::io::{BufRead, Write};
 pub const PROTOCOL_VERSION: &str = "2025-06-18";
 const SUPPORTED_VERSIONS: [&str; 3] = ["2025-06-18", "2025-03-26", "2024-11-05"];
 
-/// Operations agents never get: they change policy or settings, or need a person at a terminal.
-const HIDDEN: [&str; 2] = ["policy.requestChange", "policy.confirmChange"];
+/// Operations agents never get: they change policy, need a person at a terminal, or would close
+/// the project other people and agents are using.
+const HIDDEN: [&str; 3] = ["policy.requestChange", "policy.confirmChange", "project.close"];
 
 const INSTRUCTIONS: &str = "Opcodex analyses binaries. Start with program_list (or project_open, \
 then program_import and program_analyze), then program_functions_list, code_decompile and \
@@ -131,11 +132,20 @@ impl Server {
             return tool_error(format!("Unknown tool {name}."));
         };
         let operation = tool["title"].as_str().unwrap_or("").to_string();
+        let read_only = tool["annotations"]["readOnlyHint"].as_bool().unwrap_or(false);
         let arguments = if params["arguments"].is_object() { params["arguments"].clone() } else { json!({}) };
-        let result = match self.engine() {
-            Ok(engine) => engine.call(&operation, arguments),
-            Err(e) => Err(e),
-        };
+        let mut result = self.call_engine(&operation, arguments.clone());
+        if let Err(error) = &result {
+            if error.downcast_ref::<EngineError>().is_none() {
+                // The engine went away (restart or crash). Reconnect for this and later calls.
+                // Only reads are retried: a write may already have been applied.
+                self.client = None;
+                self.catalog = None;
+                if read_only {
+                    result = self.call_engine(&operation, arguments);
+                }
+            }
+        }
         match result {
             Ok(value) => {
                 let text = serde_json::to_string_pretty(&value).unwrap_or_default();
@@ -156,6 +166,13 @@ impl Server {
                 None => tool_error(format!("{error:#}")),
             },
         }
+    }
+}
+
+impl Server {
+    fn call_engine(&mut self, operation: &str, arguments: Value) -> Result<Value> {
+        let engine = self.engine()?;
+        engine.call(operation, arguments)
     }
 }
 

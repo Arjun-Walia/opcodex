@@ -84,6 +84,7 @@ fn mcp_lists_tools_without_system_ops() {
     let tools = mcp.request("tools/list", json!({}))["tools"].as_array().unwrap().clone();
     let find = |name: &str| tools.iter().find(|t| t["name"] == name).cloned();
     assert!(find("policy_set").is_none(), "system operations must not be agent tools");
+    assert!(find("project_close").is_none(), "agents must not close the shared project");
     let rename = find("symbol_rename").expect("symbol_rename tool");
     assert_eq!(Some(false), rename["annotations"]["readOnlyHint"].as_bool());
     assert_eq!("object", rename["inputSchema"]["type"]);
@@ -140,4 +141,21 @@ fn mcp_reports_approval_required_as_a_tool_error() {
     let text = result["content"][0]["text"].as_str().unwrap();
     assert!(text.contains("APPROVAL_REQUIRED"), "{text}");
     assert!(text.contains("opcodex policy set"), "{text}");
+}
+
+#[test]
+fn mcp_reconnects_after_engine_restart() {
+    let Some(first) = common::Engine::start() else {
+        eprintln!("skipped: set OPCODEX_ENGINE_CMD to run end-to-end tests");
+        return;
+    };
+    let session = first.session_dir.clone();
+    let mut mcp = Mcp::start(&session);
+    assert_eq!("12.1.4", mcp.tool("engine_info", json!({}))["engineVersion"]);
+
+    drop(first);
+    let _second = common::Engine::start_in(session.clone()).expect("restart engine");
+    let info = mcp.tool("engine_info", json!({}));
+    assert_eq!("12.1.4", info["engineVersion"]);
+    let _ = std::fs::remove_dir_all(&session);
 }

@@ -81,8 +81,11 @@ public class HistoryOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 	public void revertConflictsWhenValueChangedSince() {
 		String first = rename("answer");
 		rename("answer_v2");
+		long revision = engine.revision(programId);
 		JsonObject response = revert(first);
 		assertEquals("CONFLICT", EngineHarness.errorCode(response));
+		assertEquals("a refused revert must not move the revision", revision,
+			engine.revision(programId));
 		assertEquals("answer_v2", nameAtEntry());
 	}
 
@@ -96,7 +99,8 @@ public class HistoryOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 		assertEquals(2, page.getAsJsonArray("items").size());
 		JsonObject rest = engine.desktop("history.list", params("programId", programId,
 			"limit", 2, "cursor", page.get("nextCursor").getAsString())).getAsJsonObject();
-		assertEquals(1, rest.getAsJsonArray("items").size());
+		// The remaining rename plus the journaled import.
+		assertEquals(2, rest.getAsJsonArray("items").size());
 		JsonArray agentOnly = engine.desktop("history.list",
 			params("programId", programId, "actor", "mcp:someone")).getAsJsonObject()
 				.getAsJsonArray("items");
@@ -116,6 +120,24 @@ public class HistoryOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 		JsonObject reverted = revert(id);
 		assertNull(reverted.toString(), EngineHarness.errorCode(reverted));
 		assertEquals(original, nameAtEntry());
+	}
+
+	@Test
+	public void revisionsNeverRepeatAfterReopen() throws Exception {
+		long before = engine.revision(programId);
+		rename("answer");
+		long afterWrite = engine.revision(programId);
+		engine.close();
+		engine = new EngineHarness(engine.projectsDir());
+		engine.desktop("project.open",
+			params("dir", engine.projectsDir().toString(), "name", "demo"));
+		long reopened = engine.revision(programId);
+		assertTrue("revision after reopen (" + reopened + ") must exceed " + afterWrite,
+			reopened > afterWrite);
+		JsonObject stale = engine.raw(EngineHarness.DESKTOP, null, "symbol.rename",
+			params("programId", programId, "address", entry, "newName", "late",
+				"expectedRevision", before));
+		assertEquals("STALE_REVISION", EngineHarness.errorCode(stale));
 	}
 
 	@Test

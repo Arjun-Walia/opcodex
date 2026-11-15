@@ -79,6 +79,8 @@ public class EditOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 		long revision = engine.revision(programId);
 		JsonObject response = rename(EngineHarness.DESKTOP, "parse_header", revision - 1);
 		assertEquals("STALE_REVISION", EngineHarness.errorCode(response));
+		assertEquals("a refused write must not move the revision", revision,
+			engine.revision(programId));
 		assertEquals("FUN_00001000",
 			program.getFunctionManager().getFunctionAt(builder.addr("0x1000")).getName());
 		assertEquals(0, journalSize());
@@ -86,10 +88,22 @@ public class EditOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 
 	@Test
 	public void invalidNameIsInvalidParamsAndNotJournaled() {
-		JsonObject response =
-			rename(EngineHarness.DESKTOP, "has space", engine.revision(programId));
+		long revision = engine.revision(programId);
+		JsonObject response = rename(EngineHarness.DESKTOP, "has space", revision);
 		assertEquals("INVALID_PARAMS", EngineHarness.errorCode(response));
+		assertEquals(revision, engine.revision(programId));
 		assertEquals(0, journalSize());
+	}
+
+	@Test
+	public void returnedRevisionMatchesJournalAndCurrentProgram() {
+		JsonObject result = rename(EngineHarness.DESKTOP, "parse_header",
+			engine.revision(programId)).getAsJsonObject("result");
+		long returned = result.get("revision").getAsLong();
+		assertEquals(returned, engine.revision(programId));
+		JsonObject entry = engine.desktop("history.list", params("programId", programId))
+				.getAsJsonObject().getAsJsonArray("items").get(0).getAsJsonObject();
+		assertEquals(returned, entry.get("revisionAfter").getAsLong());
 	}
 
 	@Test

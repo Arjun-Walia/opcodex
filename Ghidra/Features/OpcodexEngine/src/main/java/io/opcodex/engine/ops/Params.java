@@ -41,6 +41,24 @@ final class Params {
 		return value.getAsLong();
 	}
 
+	/**
+	 * Refuses network and device paths from CLI and MCP clients. Touching a UNC path on Windows
+	 * sends the user's credentials to that server, and analysed binaries can prompt agents to.
+	 */
+	static void requireLocalPath(io.opcodex.engine.session.CallContext ctx, String key,
+			String path) throws RpcException {
+		if (ctx.kind() == io.opcodex.engine.session.Credential.Kind.DESKTOP) {
+			return;
+		}
+		String trimmed = path.strip();
+		if (trimmed.startsWith("\\\\") || trimmed.startsWith("//") || trimmed.startsWith("\\/") ||
+			trimmed.startsWith("/\\")) {
+			throw new RpcException(ErrorCode.INVALID_PARAMS,
+				key + " must be a local path. Network and device paths are refused for agents " +
+					"and the CLI; open them from the Opcodex desktop.");
+		}
+	}
+
 	static Address address(Program program, String key, String text) throws RpcException {
 		Address address = program.getAddressFactory().getAddress(text);
 		if (address == null) {

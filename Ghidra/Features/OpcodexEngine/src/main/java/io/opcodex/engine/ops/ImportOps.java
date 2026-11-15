@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 import ghidra.app.plugin.core.analysis.AutoAnalysisManager;
@@ -18,7 +19,9 @@ import ghidra.util.Msg;
 import ghidra.util.task.TaskMonitor;
 import io.opcodex.engine.catalog.*;
 import io.opcodex.engine.rpc.ErrorCode;
+import io.opcodex.engine.journal.JournalEntry;
 import io.opcodex.engine.rpc.RpcException;
+import io.opcodex.engine.session.CallContext;
 import io.opcodex.engine.spi.EngineServices;
 import io.opcodex.engine.workspace.ProgramHandle;
 import io.opcodex.engine.workspace.Workspace;
@@ -56,17 +59,17 @@ final class ImportOps {
 				"Imports a binary into the open project. Doesn't analyse it; call " +
 					"program.analyze next.",
 				OperationClass.WRITE, importParams, Schemas.any("Imported program."),
-				(ctx, params) -> importProgram(services.workspace(), params)),
+				(ctx, params) -> importProgram(services, ctx, params)),
 			new Operation("program.analyze",
 				"Runs auto-analysis on a program: finds functions, references, strings and " +
 					"types.",
 				OperationClass.WRITE, programRef, Schemas.any("Analysis result."),
-				(ctx, params) -> analyze(services.workspace(),
-					Params.requireString(params, "programId"))));
+				(ctx, params) -> analyze(services, ctx, Params.requireString(params, "programId"))));
 	}
 
-	private static JsonObject importProgram(Workspace workspace, JsonObject params)
-			throws RpcException {
+	private static JsonObject importProgram(EngineServices services, CallContext ctx,
+			JsonObject params) throws RpcException {
+		Workspace workspace = services.workspace();
 		String path = Params.string(params, "path");
 		String base64 = Params.string(params, "bytesBase64");
 		if ((path == null) == (base64 == null)) {
@@ -91,6 +94,7 @@ final class ImportOps {
 				.log(new MessageLog())
 				.monitor(TaskMonitor.DUMMY);
 		if (path != null) {
+			Params.requireLocalPath(ctx, "path", path);
 			builder.source(validatedFile(path).toFile());
 		}
 		else {
@@ -115,6 +119,10 @@ final class ImportOps {
 			Program program = results.getPrimaryDomainObject(workspace);
 			DomainFile file = results.getPrimary().getSavedDomainFile();
 			ProgramHandle handle = workspace.register(program, file);
+			JsonObject target = new JsonObject();
+			target.addProperty("path", file.getPathname());
+			journal(services, ctx, "program.import", handle.id(), handle.revision(),
+				handle.revision(), target, "import " + file.getPathname());
 			JsonObject out = new JsonObject();
 			out.addProperty("programId", handle.id());
 			out.addProperty("name", file.getName());
@@ -123,6 +131,9 @@ final class ImportOps {
 			out.addProperty("revision", handle.revision());
 			return out;
 		}
+		catch (RpcException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			Msg.warn(ImportOps.class, "Import failed: " + e.getMessage(), e);
 			throw new RpcException(ErrorCode.INVALID_PARAMS,
@@ -130,8 +141,11 @@ final class ImportOps {
 		}
 	}
 
-	private static JsonObject analyze(Workspace workspace, String programId) throws RpcException {
-		return workspace.write(programId, "Auto-analysis", program -> {
+	private static JsonObject analyze(EngineServices services, CallContext ctx, String programId)
+			throws RpcException {
+		Workspace.Written<JsonObject> written = services.workspace().write(programId,
+			"Auto-analysis", (program, revision) -> {
+			}, program -> {
 			AutoAnalysisManager manager = AutoAnalysisManager.getAnalysisManager(program);
 			manager.initializeOptions();
 			manager.reAnalyzeAll(null);
@@ -141,6 +155,21 @@ final class ImportOps {
 			out.addProperty("functionCount", program.getFunctionManager().getFunctionCount());
 			return out;
 		});
+		JsonObject out = written.value();
+		journal(services, ctx, "program.analyze", programId, written.revisionBefore(),
+			written.revisionAfter(), new JsonObject(),
+			"auto-analysis: " + out.get("functionCount").getAsInt() + " functions");
+		out.addProperty("revision", written.revisionAfter());
+		return out;
+	}
+
+	/** Records a change that can't be reverted from history (imports and analysis). */
+	private static void journal(EngineServices services, CallContext ctx, String op,
+			String programId, long before, long after, JsonObject target, String summary)
+			throws RpcException {
+		EditOps.append(services, new JournalEntry(JournalEntry.newId(), JournalEntry.now(),
+			ctx.actor(), op, programId, before, after, target, JsonNull.INSTANCE, JsonNull.INSTANCE,
+			null, summary));
 	}
 
 	private static Path validatedFile(String path) throws RpcException {

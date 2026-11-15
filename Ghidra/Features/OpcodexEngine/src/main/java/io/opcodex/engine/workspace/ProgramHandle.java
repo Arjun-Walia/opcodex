@@ -11,17 +11,28 @@ import ghidra.framework.model.DomainFile;
 import ghidra.program.model.listing.Program;
 import ghidra.util.Msg;
 
-/** An open program with its own single writer thread, so edits never interleave. */
+/**
+ * An open program with its own single writer thread, so edits never interleave.
+ * <p>
+ * Its revision starts above every revision issued before for this program, including those from
+ * earlier engine runs, so a client's old {@code expectedRevision} can never match again.
+ */
 public final class ProgramHandle {
+
+	private static final long DRAIN_SECONDS = 120;
 
 	private final String id;
 	private final Program program;
 	private final ExecutorService writer;
 	private final Map<Class<?>, AutoCloseable> attachments = new ConcurrentHashMap<>();
+	private final long base;
+	private final long modificationAtOpen;
 
-	ProgramHandle(String id, Program program) {
+	ProgramHandle(String id, Program program, long base) {
 		this.id = id;
 		this.program = program;
+		this.base = base;
+		this.modificationAtOpen = program.getModificationNumber();
 		this.writer = Executors.newSingleThreadExecutor(r -> {
 			Thread t = new Thread(r, "opcodex-writer-" + id);
 			t.setDaemon(true);
@@ -43,9 +54,9 @@ public final class ProgramHandle {
 		return program;
 	}
 
-	/** The program's modification number; every committed change increases it. */
+	/** The program's revision; every committed change increases it and it never repeats. */
 	public long revision() {
-		return program.getModificationNumber();
+		return base + (program.getModificationNumber() - modificationAtOpen);
 	}
 
 	/** Returns the per-program helper of this type, creating it once. Closed with the program. */
@@ -57,8 +68,19 @@ public final class ProgramHandle {
 		return writer;
 	}
 
+	/** Lets queued and running writes finish, then closes the per-program helpers. */
 	void shutdown() {
-		writer.shutdownNow();
+		writer.shutdown();
+		try {
+			if (!writer.awaitTermination(DRAIN_SECONDS, TimeUnit.SECONDS)) {
+				Msg.warn(this, "Writes to " + id + " didn't finish in time; stopping them.");
+				writer.shutdownNow();
+			}
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			writer.shutdownNow();
+		}
 		for (AutoCloseable attachment : attachments.values()) {
 			try {
 				attachment.close();

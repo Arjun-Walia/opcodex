@@ -17,6 +17,7 @@ pub struct Engine {
     pub projects_dir: PathBuf,
     port: u16,
     next_id: u64,
+    owns_session: bool,
 }
 
 /// Splits a command line on spaces, keeping double-quoted parts together.
@@ -57,9 +58,15 @@ fn temp_dir(prefix: &str) -> PathBuf {
 impl Engine {
     /// Starts `OPCODEX_ENGINE_CMD --tcp --desktop-token-stdin` with a private session dir.
     pub fn start() -> Option<Engine> {
+        let mut engine = Self::start_in(temp_dir("opcodex-e2e-session"))?;
+        engine.owns_session = true;
+        Some(engine)
+    }
+
+    /// Starts an engine that uses an existing session folder (for restart tests).
+    pub fn start_in(session_dir: PathBuf) -> Option<Engine> {
         let cmd = engine_cmd()?;
         let parts = split_command(&cmd);
-        let session_dir = temp_dir("opcodex-e2e-session");
         let projects_dir = temp_dir("opcodex-e2e-projects");
         let mut child = Command::new(&parts[0])
             .args(&parts[1..])
@@ -77,7 +84,7 @@ impl Engine {
         BufReader::new(child.stdout.take().unwrap()).read_line(&mut ready).unwrap();
         let ready: Value = serde_json::from_str(&ready).expect("ready line");
         let port = ready["port"].as_u64().unwrap() as u16;
-        Some(Engine { child, session_dir, projects_dir, port, next_id: 1 })
+        Some(Engine { child, session_dir, projects_dir, port, next_id: 1, owns_session: false })
     }
 
     /// Calls the engine as the desktop and returns the result, panicking on errors.
@@ -107,7 +114,9 @@ impl Drop for Engine {
     fn drop(&mut self) {
         let _ = self.child.kill();
         let _ = self.child.wait();
-        let _ = std::fs::remove_dir_all(&self.session_dir);
+        if self.owns_session {
+            let _ = std::fs::remove_dir_all(&self.session_dir);
+        }
     }
 }
 

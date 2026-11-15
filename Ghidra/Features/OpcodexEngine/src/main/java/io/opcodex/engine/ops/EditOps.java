@@ -20,7 +20,7 @@ import io.opcodex.engine.rpc.ErrorCode;
 import io.opcodex.engine.rpc.RpcException;
 import io.opcodex.engine.session.CallContext;
 import io.opcodex.engine.spi.EngineServices;
-import io.opcodex.engine.workspace.ProgramHandle;
+import io.opcodex.engine.workspace.Workspace;
 
 /**
  * Renames and comments. Every change checks the caller's revision, records the value before and
@@ -95,26 +95,42 @@ final class EditOps {
 			String revertOf) throws RpcException {
 		String programId = Params.requireString(params, "programId");
 		long expected = Params.requireLong(params, "expectedRevision");
-		ProgramHandle handle = services.workspace().get(programId);
 		String[] shown = new String[2];
-		JsonElement before = services.workspace().write(programId, describe(op), program -> {
-			if (program.getModificationNumber() != expected) {
+		JsonElement[] current = new JsonElement[1];
+		// Every refusal happens before the transaction, so a refused write changes nothing,
+		// not even the revision.
+		Workspace.Precheck precheck = (program, revision) -> {
+			if (revision != expected) {
 				throw new RpcException(ErrorCode.STALE_REVISION,
-					"The program changed since revision " + expected + ". Read it again.");
+					"The program changed since revision " + expected + " (now " + revision +
+						"). Read it again.");
 			}
-			JsonElement current = currentValue(program, op, target);
-			if (requireCurrent != null && !current.equals(requireCurrent)) {
+			current[0] = currentValue(program, op, target);
+			if (requireCurrent != null && !current[0].equals(requireCurrent)) {
 				throw new RpcException(ErrorCode.CONFLICT,
 					"The value changed after this edit was made; nothing was reverted.");
 			}
+			validate(op, newValue);
 			shown[0] = displayValue(program, op, target);
-			applyValue(program, op, target, newValue);
-			shown[1] = displayValue(program, op, target);
-			return current;
-		});
+		};
+		Workspace.Written<JsonElement> written =
+			services.workspace().write(programId, describe(op), precheck, program -> {
+				applyValue(program, op, target, newValue);
+				shown[1] = displayValue(program, op, target);
+				return current[0];
+			});
 		JournalEntry entry = new JournalEntry(JournalEntry.newId(), JournalEntry.now(), ctx.actor(),
-			op, programId, expected, handle.revision(), target, before, newValue, revertOf,
-			summary(op, target, shown[0], shown[1], revertOf));
+			op, programId, written.revisionBefore(), written.revisionAfter(), target,
+			written.value(), newValue, revertOf, summary(op, target, shown[0], shown[1], revertOf));
+		append(services, entry);
+		JsonObject out = new JsonObject();
+		out.addProperty("revision", written.revisionAfter());
+		out.addProperty("entryId", entry.id());
+		return out;
+	}
+
+	/** Appends a journal entry for a change that has already been applied. */
+	static void append(EngineServices services, JournalEntry entry) throws RpcException {
 		try {
 			services.journal().append(entry);
 		}
@@ -123,10 +139,18 @@ final class EditOps {
 			throw new RpcException(ErrorCode.ENGINE_ERROR,
 				"The change was applied, but Opcodex couldn't record it in history.");
 		}
-		JsonObject out = new JsonObject();
-		out.addProperty("revision", handle.revision());
-		out.addProperty("entryId", entry.id());
-		return out;
+	}
+
+	private static void validate(String op, JsonElement value) throws RpcException {
+		if (!op.equals(RENAME) || value == null || value.isJsonNull()) {
+			return;
+		}
+		try {
+			SymbolUtilities.validateName(value.getAsString());
+		}
+		catch (InvalidInputException e) {
+			throw new RpcException(ErrorCode.INVALID_PARAMS, "Invalid name: " + e.getMessage());
+		}
 	}
 
 	private static String summary(String op, JsonObject target, String before, String after,

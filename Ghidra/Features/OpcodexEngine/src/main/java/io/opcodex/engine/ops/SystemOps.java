@@ -91,7 +91,8 @@ final class SystemOps {
 					ApprovalPolicy mode = ApprovalPolicy.fromWire(params.get("mode").getAsString())
 							.orElseThrow();
 					JsonObject out = new JsonObject();
-					out.addProperty("challenge", CHALLENGES.request(mode));
+					out.addProperty("challenge",
+						CHALLENGES.request(mode, services.workspace().opcodexDataDir()));
 					out.addProperty("expiresInSec", PolicyChallenges.LIFETIME.toSeconds());
 					out.addProperty("project", services.workspace().projectName());
 					return out;
@@ -101,7 +102,7 @@ final class SystemOps {
 				OperationClass.READ, confirmSchema(), Schemas.any("Policy."), (ctx, params) -> {
 					services.policy();
 					ApprovalPolicy mode = CHALLENGES.confirm(params.get("challenge").getAsString(),
-						params.get("typed").getAsString())
+						params.get("typed").getAsString(), services.workspace().opcodexDataDir())
 							.orElseThrow(() -> new RpcException(ErrorCode.FORBIDDEN,
 								"The code didn't match or has expired. Run `opcodex policy set` again."));
 					services.setPolicy(mode);

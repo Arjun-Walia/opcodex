@@ -47,7 +47,10 @@ fn e2e_import_list_decompile() {
     assert!(String::from_utf8_lossy(&out.stdout).contains("0x2a"));
 
     let history = json_out(&opcodex(&dir, &["--format", "json", "history.list", "--program-id", &program_id]));
-    assert!(history["items"].as_array().unwrap().is_empty());
+    let items = history["items"].as_array().unwrap();
+    let ops: Vec<&str> = items.iter().map(|e| e["op"].as_str().unwrap()).collect();
+    assert_eq!(vec!["program.analyze", "program.import"], ops);
+    assert!(items.iter().all(|e| e["actor"] == "cli"));
 }
 
 #[test]

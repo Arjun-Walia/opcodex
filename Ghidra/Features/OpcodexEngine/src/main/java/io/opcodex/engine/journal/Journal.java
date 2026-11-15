@@ -65,6 +65,14 @@ public final class Journal {
 		return out;
 	}
 
+	/** The highest revision journaled for a program, or 0 if none. */
+	public long maxRevision(String programId) throws IOException {
+		return newestFirst(e -> e.programId().equals(programId)).stream()
+				.mapToLong(e -> Math.max(e.revisionBefore(), e.revisionAfter()))
+				.max()
+				.orElse(0);
+	}
+
 	public Optional<JournalEntry> find(String id) throws IOException {
 		return newestFirst(e -> e.id().equals(id)).stream().findFirst();
 	}

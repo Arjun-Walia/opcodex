@@ -15,7 +15,7 @@ public final class PolicyChallenges {
 
 	public static final Duration LIFETIME = Duration.ofSeconds(60);
 
-	private record Pending(String code, ApprovalPolicy mode, Instant expires) {
+	private record Pending(String code, ApprovalPolicy mode, Instant expires, Object project) {
 	}
 
 	private final SecureRandom random = new SecureRandom();
@@ -28,13 +28,24 @@ public final class PolicyChallenges {
 
 	/** Starts a change; replaces any earlier pending one. Returns the six-digit code. */
 	public synchronized String request(ApprovalPolicy mode) {
+		return request(mode, null);
+	}
+
+	/** Starts a change for one project; confirming it for another project fails. */
+	public synchronized String request(ApprovalPolicy mode, Object project) {
 		String code = String.format("%06d", random.nextInt(1_000_000));
-		pending = new Pending(code, mode, clock.instant().plus(LIFETIME));
+		pending = new Pending(code, mode, clock.instant().plus(LIFETIME), project);
 		return code;
 	}
 
 	/** Consumes the pending change; returns its mode only if the typed code matches in time. */
 	public synchronized Optional<ApprovalPolicy> confirm(String challenge, String typed) {
+		return confirm(challenge, typed, null);
+	}
+
+	/** As {@link #confirm(String, String)}, and the change must be for {@code project}. */
+	public synchronized Optional<ApprovalPolicy> confirm(String challenge, String typed,
+			Object project) {
 		Pending current = pending;
 		pending = null;
 		if (current == null || challenge == null || typed == null) {
@@ -43,7 +54,8 @@ public final class PolicyChallenges {
 		boolean sameChallenge = equal(current.code(), challenge);
 		boolean typedCorrectly = equal(current.code(), typed.strip());
 		boolean inTime = !clock.instant().isAfter(current.expires());
-		return sameChallenge && typedCorrectly && inTime ? Optional.of(current.mode())
+		boolean sameProject = java.util.Objects.equals(current.project(), project);
+		return sameChallenge && typedCorrectly && inTime && sameProject ? Optional.of(current.mode())
 				: Optional.empty();
 	}
 

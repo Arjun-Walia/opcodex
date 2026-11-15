@@ -12,6 +12,8 @@ import ghidra.program.model.listing.Program;
 import io.opcodex.engine.catalog.*;
 import io.opcodex.engine.rpc.ErrorCode;
 import io.opcodex.engine.rpc.RpcException;
+import io.opcodex.engine.session.CallContext;
+import io.opcodex.engine.session.Credential;
 import io.opcodex.engine.spi.EngineServices;
 import io.opcodex.engine.workspace.ProgramHandle;
 
@@ -32,15 +34,16 @@ final class ProjectOps {
 			new Operation("project.create",
 				"Creates a new, empty project. Refuses to replace an existing project.",
 				OperationClass.READ, location, projectResult, (ctx, params) -> {
-					Path dir = directory(params);
+					Path dir = directory(ctx, params);
 					String name = Params.requireString(params, "name");
-					services.workspace().create(dir, name);
+					services.workspace().create(dir, name, ctx.kind() == Credential.Kind.DESKTOP);
 					return projectId(name);
 				}),
 			new Operation("project.open", "Opens an existing project.", OperationClass.READ,
 				location, projectResult, (ctx, params) -> {
 					String name = Params.requireString(params, "name");
-					services.workspace().open(directory(params), name);
+					services.workspace().open(directory(ctx, params), name,
+						ctx.kind() == Credential.Kind.DESKTOP);
 					return projectId(name);
 				}),
 			new Operation("project.close", "Closes the open project and its programs.",
@@ -94,8 +97,9 @@ final class ProjectOps {
 		return out;
 	}
 
-	private static Path directory(JsonObject params) throws RpcException {
+	private static Path directory(CallContext ctx, JsonObject params) throws RpcException {
 		String dir = Params.requireString(params, "dir");
+		Params.requireLocalPath(ctx, "dir", dir);
 		Path path = Path.of(dir);
 		if (!path.isAbsolute()) {
 			throw new RpcException(ErrorCode.INVALID_PARAMS, "dir must be an absolute path.");
