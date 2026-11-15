@@ -102,6 +102,36 @@ class ReleaseTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'invalid pinned Eclipse extension'):
                 package()
 
+    def test_cli_is_packaged_in_support_with_its_checksum(self):
+        cli = self.directory / 'opcodex-cli-binary'
+        cli.write_bytes(b'cli payload')
+        result = package_release(self.archive(), self.directory / 'output', 'linux_x86_64',
+                                 self.repository, 'a' * 40, cli=cli)
+        with ZipFile(result) as archive:
+            prefix = result.stem + '/'
+            self.assertEqual(archive.read(prefix + 'support/opcodex'), b'cli payload')
+            self.assertEqual((archive.getinfo(prefix + 'support/opcodex').external_attr >> 16) & 0o777,
+                             0o755)
+            manifest = json.loads(archive.read(prefix + 'opcodex-release.json'))
+            self.assertEqual(manifest['cliSha256'], digest(cli))
+
+    def test_windows_cli_is_named_exe(self):
+        self.entries.pop('engine/Ghidra/Features/Decompiler/os/linux_x86_64/decompile')
+        self.entries.pop('engine/support/launch.sh')
+        self.entries['engine/Ghidra/Features/Decompiler/os/win_x86_64/decompile.exe'] = b'native'
+        self.entries['engine/support/launch.bat'] = b'launch'
+        cli = self.directory / 'opcodex.exe'
+        cli.write_bytes(b'windows cli')
+        result = package_release(self.archive(), self.directory / 'output', 'win_x86_64',
+                                 self.repository, 'a' * 40, cli=cli)
+        with ZipFile(result) as archive:
+            self.assertEqual(archive.read(result.stem + '/support/opcodex.exe'), b'windows cli')
+
+    def test_missing_cli_binary_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'Missing release overlay'):
+            package_release(self.archive(), self.directory / 'output', 'linux_x86_64',
+                            self.repository, 'a' * 40, cli=self.directory / 'absent')
+
     def test_rejects_incorrect_platform_instead_of_mislabelling_native_binaries(self):
         with self.assertRaisesRegex(ValueError, 'missing a required distribution file'):
             self.package('win_x86_64')

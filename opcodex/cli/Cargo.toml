@@ -1,0 +1,24 @@
+# Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
+[package]
+name = "opcodex"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Opcodex command line and MCP server: every engine operation from a terminal or an agent."
+publish = false
+
+[[bin]]
+name = "opcodex"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.104"
+getrandom = "0.3.4"
+dirs = "7.0.0"
+serde_json = { version = "1.0.154", features = ["preserve_order"] }
+toml = "1.1.8"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

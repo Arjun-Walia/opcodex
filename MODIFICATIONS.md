@@ -230,3 +230,7 @@ The SSH GDB launcher incorporates the upstream GP-7332 correction for escaping t
 Native theme ZIP import validates entry counts, uncompressed sizes and icon destinations before extraction. Theme names are checked before creating a settings file. This protects the theme import path. Extension extraction and shared-server TLS still require their own security review.
 
 The BSim query tests generate two x86 functions and keep the existing query assertions. Surface colors initialize on first use so headless resource loading can complete without re-entering theme initialization.
+
+## Engine host, CLI and MCP (milestone 1 of the new front end)
+
+The engine host is a new module, `Ghidra/Features/OpcodexEngine`. It uses the existing headless application, project, loader, auto-analysis, decompiler, listing and symbol APIs, and changes no upstream file. The `opcodex` CLI and MCP server are a new Rust crate in `opcodex/cli`. Both carry the Opcodex Apache-2.0 header. See `docs/superpowers/specs/2026-11-15-opcodex-new-front-end-design.md`.
