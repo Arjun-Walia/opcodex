@@ -98,6 +98,7 @@ public final class Dispatcher {
 			}
 			CallContext ctx = new CallContext(credential.kind(), actor, services);
 			JsonObject paramObject = params.getAsJsonObject();
+			SchemaValidator.validate(op.paramsSchema(), paramObject);
 			gate.check(ctx, op, paramObject);
 			JsonElement result = op.handler().handle(ctx, paramObject);
 			JsonObject response = base(id);
