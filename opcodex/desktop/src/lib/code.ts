@@ -34,6 +34,8 @@ export function toLines(tokens: DecompileToken[]): DecompileToken[][] {
       lines[lines.length - 1].push(token);
     }
   }
-  while (lines.length > 1 && lines[0].length === 0) lines.shift();
+  const blank = (line: DecompileToken[]) => line.every((t) => t.text.trim() === '');
+  while (lines.length > 1 && blank(lines[0])) lines.shift();
+  while (lines.length > 1 && blank(lines[lines.length - 1])) lines.pop();
   return lines;
 }

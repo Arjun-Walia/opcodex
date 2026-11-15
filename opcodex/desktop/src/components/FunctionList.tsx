@@ -4,9 +4,9 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { Search } from 'lucide-react';
 import { call } from '../engine/client';
 import type { FunctionSummary, Page } from '../engine/types';
+import { usePrefs } from '../state/prefs';
 import { useSession } from '../state/session';
 
-const ROW = 30;
 const MAX_LOADED = 50_000;
 
 function isDefaultName(name: string): boolean {
@@ -15,6 +15,7 @@ function isDefaultName(name: string): boolean {
 
 export function FunctionList() {
   const session = useSession();
+  const ROW = usePrefs().layout.density === 'compact' ? 24 : 30;
   const [functions, setFunctions] = useState<FunctionSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');

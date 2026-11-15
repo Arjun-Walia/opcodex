@@ -22,6 +22,18 @@ describe('decompiler tokens', () => {
     expect(lines[1][1].text).toBe('return');
   });
 
+  it('drops blank lines at the start and end', () => {
+    const lines = toLines([
+      { text: '\n', kind: 'break' },
+      { text: '\n  ', kind: 'break' },
+      { text: 'int', kind: 'type' },
+      { text: '\n', kind: 'break' },
+      { text: '\n    ', kind: 'break' },
+    ]);
+    expect(lines).toHaveLength(1);
+    expect(lines[0].map((t) => t.text).join('')).toBe('  int');
+  });
+
   it('colours keywords, numbers and strings by their text', () => {
     expect(classify({ text: 'return', kind: 'syntax' })).toBe('keyword');
     expect(classify({ text: 'while', kind: 'op' })).toBe('keyword');

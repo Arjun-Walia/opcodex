@@ -11,11 +11,11 @@ interface Props {
   onHome: () => void;
   onOpenProgram: () => void;
   onOpenProject: () => void;
-  onToggleTheme: () => void;
+  onSettings: () => void;
   onAgent: () => void;
 }
 
-export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, onToggleTheme, onAgent }: Props) {
+export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, onSettings, onAgent }: Props) {
   const session = useSession();
   const [query, setQuery] = useState('');
   const [matches, setMatches] = useState<FunctionSummary[]>([]);
@@ -79,13 +79,13 @@ export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, 
                 <Gauge size={15} /> Overview <span className="hint">Alt 1</span>
               </Command.Item>
               <Command.Item onSelect={() => run(() => session.setTab('decompile'))}>
-                <Braces size={15} /> Decompiled C <span className="hint">Alt 2</span>
+                <Braces size={15} /> Code <span className="hint">Alt 2</span>
               </Command.Item>
               <Command.Item onSelect={() => run(() => session.setTab('disassembly'))}>
-                <Binary size={15} /> Disassembly <span className="hint">Alt 3</span>
+                <Binary size={15} /> Assembly <span className="hint">Alt 3</span>
               </Command.Item>
               <Command.Item onSelect={() => run(() => session.setTab('hex'))}>
-                <Hash size={15} /> Hex <span className="hint">Alt 4</span>
+                <Hash size={15} /> Bytes <span className="hint">Alt 4</span>
               </Command.Item>
             </Command.Group>
           )}
@@ -99,8 +99,8 @@ export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, 
             <Command.Item onSelect={() => run(onHome)}>
               <House size={15} /> Go home
             </Command.Item>
-            <Command.Item onSelect={() => run(onToggleTheme)}>
-              <Moon size={15} /> Switch theme
+            <Command.Item onSelect={() => run(onSettings)}>
+              <Moon size={15} /> Themes and layout <span className="hint">Ctrl ,</span>
             </Command.Item>
             <Command.Item onSelect={() => run(onAgent)}>
               <Bot size={15} /> Connect an agent

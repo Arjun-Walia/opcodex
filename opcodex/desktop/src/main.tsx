@@ -6,6 +6,7 @@ import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/500.css';
 import './styles/tokens.css';
 import './styles/app.css';
+import './styles/experience.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(
