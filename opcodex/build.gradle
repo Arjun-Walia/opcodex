@@ -58,6 +58,15 @@ tasks.register('buildOpcodexLinuxInstaller', Exec) {
     }
 }
 
+// The native Opcodex app (Tauri): interface, engine supervision and terminal.
+def opcodexNpm = System.getProperty('os.name').startsWith('Windows') ? 'npm.cmd' : 'npm'
+def buildOpcodexDesktopShell = tasks.register('buildOpcodexDesktopShell', Exec) {
+    group = 'distribution'
+    description = 'Build the native Opcodex app (Tauri) with its bundled interface.'
+    workingDir file('opcodex/desktop')
+    commandLine opcodexNpm, 'run', 'tauri', '--', 'build'
+}
+
 // Native Windows app image and current-user shortcuts; portable ZIP builds remain unchanged.
 ['buildOpcodexDesktop': false, 'installOpcodexDesktop': true,
  'buildOpcodexInstaller': false].each { taskName, install ->
@@ -65,7 +74,7 @@ tasks.register('buildOpcodexLinuxInstaller', Exec) {
         group = 'distribution'
         description = install ? 'Build and install the native Opcodex desktop app.' :
             'Build the native Opcodex Windows app image with its runtime.'
-        dependsOn tasks.named('buildOpcodex')
+        dependsOn tasks.named('buildOpcodex'), buildOpcodexDesktopShell
         doFirst {
             if (!System.getProperty('os.name').startsWith('Windows')) {
                 throw new GradleException('Native desktop installation currently supports Windows.')
@@ -74,7 +83,8 @@ tasks.register('buildOpcodexLinuxInstaller', Exec) {
             file('Ghidra/application.properties').withInputStream { product.load(it) }
             def archive = file("build/releases/opcodex_${product.getProperty('opcodex.version')}_win_x86_64.zip")
             def args = ['pwsh', '-NoProfile', '-File', file('opcodex/build-desktop.ps1'),
-                '-PackagePath', archive, '-BuildJavaHome', System.getProperty('java.home')]
+                '-PackagePath', archive, '-BuildJavaHome', System.getProperty('java.home'),
+                '-DesktopShellPath', file('opcodex/desktop/src-tauri/target/release/opcodex-desktop.exe')]
             if (install) {
                 args += '-Install'
             }

@@ -5,6 +5,7 @@ param(
     [string]$BuildJavaHome = $env:JAVA_HOME,
     [switch]$Install,
     [switch]$Installer,
+    [string]$DesktopShellPath = (Join-Path (Split-Path -Parent $PSScriptRoot) 'opcodex/desktop/src-tauri/target/release/opcodex-desktop.exe'),
     [string]$WixDirectory = $env:OPCODEX_WIX_HOME
 )
 $ErrorActionPreference = 'Stop'
@@ -114,6 +115,16 @@ if (-not (Test-Path -LiteralPath $opcodexCli)) { throw 'The package is missing t
 if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'runtime/bin/java.exe') -PathType Leaf)) {
     throw 'Native app image is missing the bundled Java command required by the Opcodex CLI.'
 }
+# The native Opcodex app replaces the Java launcher. It starts the engine from runtime/ and app/.
+$opcodexShell = $DesktopShellPath
+if (-not (Test-Path -LiteralPath $opcodexShell -PathType Leaf)) {
+    throw 'The native Opcodex app was not built. Run the buildOpcodexDesktopShell Gradle task first.'
+}
+Copy-Item -LiteralPath $opcodexShell -Destination (Join-Path $opcodexImage 'Opcodex.exe') -Force
+$opcodexShellHash = (Get-FileHash -LiteralPath $opcodexShell -Algorithm SHA256).Hash.ToLowerInvariant()
+$opcodexImageRecord = Get-Content -LiteralPath $opcodexRecordPath -Raw | ConvertFrom-Json
+$opcodexImageRecord | Add-Member -NotePropertyName desktopShellSha256 -NotePropertyValue $opcodexShellHash -Force
+$opcodexImageRecord | ConvertTo-Json | Set-Content -LiteralPath $opcodexRecordPath -Encoding utf8NoBOM
 
 if ($Installer) {
     $opcodexInstallerConfig = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'windows-installer.json') -Raw | ConvertFrom-Json
