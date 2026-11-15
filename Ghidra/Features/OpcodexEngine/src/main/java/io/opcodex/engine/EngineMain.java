@@ -13,6 +13,8 @@ import java.util.concurrent.CountDownLatch;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import ghidra.GhidraApplicationLayout;
+import ghidra.GhidraLaunchable;
 import io.opcodex.engine.rpc.LineTransport;
 import io.opcodex.engine.rpc.TcpServer;
 import io.opcodex.engine.session.Credential;
@@ -28,11 +30,13 @@ import io.opcodex.engine.session.SessionFiles;
  * the desktop credential.</li>
  * </ul>
  */
-public final class EngineMain {
+public final class EngineMain implements GhidraLaunchable {
 
 	private static final SecureRandom RANDOM = new SecureRandom();
 
-	private EngineMain() {
+	@Override
+	public void launch(GhidraApplicationLayout layout, String[] args) throws Exception {
+		main(args);
 	}
 
 	public static void main(String[] args) throws Exception {

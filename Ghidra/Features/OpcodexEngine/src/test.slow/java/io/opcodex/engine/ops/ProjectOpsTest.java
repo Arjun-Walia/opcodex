@@ -11,7 +11,9 @@ import org.junit.*;
 import com.google.gson.*;
 
 import ghidra.test.AbstractGhidraHeadlessIntegrationTest;
+import ghidra.GhidraLaunchable;
 import io.opcodex.engine.EngineHarness;
+import io.opcodex.engine.EngineMain;
 
 public class ProjectOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 
@@ -50,6 +52,11 @@ public class ProjectOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 		assertEquals("Opcodex", info.get("product").getAsString());
 		assertEquals("12.1.4", info.get("engineVersion").getAsString());
 		assertEquals("1.0", info.get("apiVersion").getAsString());
+	}
+
+	@Test
+	public void packagedEngineIsLaunchableByTheModuleLoader() throws Exception {
+		assertTrue(EngineMain.class.getConstructor().newInstance() instanceof GhidraLaunchable);
 	}
 
 	@Test
