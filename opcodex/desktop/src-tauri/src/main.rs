@@ -21,10 +21,6 @@ struct Shell {
 
 const AGENT_IDS: [&str; 7] = ["claude-code", "claude-desktop", "cursor", "vscode", "windsurf", "gemini", "codex"];
 
-fn exe_dir() -> PathBuf {
-    std::env::current_exe().ok().and_then(|p| p.parent().map(PathBuf::from)).unwrap_or_default()
-}
-
 fn engine_command() -> Result<Vec<String>, String> {
     let exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let env = std::env::var("OPCODEX_ENGINE_CMD").ok();
@@ -47,14 +43,28 @@ fn engine_command() -> Result<Vec<String>, String> {
 
 /// The opcodex CLI shipped with this app (or the checkout's build during development).
 fn cli_path() -> Option<PathBuf> {
+    let exe = std::env::current_exe().ok()?;
+    let dev = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../cli/target/release");
+    find_cli(&exe, std::env::var_os("OPCODEX_CLI").map(PathBuf::from), Some(dev))
+}
+
+/// Finds the CLI for the app at `exe`. Windows names are case-insensitive, so the app's own
+/// folder can hold `Opcodex.exe` where `opcodex.exe` is looked for: never return the app itself.
+fn find_cli(exe: &std::path::Path, configured: Option<PathBuf>, dev_dir: Option<PathBuf>) -> Option<PathBuf> {
     let name = if cfg!(windows) { "opcodex.exe" } else { "opcodex" };
+    let dir = exe.parent()?;
+    let itself = std::fs::canonicalize(exe).ok();
     let candidates = [
-        std::env::var_os("OPCODEX_CLI").map(PathBuf::from),
-        Some(exe_dir().join(name)),
-        Some(exe_dir().join("app").join("support").join(name)),
-        Some(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../cli/target/release").join(name)),
+        configured,
+        Some(dir.join("app").join("support").join(name)),
+        Some(dir.join(name)),
+        dev_dir.map(|d| d.join(name)),
     ];
-    candidates.into_iter().flatten().find(|p| p.is_file())
+    candidates
+        .into_iter()
+        .flatten()
+        .filter(|p| p.is_file())
+        .find(|p| itself.is_none() || std::fs::canonicalize(p).ok() != itself)
 }
 
 fn error(message: impl Into<String>, code: &str) -> Value {
@@ -186,4 +196,25 @@ fn main() {
             drop(engine);
         }
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cli_lookup_skips_the_app_itself_when_names_differ_only_in_case() {
+        let root = std::env::temp_dir().join(format!("opcodex-cli-lookup-{}", std::process::id()));
+        let support = root.join("app").join("support");
+        std::fs::create_dir_all(&support).unwrap();
+        let app = root.join("Opcodex.exe");
+        std::fs::write(&app, b"app").unwrap();
+        let cli = support.join("opcodex.exe");
+        std::fs::write(&cli, b"cli").unwrap();
+
+        let found = find_cli(&app, None, None).unwrap();
+
+        assert_eq!(std::fs::read(&found).unwrap(), b"cli");
+        std::fs::remove_dir_all(&root).unwrap();
+    }
 }
