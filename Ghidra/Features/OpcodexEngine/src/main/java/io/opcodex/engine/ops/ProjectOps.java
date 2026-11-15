@@ -48,6 +48,26 @@ final class ProjectOps {
 					services.workspace().close();
 					return new JsonObject();
 				}),
+			new Operation("program.info",
+				"Opens a program if needed and shows its name, language and current revision. " +
+					"Writes need the revision.",
+				OperationClass.READ, FunctionOps.programParam(), Schemas.any("Program."),
+				(ctx, params) -> {
+					ProgramHandle handle =
+						services.workspace().get(Params.requireString(params, "programId"));
+					Program program = handle.program();
+					JsonObject out = new JsonObject();
+					out.addProperty("programId", handle.id());
+					out.addProperty("name", program.getDomainFile().getName());
+					out.addProperty("path", program.getDomainFile().getPathname());
+					out.addProperty("language", program.getLanguageID().getIdAsString());
+					out.addProperty("compiler",
+						program.getCompilerSpec().getCompilerSpecID().getIdAsString());
+					out.addProperty("revision", handle.revision());
+					out.addProperty("functionCount",
+						program.getFunctionManager().getFunctionCount());
+					return out;
+				}),
 			new Operation("program.list",
 				"Lists the programs in the open project. Open programs include their language " +
 					"and revision.",

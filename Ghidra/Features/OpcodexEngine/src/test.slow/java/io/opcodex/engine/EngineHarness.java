@@ -25,7 +25,12 @@ public final class EngineHarness implements AutoCloseable {
 	private int nextId = 1;
 
 	public EngineHarness() throws Exception {
-		projectsDir = Files.createTempDirectory("opcodex-engine-test");
+		this(Files.createTempDirectory("opcodex-engine-test"));
+	}
+
+	/** An engine that works in an existing projects folder, for restart tests. */
+	public EngineHarness(Path projectsDir) throws Exception {
+		this.projectsDir = projectsDir;
 		core = EngineCore.start(Map.of(DESKTOP, new Credential(Credential.Kind.DESKTOP, DESKTOP),
 			CLIENT, new Credential(Credential.Kind.CLIENT, CLIENT)));
 	}
@@ -108,6 +113,13 @@ public final class EngineHarness implements AutoCloseable {
 			params("name", "ret42.bin", "bytesBase64", Base64.getEncoder().encodeToString(RETURN_42),
 				"language", "x86:LE:64:default", "compiler", "gcc")).getAsJsonObject();
 		return imported.get("programId").getAsString();
+	}
+
+	/** Current revision of a program, as a client would read it before a write. */
+	public long revision(String programId) {
+		return desktop("program.info", params("programId", programId)).getAsJsonObject()
+				.get("revision")
+				.getAsLong();
 	}
 
 	/**
