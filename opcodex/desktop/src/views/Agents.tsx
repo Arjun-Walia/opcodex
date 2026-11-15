@@ -1,8 +1,9 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 // The agent harness: which agent apps can drive Opcodex, what they may change, what they did.
 import { useEffect, useState } from 'react';
-import { Bot, Check, Copy, Loader2, Plug, PlugZap, RefreshCw, ShieldCheck, Undo2, Wrench } from 'lucide-react';
+import { Bot, Check, Copy, Loader2, Plug, PlugZap, RefreshCw, ShieldCheck, SquareTerminal, Undo2, Wrench } from 'lucide-react';
 import { call, EngineError } from '../engine/client';
+import { openTerminal } from '../components/TerminalPanel';
 import type { HistoryEntry, Page } from '../engine/types';
 import { useEngine, useSession } from '../state/session';
 
@@ -28,6 +29,9 @@ const APP_NAMES: Record<string, string> = {
   windsurf: 'Windsurf',
   gemini: 'Gemini CLI',
 };
+
+/** Agents that run in a terminal, and the command that starts them. */
+const TERMINAL_AGENTS: Record<string, string> = { 'claude-code': 'claude', codex: 'codex', gemini: 'gemini' };
 
 const POLICIES = [
   { id: 'ask', label: 'Ask first', text: 'Agents can read everything. Changes wait for you.' },
@@ -68,6 +72,17 @@ function AppRow({ app, onChanged }: { app: AgentApp; onChanged: () => void }) {
         <span className={`agent-status ${connected ? 'ok' : ''}`}>{status}</span>
         {error && <span className="agent-error">{error}</span>}
       </div>
+      {app.installed && connected && TERMINAL_AGENTS[app.id] && (
+        <button
+          type="button"
+          className="icon-button"
+          aria-label={`Open ${APP_NAMES[app.id]} in a terminal`}
+          title={`Open ${APP_NAMES[app.id]} in a terminal`}
+          onClick={() => openTerminal({ title: APP_NAMES[app.id], command: TERMINAL_AGENTS[app.id] })}
+        >
+          <SquareTerminal size={15} />
+        </button>
+      )}
       {app.installed && (
         <button type="button" className={`button ${connected ? 'ghost' : 'primary'}`} disabled={busy} onClick={toggle}>
           {busy && <Loader2 size={14} className="spin" />}

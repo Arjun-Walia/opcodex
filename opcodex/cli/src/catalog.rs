@@ -114,6 +114,32 @@ pub fn parse_params(op: &Value, args: &[String]) -> Result<Value> {
     Ok(Value::Object(params))
 }
 
+/// Takes `--format X`, `--output-format X` and `--json` out of an operation's arguments, so
+/// output flags work after the operation name too. An operation with its own `format`
+/// parameter keeps `--format`.
+pub fn take_output_flags(op: &Value, args: &[String]) -> (Option<String>, Vec<String>) {
+    let own_format = op["params"]["properties"].get("format").is_some();
+    let mut format = None;
+    let mut rest = Vec::new();
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--json" => format = Some("json".to_string()),
+            "--output-format" if i + 1 < args.len() => {
+                format = Some(args[i + 1].clone());
+                i += 1;
+            }
+            "--format" if !own_format && i + 1 < args.len() => {
+                format = Some(args[i + 1].clone());
+                i += 1;
+            }
+            _ => rest.push(args[i].clone()),
+        }
+        i += 1;
+    }
+    (format, rest)
+}
+
 /// Help text for one operation.
 pub fn help(op: &Value) -> String {
     let mut out = format!(

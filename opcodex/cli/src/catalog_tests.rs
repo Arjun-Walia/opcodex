@@ -66,3 +66,22 @@ fn kebab_and_camel_convert_both_ways() {
     assert_eq!(camel_from_kebab("expected-revision"), "expectedRevision");
     assert_eq!(kebab_from_camel("bytesBase64"), "bytes-base64");
 }
+
+#[test]
+fn output_flags_after_the_operation_are_taken_as_global() {
+    let (format, rest) = take_output_flags(&rename_op(), &args(&["--program-id", "p", "--format", "text", "--new-name", "x"]));
+    assert_eq!(Some("text".to_string()), format);
+    assert_eq!(args(&["--program-id", "p", "--new-name", "x"]), rest);
+    let (json, rest) = take_output_flags(&rename_op(), &args(&["--json"]));
+    assert_eq!(Some("json".to_string()), json);
+    assert!(rest.is_empty());
+}
+
+#[test]
+fn an_operation_with_its_own_format_parameter_keeps_it() {
+    let op = serde_json::json!({"name": "report.write", "params": {"type": "object",
+        "properties": {"format": {"type": "string"}}}});
+    let (format, rest) = take_output_flags(&op, &args(&["--format", "md"]));
+    assert_eq!(None, format);
+    assert_eq!(args(&["--format", "md"]), rest);
+}

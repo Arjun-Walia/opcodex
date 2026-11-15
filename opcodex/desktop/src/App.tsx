@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { pickPath } from './engine/client';
 import { CommandPalette } from './components/CommandPalette';
 import { DropTarget } from './components/DropTarget';
+import { TerminalPanel } from './components/TerminalPanel';
 import { Frame, type Screen } from './components/Frame';
 import { ActivityView, AgentSheet } from './components/Overlays';
 import { splitProjectPath } from './lib/recent';
@@ -20,6 +21,7 @@ function Shell() {
   const [screen, setScreen] = useState<Screen>('home');
   const [palette, setPalette] = useState(false);
   const [agent, setAgent] = useState(false);
+  const [terminal, setTerminal] = useState(false);
 
   useEffect(() => {
     if (session.programId && !session.activity) setScreen('workspace');
@@ -36,6 +38,9 @@ function Shell() {
       if (mod && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setPalette((p) => !p);
+      } else if (e.ctrlKey && e.key === '`') {
+        e.preventDefault();
+        setTerminal((t) => !t);
       } else if (mod && e.key === ',') {
         e.preventDefault();
         setScreen('settings');
@@ -51,6 +56,12 @@ function Shell() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [session]);
+
+  useEffect(() => {
+    const show = () => setTerminal(true);
+    window.addEventListener('opcodex:terminal', show);
+    return () => window.removeEventListener('opcodex:terminal', show);
+  }, []);
 
   async function openProgram() {
     setScreen('home');
@@ -83,8 +94,17 @@ function Shell() {
 
   return (
     <>
-      <Frame screen={shown} onNavigate={setScreen} onPalette={() => setPalette(true)}>
-        {content}
+      <Frame
+        screen={shown}
+        onNavigate={setScreen}
+        onPalette={() => setPalette(true)}
+        terminalOpen={terminal}
+        onTerminal={() => setTerminal((t) => !t)}
+      >
+        <div className="main-stack">
+          <div className="main-content">{content}</div>
+          <TerminalPanel open={terminal} onClose={() => setTerminal(false)} />
+        </div>
       </Frame>
       {palette && (
         <CommandPalette
