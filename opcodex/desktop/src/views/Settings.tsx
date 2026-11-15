@@ -1,6 +1,8 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import { useRef, useState, type ChangeEvent } from 'react';
-import { Check, Download, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import { Bot, Check, Download, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import { Logo } from '../components/Logo';
+import { useEngine } from '../state/session';
 import { LayoutPreview, ThemePreview } from '../components/Previews';
 import { LAYOUT_PRESETS, type Layout } from '../layout/layouts';
 import { usePrefs } from '../state/prefs';
@@ -49,8 +51,23 @@ function Switch({ label, checked, onChange }: { label: string; checked: boolean;
   );
 }
 
-export function Settings() {
+const SHORTCUTS: [string, string[]][] = [
+  ['Search functions and commands', ['Ctrl', 'K']],
+  ['Settings', ['Ctrl', ',']],
+  ['Overview', ['Alt', '1']],
+  ['Code', ['Alt', '2']],
+  ['Assembly', ['Alt', '3']],
+  ['Bytes', ['Alt', '4']],
+  ['Strings', ['Alt', '5']],
+  ['Back', ['Alt', '←']],
+  ['Forward', ['Alt', '→']],
+  ['Close a dialog', ['Esc']],
+];
+
+export function Settings({ onOpenAgents }: { onOpenAgents: () => void }) {
   const prefs = usePrefs();
+  const engine = useEngine<{ product: string; edition: string; engineVersion: string; apiVersion: string }>('engine.info', {}, []);
+  const projectsDir = useEngine<string>('__desktop.defaultProjectsDir', {}, []);
   const [editing, setEditing] = useState<Theme | null>(null);
   const [notice, setNotice] = useState<string>();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -165,6 +182,31 @@ export function Settings() {
         <section className="settings-section">
           <div className="settings-head">
             <div>
+              <h2>Code</h2>
+              <p>How decompiled code and assembly read.</p>
+            </div>
+          </div>
+          <div className="custom-layout">
+            <Switch label="Line numbers" checked={prefs.lineNumbers} onChange={prefs.setLineNumbers} />
+            <Switch label="Wrap long lines" checked={prefs.wrapCode} onChange={prefs.setWrapCode} />
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <div className="settings-head">
+            <div>
+              <h2>Agents and privacy</h2>
+              <p>Analysis runs on this computer. Opcodex sends nothing anywhere unless you connect a cloud model yourself.</p>
+            </div>
+            <button type="button" className="button" onClick={onOpenAgents}>
+              <Bot size={14} /> Open Agents
+            </button>
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <div className="settings-head">
+            <div>
               <h2>Motion and welcome</h2>
               <p>Animations are short and subtle. Turn them off if you prefer stillness.</p>
             </div>
@@ -177,6 +219,54 @@ export function Settings() {
                 Show again
               </button>
             </label>
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <div className="settings-head">
+            <div>
+              <h2>Keyboard shortcuts</h2>
+            </div>
+          </div>
+          <div className="shortcuts">
+            {SHORTCUTS.map(([label, keys]) => (
+              <div className="shortcut" key={label}>
+                <span>{label}</span>
+                <span>{keys.map((k) => <kbd key={k}>{k}</kbd>)}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <div className="settings-head">
+            <div>
+              <h2>Engine and files</h2>
+            </div>
+          </div>
+          <dl className="kv wide">
+            <dt>Edition</dt>
+            <dd>{engine.data ? `Opcodex ${engine.data.edition === 'community' ? 'Community' : engine.data.edition}` : '…'}</dd>
+            <dt>Analysis engine</dt>
+            <dd>{engine.data?.engineVersion ?? (engine.error ? 'Not running' : '…')}</dd>
+            <dt>Engine API</dt>
+            <dd>{engine.data?.apiVersion ?? '…'}</dd>
+            <dt>New projects go to</dt>
+            <dd className="mono">{projectsDir.data ?? '…'}</dd>
+          </dl>
+        </section>
+
+        <section className="settings-section">
+          <div className="about">
+            <Logo size={56} surface={prefs.theme.kind} />
+            <div>
+              <h3>Opcodex Community</h3>
+              <p>Free and open source under the Apache License 2.0. opcodex.xyz</p>
+              <p>
+                Built on Ghidra {engine.data?.engineVersion ?? '12.1.4'}. Opcodex is an independent modified distribution and is
+                not endorsed by the National Security Agency or the Ghidra project.
+              </p>
+            </div>
           </div>
         </section>
       </div>

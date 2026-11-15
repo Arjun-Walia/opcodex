@@ -1,9 +1,11 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import type { ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, House, LayoutGrid, Search, Settings } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bot, House, LayoutGrid, Search, Settings } from 'lucide-react';
+import { usePrefs } from '../state/prefs';
 import { useSession } from '../state/session';
+import { Logo } from './Logo';
 
-export type Screen = 'home' | 'workspace' | 'settings';
+export type Screen = 'home' | 'workspace' | 'agents' | 'settings';
 
 interface FrameProps {
   screen: Screen;
@@ -40,6 +42,7 @@ function RailButton(props: {
 
 export function Frame({ screen, onNavigate, onPalette, children }: FrameProps) {
   const session = useSession();
+  const prefs = usePrefs();
   const program = session.programs.find((p) => p.programId === session.programId);
   const busy = !!session.activity;
   const inWorkspace = screen === 'workspace';
@@ -47,9 +50,9 @@ export function Frame({ screen, onNavigate, onPalette, children }: FrameProps) {
   return (
     <div className="frame">
       <nav className="rail" aria-label="Main">
-        <div className="rail-logo" aria-hidden>
-          ox
-        </div>
+        <button type="button" className="rail-logo" aria-label="Opcodex home" onClick={() => onNavigate('home')}>
+          <Logo size={26} surface={prefs.theme.kind} />
+        </button>
         <RailButton label="Home" current={screen === 'home'} onClick={() => onNavigate('home')}>
           <House size={18} />
         </RailButton>
@@ -63,6 +66,9 @@ export function Frame({ screen, onNavigate, onPalette, children }: FrameProps) {
         </RailButton>
         <RailButton label="Search" shortcut="Ctrl K" onClick={onPalette}>
           <Search size={18} />
+        </RailButton>
+        <RailButton label="Agents" current={screen === 'agents'} onClick={() => onNavigate('agents')}>
+          <Bot size={18} />
         </RailButton>
         <div className="rail-spacer" />
         <RailButton label="Settings" shortcut="Ctrl ," current={screen === 'settings'} onClick={() => onNavigate('settings')}>
@@ -93,7 +99,7 @@ export function Frame({ screen, onNavigate, onPalette, children }: FrameProps) {
               )}
             </>
           ) : (
-            <strong>{screen === 'settings' ? 'Settings' : 'Opcodex'}</strong>
+            <strong>{screen === 'settings' ? 'Settings' : screen === 'agents' ? 'Agents' : 'Opcodex'}</strong>
           )}
         </div>
         <button type="button" className="topbar-search" onClick={onPalette}>

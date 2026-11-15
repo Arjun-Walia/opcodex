@@ -4,6 +4,7 @@ import { PanelLeft, PanelRight, X } from 'lucide-react';
 import { DecompileView, DisassemblyView, HexView } from '../components/CodeViews';
 import { FunctionList } from '../components/FunctionList';
 import { Inspector } from '../components/Inspector';
+import { StringsView } from '../components/StringsView';
 import { usePrefs } from '../state/prefs';
 import { useSession, type Tab } from '../state/session';
 import { Overview } from './Overview';
@@ -13,6 +14,7 @@ const TABS: { id: Tab; label: string; key: string }[] = [
   { id: 'decompile', label: 'Code', key: '2' },
   { id: 'disassembly', label: 'Assembly', key: '3' },
   { id: 'hex', label: 'Bytes', key: '4' },
+  { id: 'strings', label: 'Strings', key: '5' },
 ];
 
 function Tabs() {
@@ -127,11 +129,12 @@ export function Workspace() {
             <X size={15} />
           </button>
         </div>
-        <div className="view" role="tabpanel" key={`${session.tab}:${session.location ?? ''}`}>
+        <div className="view" role="tabpanel" key={session.tab === 'strings' ? 'strings' : `${session.tab}:${session.location ?? ''}`}>
           {session.tab === 'overview' && <Overview />}
           {session.tab === 'decompile' && <DecompileView />}
           {session.tab === 'disassembly' && <DisassemblyView />}
           {session.tab === 'hex' && <HexView />}
+          {session.tab === 'strings' && <StringsView />}
         </div>
       </section>
       <div className="slot slot-right">

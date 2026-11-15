@@ -17,6 +17,8 @@ interface Stored {
   layout: Layout;
   onboarded: boolean;
   reduceMotion: boolean;
+  lineNumbers: boolean;
+  wrapCode: boolean;
 }
 
 interface Prefs extends Stored {
@@ -29,6 +31,8 @@ interface Prefs extends Stored {
   finishOnboarding(): void;
   restartOnboarding(): void;
   setReduceMotion(on: boolean): void;
+  setLineNumbers(on: boolean): void;
+  setWrapCode(on: boolean): void;
 }
 
 function load(): Stored {
@@ -39,9 +43,18 @@ function load(): Stored {
       layout: normalizeLayout(raw.layout),
       onboarded: raw.onboarded === true,
       reduceMotion: raw.reduceMotion === true,
+      lineNumbers: raw.lineNumbers !== false,
+      wrapCode: raw.wrapCode === true,
     };
   } catch {
-    return { themeId: DEFAULT_THEME_ID, layout: LAYOUT_PRESETS[0], onboarded: false, reduceMotion: false };
+    return {
+      themeId: DEFAULT_THEME_ID,
+      layout: LAYOUT_PRESETS[0],
+      onboarded: false,
+      reduceMotion: false,
+      lineNumbers: true,
+      wrapCode: false,
+    };
   }
 }
 
@@ -77,6 +90,8 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--code-size', `${layout.codeSize}px`);
     root.dataset.density = layout.density;
     root.dataset.motion = stored.reduceMotion ? 'reduced' : 'full';
+    root.dataset.lineNumbers = stored.lineNumbers ? 'on' : 'off';
+    root.dataset.wrap = stored.wrapCode ? 'on' : 'off';
   }, [stored]);
 
   const value = useMemo<Prefs>(
@@ -105,6 +120,8 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
       finishOnboarding: () => setStored((s) => ({ ...s, onboarded: true })),
       restartOnboarding: () => setStored((s) => ({ ...s, onboarded: false })),
       setReduceMotion: (reduceMotion) => setStored((s) => ({ ...s, reduceMotion })),
+      setLineNumbers: (lineNumbers) => setStored((s) => ({ ...s, lineNumbers })),
+      setWrapCode: (wrapCode) => setStored((s) => ({ ...s, wrapCode })),
     }),
     [stored, themes, theme],
   );

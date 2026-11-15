@@ -75,6 +75,43 @@ function call(engine: Engine, method: string, params: unknown): Promise<string> 
   });
 }
 
+const CLI = process.env.OPCODEX_CLI || 'D:/opcodex/opcodex/cli/target/release/opcodex.exe';
+const AGENT_IDS = new Set(['claude-code', 'claude-desktop', 'cursor', 'vscode', 'windsurf', 'gemini', 'codex']);
+
+function runCli(args: string[]): Promise<{ code: number; stdout: string; stderr: string }> {
+  return new Promise((resolve) => {
+    const child = spawn(CLI, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    let stdout = '';
+    let stderr = '';
+    child.stdout!.on('data', (c) => (stdout += c));
+    child.stderr!.on('data', (c) => (stderr += c));
+    child.on('close', (code) => resolve({ code: code ?? 1, stdout, stderr }));
+    child.on('error', (e) => resolve({ code: 1, stdout, stderr: String(e) }));
+  });
+}
+
+/** Agent app status and registration through the opcodex CLI, as the desktop app does. */
+async function agents(method: string, params: { app?: string }) {
+  if (method === '__desktop.agents.status') {
+    const out = await runCli(['doctor', '--format', 'json']);
+    try {
+      const checks = JSON.parse(out.stdout) as { name: string; detail: unknown }[];
+      return { result: { executable: CLI, apps: checks.find((c) => c.name === 'agents')?.detail ?? [] } };
+    } catch {
+      return { error: { message: out.stderr || 'opcodex doctor failed.', data: { code: 'ENGINE_ERROR' } } };
+    }
+  }
+  const app = params.app ?? '';
+  if (!AGENT_IDS.has(app)) return { error: { message: 'Unknown agent app.', data: { code: 'INVALID_PARAMS' } } };
+  const args = method === '__desktop.agents.connect'
+    ? ['setup', '--only', app, '--yes']
+    : ['setup', '--uninstall', '--only', app, '--yes'];
+  const out = await runCli(args);
+  return out.code === 0
+    ? { result: { output: out.stdout.trim() } }
+    : { error: { message: (out.stderr || out.stdout).trim(), data: { code: 'ENGINE_ERROR' } } };
+}
+
 export function engineBridge(): Plugin {
   let engine: Promise<Engine> | null = null;
   return {
@@ -95,6 +132,11 @@ export function engineBridge(): Plugin {
             if (method === '__desktop.defaultProjectsDir') {
               res.setHeader('content-type', 'application/json');
               res.end(JSON.stringify({ result: join(homedir(), 'Documents', 'Opcodex Projects') }));
+              return;
+            }
+            if (method.startsWith('__desktop.agents.')) {
+              res.setHeader('content-type', 'application/json');
+              res.end(JSON.stringify(await agents(method, params ?? {})));
               return;
             }
             engine ??= startEngine();

@@ -1,12 +1,14 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import { useEffect, useState } from 'react';
-import { isDesktopApp, pickPath } from './engine/client';
+import { pickPath } from './engine/client';
 import { CommandPalette } from './components/CommandPalette';
+import { DropTarget } from './components/DropTarget';
 import { Frame, type Screen } from './components/Frame';
 import { ActivityView, AgentSheet } from './components/Overlays';
 import { splitProjectPath } from './lib/recent';
 import { PrefsProvider, usePrefs } from './state/prefs';
 import { SessionProvider, useSession, type Tab } from './state/session';
+import { Agents } from './views/Agents';
 import { Home } from './views/Home';
 import { Settings } from './views/Settings';
 import { Welcome } from './views/Welcome';
@@ -18,7 +20,6 @@ function Shell() {
   const [screen, setScreen] = useState<Screen>('home');
   const [palette, setPalette] = useState(false);
   const [agent, setAgent] = useState(false);
-  const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
     if (session.programId && !session.activity) setScreen('workspace');
@@ -29,7 +30,7 @@ function Shell() {
   }, [session.project, screen]);
 
   useEffect(() => {
-    const tabs: Record<string, Tab> = { '1': 'overview', '2': 'decompile', '3': 'disassembly', '4': 'hex' };
+    const tabs: Record<string, Tab> = { '1': 'overview', '2': 'decompile', '3': 'disassembly', '4': 'hex', '5': 'strings' };
     function onKey(e: KeyboardEvent) {
       const mod = e.ctrlKey || e.metaKey;
       if (mod && e.key.toLowerCase() === 'k') {
@@ -49,31 +50,6 @@ function Shell() {
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [session]);
-
-  // Files dropped onto the window (the app gives real paths; browsers don't).
-  useEffect(() => {
-    if (!isDesktopApp()) return;
-    let unlisten: (() => void) | undefined;
-    import('@tauri-apps/api/webview').then(({ getCurrentWebview }) =>
-      getCurrentWebview()
-        .onDragDropEvent((event) => {
-          const { type } = event.payload;
-          if (type === 'over' || type === 'enter') setDragging(true);
-          else if (type === 'leave') setDragging(false);
-          else if (type === 'drop') {
-            setDragging(false);
-            const path = event.payload.paths[0];
-            if (!path) return;
-            if (/\.gpr$/i.test(path)) {
-              const { dir, name } = splitProjectPath(path);
-              session.openProject(dir, name);
-            } else session.openBinary(path);
-          }
-        })
-        .then((fn) => (unlisten = fn)),
-    );
-    return () => unlisten?.();
   }, [session]);
 
   async function openProgram() {
@@ -98,9 +74,10 @@ function Shell() {
 
   let content: JSX.Element;
   if (session.activity) content = <ActivityView key="activity" />;
-  else if (screen === 'settings') content = <Settings key="settings" />;
+  else if (screen === 'settings') content = <Settings key="settings" onOpenAgents={() => setScreen('agents')} />;
+  else if (screen === 'agents') content = <Agents key="agents" />;
   else if (screen === 'workspace' && session.project) content = <Workspace key="workspace" />;
-  else content = <Home key="home" onConnectAgent={() => setAgent(true)} />;
+  else content = <Home key="home" onConnectAgent={() => setScreen('agents')} />;
 
   const shown: Screen = screen === 'workspace' && !session.project ? 'home' : screen;
 
@@ -116,11 +93,11 @@ function Shell() {
           onOpenProgram={openProgram}
           onOpenProject={openProject}
           onSettings={() => setScreen('settings')}
-          onAgent={() => setAgent(true)}
+          onAgent={() => setScreen('agents')}
         />
       )}
       {agent && <AgentSheet onClose={() => setAgent(false)} />}
-      {dragging && <div className="drop-overlay">Drop to open</div>}
+      <DropTarget onOpened={() => setScreen('home')} />
     </>
   );
 }

@@ -87,6 +87,9 @@ export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, 
               <Command.Item onSelect={() => run(() => session.setTab('hex'))}>
                 <Hash size={15} /> Bytes <span className="hint">Alt 4</span>
               </Command.Item>
+              <Command.Item onSelect={() => run(() => session.setTab('strings'))}>
+                <Hash size={15} /> Strings <span className="hint">Alt 5</span>
+              </Command.Item>
             </Command.Group>
           )}
           <Command.Group heading="Actions">
@@ -103,7 +106,7 @@ export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, 
               <Moon size={15} /> Themes and layout <span className="hint">Ctrl ,</span>
             </Command.Item>
             <Command.Item onSelect={() => run(onAgent)}>
-              <Bot size={15} /> Connect an agent
+              <Bot size={15} /> Agents: connect apps and permissions
             </Command.Item>
           </Command.Group>
         </Command.List>
