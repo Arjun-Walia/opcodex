@@ -110,6 +110,20 @@ public final class EngineHarness implements AutoCloseable {
 		return imported.get("programId").getAsString();
 	}
 
+	/**
+	 * Saves a builder-made program into the open project and hands it to the workspace.
+	 * Returns its program id.
+	 */
+	public String adopt(ghidra.program.model.listing.Program program) throws Exception {
+		var workspace = core.services().workspace();
+		var file = workspace.project()
+				.getProjectData()
+				.getRootFolder()
+				.createFile(program.getName(), program, ghidra.util.task.TaskMonitor.DUMMY);
+		program.addConsumer(workspace);
+		return workspace.register(program, file).id();
+	}
+
 	@Override
 	public void close() {
 		core.close();

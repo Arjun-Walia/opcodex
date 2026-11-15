@@ -2,12 +2,14 @@
 package io.opcodex.engine.workspace;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 import ghidra.framework.model.DomainFile;
 import ghidra.program.model.listing.Program;
+import ghidra.util.Msg;
 
 /** An open program with its own single writer thread, so edits never interleave. */
 public final class ProgramHandle {
@@ -15,6 +17,7 @@ public final class ProgramHandle {
 	private final String id;
 	private final Program program;
 	private final ExecutorService writer;
+	private final Map<Class<?>, AutoCloseable> attachments = new ConcurrentHashMap<>();
 
 	ProgramHandle(String id, Program program) {
 		this.id = id;
@@ -45,11 +48,25 @@ public final class ProgramHandle {
 		return program.getModificationNumber();
 	}
 
+	/** Returns the per-program helper of this type, creating it once. Closed with the program. */
+	public <T extends AutoCloseable> T attachment(Class<T> type, Supplier<T> factory) {
+		return type.cast(attachments.computeIfAbsent(type, k -> factory.get()));
+	}
+
 	ExecutorService writer() {
 		return writer;
 	}
 
 	void shutdown() {
 		writer.shutdownNow();
+		for (AutoCloseable attachment : attachments.values()) {
+			try {
+				attachment.close();
+			}
+			catch (Exception e) {
+				Msg.warn(this, "Could not close " + attachment.getClass().getSimpleName(), e);
+			}
+		}
+		attachments.clear();
 	}
 }
