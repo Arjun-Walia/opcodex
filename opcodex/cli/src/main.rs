@@ -6,6 +6,7 @@
 mod catalog;
 mod client;
 mod format;
+mod mcp;
 
 use anyhow::{anyhow, bail, Result};
 use client::{Client, EngineError};
@@ -84,6 +85,10 @@ fn run() -> Result<()> {
             Ok(())
         }
         "serve" => serve(),
+        "mcp" => {
+            let project = global.project.as_deref().map(project_location).transpose()?;
+            mcp::serve(project)
+        }
         _ => run_operation(&global, &command, args),
     }
 }
