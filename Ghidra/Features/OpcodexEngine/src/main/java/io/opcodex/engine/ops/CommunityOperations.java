@@ -22,6 +22,7 @@ public final class CommunityOperations implements OperationProvider {
 		all.addAll(CodeOps.operations(services));
 		all.addAll(XrefOps.operations(services));
 		all.addAll(StringOps.operations(services));
+		all.addAll(SummaryOps.operations(services));
 		all.addAll(EditOps.operations(services));
 		all.addAll(HistoryOps.operations(services));
 		return all;

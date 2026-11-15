@@ -1,0 +1,10 @@
+{
+  "process-injection": ["VirtualAllocEx", "WriteProcessMemory", "CreateRemoteThread", "CreateRemoteThreadEx", "NtCreateThreadEx", "RtlCreateUserThread", "QueueUserAPC", "NtQueueApcThread", "SetThreadContext", "NtMapViewOfSection", "NtUnmapViewOfSection", "ptrace"],
+  "anti-debug": ["IsDebuggerPresent", "CheckRemoteDebuggerPresent", "NtQueryInformationProcess", "OutputDebugStringA", "OutputDebugStringW", "NtSetInformationThread"],
+  "network": ["WSAStartup", "socket", "connect", "send", "recv", "getaddrinfo", "gethostbyname", "InternetOpenA", "InternetOpenW", "InternetConnectA", "InternetConnectW", "HttpSendRequestA", "HttpSendRequestW", "URLDownloadToFileA", "URLDownloadToFileW", "WinHttpOpen", "WinHttpSendRequest"],
+  "persistence": ["RegSetValueExA", "RegSetValueExW", "RegCreateKeyExA", "RegCreateKeyExW", "CreateServiceA", "CreateServiceW", "SetWindowsHookExA", "SetWindowsHookExW"],
+  "crypto": ["CryptEncrypt", "CryptDecrypt", "CryptAcquireContextA", "CryptAcquireContextW", "BCryptEncrypt", "BCryptDecrypt", "BCryptGenRandom"],
+  "execution": ["CreateProcessA", "CreateProcessW", "ShellExecuteA", "ShellExecuteW", "ShellExecuteExW", "WinExec", "system", "execve", "execl", "popen"],
+  "input-capture": ["GetAsyncKeyState", "GetKeyState", "GetKeyboardState", "RegisterRawInputDevices"],
+  "privilege": ["AdjustTokenPrivileges", "OpenProcessToken", "LookupPrivilegeValueA", "LookupPrivilegeValueW", "ImpersonateLoggedOnUser"]
+}
