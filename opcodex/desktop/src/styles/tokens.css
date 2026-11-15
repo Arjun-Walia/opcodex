@@ -1,0 +1,139 @@
+/* Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0 */
+/* Opcodex design tokens: neutral graphite, one quiet blue for focus and selection,
+   no gradients or glows. Status colours are muted and used only where they mean something. */
+
+:root {
+  --font-ui: 'Inter Variable', 'Segoe UI Variable', system-ui, sans-serif;
+  --font-code: 'JetBrains Mono', 'Cascadia Code', ui-monospace, monospace;
+
+  --text-xs: 11px;
+  --text-sm: 12.5px;
+  --text-md: 13.5px;
+  --text-lg: 15px;
+  --text-xl: 20px;
+  --text-hero: clamp(26px, 1.8vw + 14px, 34px);
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --rail-width: 56px;
+  --sidebar-width: 292px;
+  --inspector-width: 320px;
+  --topbar-height: 48px;
+  --statusbar-height: 26px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+}
+
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-app: #111214;
+  --bg-sunken: #0d0e10;
+  --bg-panel: #16171a;
+  --bg-raised: #1c1d21;
+  --bg-hover: #222328;
+  --bg-active: #2a2b31;
+  --bg-selection: #23262d;
+  --bg-selection-strong: #2c3340;
+
+  --border-subtle: #1f2024;
+  --border: #2a2b30;
+  --border-strong: #3a3b42;
+
+  --text: #ececee;
+  --text-muted: #a1a1aa;
+  --text-faint: #6b6b74;
+  --text-on-accent: #ffffff;
+
+  /* The only accent: a quiet blue for focus, selection and the primary action. */
+  --accent: #5b8def;
+  --accent-strong: #7aa3f5;
+  --accent-soft: rgba(91, 141, 239, 0.12);
+  --agent: var(--text-muted);
+  --agent-soft: var(--bg-raised);
+
+  --ok: #6fbf8e;
+  --warn: #d9b26a;
+  --danger: #e07a7a;
+  --danger-soft: rgba(224, 122, 122, 0.1);
+  --warn-soft: rgba(217, 178, 106, 0.1);
+
+  /* Code: low saturation, readable for hours. */
+  --code-keyword: #c09ad8;
+  --code-type: #8fc3b8;
+  --code-function: #8fb3e8;
+  --code-variable: #d9d9de;
+  --code-param: #d8b98e;
+  --code-number: #d9a386;
+  --code-string: #a8c79a;
+  --code-comment: #6b6b74;
+  --code-op: #a1a1aa;
+  --code-address: #6b6b74;
+  --code-mnemonic: #8fb3e8;
+  --code-register: #d8b98e;
+
+  --shadow-popover: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+  --glow-accent: 0 0 0 2px rgba(91, 141, 239, 0.45);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg-app: #fafafa;
+  --bg-sunken: #f4f4f5;
+  --bg-panel: #ffffff;
+  --bg-raised: #ffffff;
+  --bg-hover: #f4f4f5;
+  --bg-active: #ececee;
+  --bg-selection: #eef2fb;
+  --bg-selection-strong: #dfe7f8;
+
+  --border-subtle: #ececee;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+
+  --text: #18181b;
+  --text-muted: #52525b;
+  --text-faint: #8e8e96;
+  --text-on-accent: #ffffff;
+
+  --accent: #2f6fe0;
+  --accent-strong: #2560c8;
+  --accent-soft: rgba(47, 111, 224, 0.08);
+  --agent: var(--text-muted);
+  --agent-soft: var(--bg-sunken);
+
+  --ok: #3f8f5f;
+  --warn: #9a6b1f;
+  --danger: #b84a4a;
+  --danger-soft: rgba(184, 74, 74, 0.07);
+  --warn-soft: rgba(154, 107, 31, 0.07);
+
+  --code-keyword: #7c4dab;
+  --code-type: #2d7a6d;
+  --code-function: #2f5fb3;
+  --code-variable: #18181b;
+  --code-param: #8a5a1f;
+  --code-number: #a14d24;
+  --code-string: #3f7a35;
+  --code-comment: #8e8e96;
+  --code-op: #52525b;
+  --code-address: #8e8e96;
+  --code-mnemonic: #2f5fb3;
+  --code-register: #8a5a1f;
+
+  --shadow-popover: 0 16px 48px rgba(24, 24, 27, 0.12), 0 0 0 1px var(--border);
+  --glow-accent: 0 0 0 2px rgba(47, 111, 224, 0.35);
+}

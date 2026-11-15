@@ -32,7 +32,10 @@ final class SummaryOps {
 	private static final Map<String, Pattern> STRING_KINDS = new LinkedHashMap<>();
 	static {
 		STRING_KINDS.put("url", Pattern.compile("(?i)\\b(?:https?|ftp|wss?)://[^\\s\"'<>]{3,}"));
-		STRING_KINDS.put("ip", Pattern.compile("\\b(?:\\d{1,3}\\.){3}\\d{1,3}(?::\\d{1,5})?\\b"));
+		// Four octets of 0-255, not part of a longer dotted number or a quoted version attribute.
+		STRING_KINDS.put("ip", Pattern.compile("(?<![\\w.=\"'])" +
+			"(?:(?:25[0-5]|2[0-4]\\d|1?\\d?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1?\\d?\\d)" +
+			"(?::\\d{1,5})?(?![\\w.])"));
 		STRING_KINDS.put("email", Pattern.compile("\\b[\\w.+-]+@[\\w-]+\\.[\\w.-]{2,}\\b"));
 		STRING_KINDS.put("registry",
 			Pattern.compile("(?i)\\b(?:HKEY_[A-Z_]+|HKLM|HKCU|SOFTWARE\\\\[\\w\\\\ ]+)"));
@@ -86,7 +89,7 @@ final class SummaryOps {
 	}
 
 	/** Functions defined in the program itself, without imported (external) functions. */
-	private static int internalFunctionCount(Program program) {
+	static int internalFunctionCount(Program program) {
 		int external = 0;
 		var externals = program.getFunctionManager().getExternalFunctions();
 		while (externals.hasNext()) {

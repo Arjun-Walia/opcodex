@@ -36,6 +36,8 @@ public class SummaryOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 		builder.createEntryPoint("0x1000", "entry");
 		builder.createString("0x1100", "https://opcodex.example/beacon",
 			StandardCharsets.US_ASCII, true, StringDataType.dataType);
+		builder.createString("0x1180", "<assemblyIdentity version=\"10.0.0.0\" name=\"x\"/>",
+			StandardCharsets.US_ASCII, true, StringDataType.dataType);
 		builder.createExternalLibraries("KERNEL32.DLL");
 		builder.createExternalFunction("0x0", "KERNEL32.DLL", "VirtualAllocEx");
 		builder.createExternalFunction("0x0", "KERNEL32.DLL", "GetTickCount");
@@ -79,9 +81,19 @@ public class SummaryOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 			risky.get(0).getAsJsonObject().get("category").getAsString());
 
 		JsonArray notable = s.getAsJsonArray("notableStrings");
+		assertEquals("a version number is not an IP address", 1, notable.size());
 		assertEquals("https://opcodex.example/beacon",
 			notable.get(0).getAsJsonObject().get("value").getAsString());
 		assertEquals("url", notable.get(0).getAsJsonObject().get("kind").getAsString());
+	}
+
+	@Test
+	public void analysisCountsOnlyTheProgramsOwnFunctions() {
+		JsonObject analyzed = engine.desktop("program.analyze", params("programId", programId))
+				.getAsJsonObject();
+		assertEquals(engine.client("program.summary", params("programId", programId))
+				.getAsJsonObject().get("functionCount").getAsInt(),
+			analyzed.get("functionCount").getAsInt());
 	}
 
 	@Test
