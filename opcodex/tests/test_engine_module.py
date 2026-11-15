@@ -1,5 +1,5 @@
 # Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
-"""The engine module must certify every shipped non-Java file, like upstream modules."""
+"""The distribution license scan requires certification for engine sources and resources."""
 
 import unittest
 from pathlib import Path
@@ -14,9 +14,7 @@ def shipped_files():
         if not path.is_file():
             continue
         relative = path.relative_to(MODULE).as_posix()
-        if relative.startswith(("build/", "bin/", "src/test", ".")) or relative in UNCERTIFIED:
-            continue
-        if path.suffix == ".java":
+        if relative.startswith(("build/", "bin/", ".")) or relative in UNCERTIFIED:
             continue
         yield relative
 
@@ -33,7 +31,7 @@ def certified():
 
 class EngineModuleTest(unittest.TestCase):
 
-    def test_engine_module_files_are_certified(self):
+    def test_engine_module_sources_and_resources_are_certified(self):
         entries = certified()
         missing = sorted(set(shipped_files()) - set(entries))
         self.assertEqual([], missing, "add these to certification.manifest")
