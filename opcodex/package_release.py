@@ -15,6 +15,11 @@ import tempfile
 from pathlib import Path, PurePosixPath
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
+if __package__:
+    from .stage_eclipse import EXTENSIONS as ECLIPSE_EXTENSIONS
+else:
+    from stage_eclipse import EXTENSIONS as ECLIPSE_EXTENSIONS
+
 ROOT = Path(__file__).resolve().parents[1]
 PLATFORMS = ('linux_x86_64', 'linux_arm_64', 'win_x86_64', 'mac_x86_64', 'mac_arm_64')
 
@@ -52,7 +57,8 @@ def checked_members(archive: ZipFile) -> tuple[str, list[ZipInfo]]:
 
 
 def package_release(source: Path, destination: Path, platform: str,
-                    repository: Path = ROOT, revision: str | None = None) -> Path:
+                    repository: Path = ROOT, revision: str | None = None,
+                    eclipse_dir: Path | None = None, cli: Path | None = None) -> Path:
     if platform not in PLATFORMS:
         raise ValueError(f'Unsupported platform: {platform}')
     upstream = json.loads((repository / 'opcodex/upstream.json').read_text(encoding='utf-8'))
@@ -70,7 +76,7 @@ def package_release(source: Path, destination: Path, platform: str,
                                            cwd=repository, text=True).strip()
     if not re.fullmatch(r'[0-9a-f]{40}', revision):
         raise ValueError('A full source commit is required')
-    name = f'opcodex_{product_version}_ghidra{upstream["version"]}_{platform}'
+    name = f'opcodex_{product_version}_{platform}'
     destination.mkdir(parents=True, exist_ok=True)
     target = destination / f'{name}.zip'
     manifest = {
@@ -89,6 +95,18 @@ def package_release(source: Path, destination: Path, platform: str,
         'opcodexRun.bat': repository / 'opcodexRun.bat',
         'support/opcodex.ico': repository / 'opcodex/branding/opcodex.ico',
     }
+    if eclipse_dir is not None:
+        for extension_name, checksum in ECLIPSE_EXTENSIONS.items():
+            extension = eclipse_dir / extension_name
+            if not extension.is_file() or digest(extension) != checksum:
+                raise ValueError(f'Missing or invalid pinned Eclipse extension: {extension_name}')
+            additions[f'Extensions/Eclipse/{extension_name}'] = extension
+    if cli is not None:
+        if not cli.is_file():
+            raise ValueError(f'Missing release overlay: {cli.name} (the opcodex CLI)')
+        cli_name = 'support/opcodex.exe' if platform.startswith('win') else 'support/opcodex'
+        additions[cli_name] = cli
+        manifest['cliSha256'] = digest(cli)
     replaced = {name.casefold() for name in additions}
     replaced.update(('ghidrarun', 'ghidrarun.bat', 'opcodex-release.json'))
     with ZipFile(source) as incoming:
@@ -124,12 +142,20 @@ def package_release(source: Path, destination: Path, platform: str,
                     entry = copy.copy(member)
                     entry.filename = f'{name}/{relative}'
                     entry.compress_type = ZIP_DEFLATED
+                    if relative == 'Ghidra/application.properties':
+                        # Source identity must not depend on the build checkout's directory name.
+                        text = incoming.read(member).decode('utf-8')
+                        text = '\n'.join(line for line in text.splitlines()
+                                         if not line.startswith('opcodex.source.revision='))
+                        outgoing.writestr(entry, text + '\n# OPCODEX: verified package source identity.\n'
+                                          + 'opcodex.source.revision=' + revision + '\n')
+                        continue
                     with incoming.open(member) as reader, outgoing.open(entry, 'w') as writer:
                         shutil.copyfileobj(reader, writer)
                 for relative, path in additions.items():
                     entry = ZipInfo(f'{name}/{relative}')
                     entry.create_system = 3
-                    mode = 0o755 if relative == 'opcodexRun' else 0o644
+                    mode = 0o755 if relative in ('opcodexRun', 'support/opcodex') else 0o644
                     entry.external_attr = (stat.S_IFREG | mode) << 16
                     outgoing.writestr(entry, path.read_bytes(), compress_type=ZIP_DEFLATED)
                 outgoing.writestr(f'{name}/opcodex-release.json', json.dumps(manifest, indent=2) + '\n')
@@ -146,8 +172,11 @@ def main() -> None:
     parser.add_argument('--input', required=True, type=Path)
     parser.add_argument('--output-dir', required=True, type=Path)
     parser.add_argument('--platform', required=True, choices=PLATFORMS)
+    parser.add_argument('--eclipse-dir', type=Path)
+    parser.add_argument('--cli', type=Path, help='The built opcodex CLI executable to include.')
     args = parser.parse_args()
-    print(package_release(args.input, args.output_dir, args.platform))
+    print(package_release(args.input, args.output_dir, args.platform, eclipse_dir=args.eclipse_dir,
+                          cli=args.cli))
 
 
 if __name__ == '__main__':

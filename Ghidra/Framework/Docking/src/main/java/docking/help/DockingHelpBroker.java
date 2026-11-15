@@ -45,11 +45,10 @@ import resources.Icons;
  */
 public class DockingHelpBroker extends GHelpBroker {
 
-	private static final List<Image> ICONS = ApplicationInformationDisplayFactory.getWindowIcons();
-
 	private HelpModelListener helpModelListener = new HelpIDChangedListener();
 
 	private CalloutRequest callout;
+	private JToolBar decoratedToolbar;
 
 	public DockingHelpBroker(HelpSet hs) {
 		super(hs);
@@ -57,7 +56,8 @@ public class DockingHelpBroker extends GHelpBroker {
 
 	@Override
 	protected List<Image> getApplicationIcons() {
-		return ICONS;
+        // OPCODEX: a help window opened after switching themes must use the current logo.
+		return ApplicationInformationDisplayFactory.getWindowIcons();
 	}
 
 	@Override
@@ -100,6 +100,24 @@ public class DockingHelpBroker extends GHelpBroker {
 
 	@Override
 	protected void installActions(JHelp help) {
+		// OPCODEX: keep navigation beside the document and reserve a usable reading width.
+		if (generic.theme.builtin.OpcodexUi.active()) {
+			javax.swing.SwingUtilities.invokeLater(() -> {
+				java.awt.Window window = SwingUtilities.getWindowAncestor(help);
+				if (window == null) return;
+				java.awt.Rectangle available = window.getGraphicsConfiguration().getBounds();
+				java.awt.Insets insets = java.awt.Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
+				int width = available.width - insets.left - insets.right;
+				int height = available.height - insets.top - insets.bottom;
+				window.setSize(Math.min(width, Math.max(1100, window.getWidth())),
+					Math.min(height, Math.max(700, window.getHeight())));
+				window.setLocation(Math.max(available.x + insets.left,
+					Math.min(window.getX(), available.x + insets.left + width - window.getWidth())),
+					Math.max(available.y + insets.top,
+					Math.min(window.getY(), available.y + insets.top + height - window.getHeight())));
+				layoutNavigation(help);
+			});
+		}
 		JToolBar toolbar = null;
 		Component[] components = help.getComponents();
 		for (Component c : components) {
@@ -114,6 +132,24 @@ public class DockingHelpBroker extends GHelpBroker {
 			return;
 		}
 
+		addHelpActions(toolbar);
+		decoratedToolbar = toolbar;
+		refreshHelpIcons(help);
+		help.addPropertyChangeListener("UI", event -> SwingUtilities.invokeLater(() -> {
+			for (Component child : help.getComponents()) {
+				if (child instanceof JToolBar current && current != decoratedToolbar) {
+					// JavaHelp rebuilds its toolbar on LAF changes; retain zoom and navigation aid.
+					addCustomToolbarItems(help);
+					addHelpActions(current);
+					decoratedToolbar = current;
+				}
+			}
+			refreshHelpIcons(help);
+			if (getCurrentURL() != null) reloadHelpPage(getCurrentURL(), true);
+		}));
+	}
+
+	private void addHelpActions(JToolBar toolbar) {
 		// separate the Java help stuff from our actions
 		toolbar.addSeparator();
 
@@ -135,6 +171,82 @@ public class DockingHelpBroker extends GHelpBroker {
 				}
 			};
 			toolbar.add(new JButton(refreshAction));
+		}
+	}
+
+	private static void refreshHelpIcons(java.awt.Container parent) {
+		boolean modern = generic.theme.builtin.OpcodexUi.active();
+		for (Component child : parent.getComponents()) {
+			if (child instanceof AbstractButton button) {
+				if (button.getParent() instanceof JToolBar) {
+					button.setCursor(modern ? java.awt.Cursor.getPredefinedCursor(button.isEnabled() ?
+						java.awt.Cursor.HAND_CURSOR : java.awt.Cursor.DEFAULT_CURSOR) : null);
+					if (button.getClientProperty("opcodex.help.pointer") == null) {
+						button.putClientProperty("opcodex.help.pointer", true);
+						button.addPropertyChangeListener("enabled", event -> button.setCursor(
+							generic.theme.builtin.OpcodexUi.active() ? java.awt.Cursor.getPredefinedCursor(
+								button.isEnabled() ? java.awt.Cursor.HAND_CURSOR : java.awt.Cursor.DEFAULT_CURSOR) : null));
+					}
+				}
+				String glyph = null;
+				java.util.List<java.util.EventListener> listeners = new java.util.ArrayList<>();
+				java.util.Collections.addAll(listeners, button.getActionListeners());
+				java.util.Collections.addAll(listeners, button.getMouseListeners());
+				for (java.util.EventListener listener : listeners) {
+					glyph = switch (listener.getClass().getName()) {
+						case "javax.help.BackAction" -> "left";
+						case "javax.help.ForwardAction" -> "right";
+						case "javax.help.PrintAction" -> "print";
+						case "javax.help.PrintSetupAction" -> "settings";
+						case "javax.help.FavoritesAction" -> "bookmark";
+						default -> glyph;
+					};
+				}
+				if (glyph != null) {
+					if (button.getClientProperty("opcodex.help.originalIcon") == null) {
+						button.putClientProperty("opcodex.help.originalIcon", button.getIcon());
+						button.putClientProperty("opcodex.help.originalDisabledIcon", button.getDisabledIcon());
+					}
+					Icon icon = modern ? generic.theme.builtin.OpcodexUi.sized(
+						new generic.theme.GIcon("icon.opcodex.glyph." + glyph), 20) :
+						(Icon) button.getClientProperty("opcodex.help.originalIcon");
+					button.setIcon(icon);
+					button.setDisabledIcon(modern ? generic.theme.builtin.OpcodexUi.disabled(icon) :
+						(Icon) button.getClientProperty("opcodex.help.originalDisabledIcon"));
+					button.setCursor(modern ? java.awt.Cursor.getPredefinedCursor(button.isEnabled() ?
+						java.awt.Cursor.HAND_CURSOR : java.awt.Cursor.DEFAULT_CURSOR) : null);
+				}
+			}
+			if (child instanceof JTabbedPane tabs) {
+				for (int i = 0; i < tabs.getTabCount(); i++) {
+					String glyph = switch (tabs.getComponentAt(i)) {
+						case JHelpTOCNavigator navigator -> "book";
+						case JHelpIndexNavigator navigator -> "list";
+						case JHelpSearchNavigator navigator -> "search";
+						case JHelpFavoritesNavigator navigator -> "star";
+						default -> null;
+					};
+					if (glyph == null) continue;
+					String key = "opcodex.help.originalTabIcon." + i;
+					if (tabs.getClientProperty(key) == null) tabs.putClientProperty(key, tabs.getIconAt(i));
+					tabs.setIconAt(i, modern ? new generic.theme.GIcon("icon.opcodex.glyph." + glyph) :
+						(Icon) tabs.getClientProperty(key));
+				}
+			}
+			if (child instanceof java.awt.Container nested) refreshHelpIcons(nested);
+		}
+	}
+
+	private static void layoutNavigation(java.awt.Container parent) {
+		for (Component child : parent.getComponents()) {
+			if (child instanceof JSplitPane split && split.getOrientation() == JSplitPane.HORIZONTAL_SPLIT &&
+				split.getLeftComponent() != null && split.getRightComponent() != null) {
+				split.getLeftComponent().setMinimumSize(new java.awt.Dimension(160, 100));
+				split.getRightComponent().setMinimumSize(new java.awt.Dimension(320, 100));
+				split.setResizeWeight(0);
+				split.setDividerLocation(260);
+			}
+			if (child instanceof java.awt.Container nested) layoutNavigation(nested);
 		}
 	}
 

@@ -84,9 +84,9 @@ public class ThemeUtils {
 	}
 
 	private static boolean shouldCancelSave(ThemeManager themeManager, String name) {
-		if (name.isBlank()) {
+		if (!isValidThemeName(name)) {
 			int result = OptionDialog.showOptionNoCancelDialog(null, "Invalid Theme Name",
-				"The theme name can't be blank!\nDo you want to enter a new name?", "Yes", "Cancel",
+				"Enter a theme name without path separators or reserved characters.", "Yes", "Cancel",
 				OptionDialog.QUESTION_MESSAGE);
 			return result != OptionDialog.OPTION_ONE;
 		}
@@ -109,8 +109,8 @@ public class ThemeUtils {
 		chooser.setTitle("Choose Theme File");
 		chooser.setApproveButtonToolTipText("Select File");
 		chooser.setFileSelectionMode(GhidraFileChooserMode.FILES_ONLY);
-		chooser.setFileFilter(ExtensionFileFilter.forExtensions("Ghidra Theme Files",
-			GTheme.FILE_EXTENSION, GTheme.ZIP_FILE_EXTENSION));
+		chooser.setFileFilter(ExtensionFileFilter.forExtensions("Opcodex and VS Code Theme Files",
+			GTheme.FILE_EXTENSION, GTheme.ZIP_FILE_EXTENSION, "json", "jsonc"));
 
 		File file = chooser.getSelectedFile();
 		chooser.dispose();
@@ -133,7 +133,8 @@ public class ThemeUtils {
 			// by going through the usual save mechanism, only values that differ from defaults
 			// be saved.
 			//
-			GTheme imported = GTheme.loadTheme(themeFile);
+			GTheme imported = VsCodePalette.accepts(themeFile) ? VsCodePalette.read(themeFile)
+					: GTheme.loadTheme(themeFile);
 			themeManager.setTheme(imported);
 			if (!saveThemeChanges(themeManager)) {
 				themeManager.setTheme(startingTheme);
@@ -213,7 +214,7 @@ public class ThemeUtils {
 	}
 
 	public static Boolean canSaveToName(ThemeManager themeManager, String name) {
-		if (name.isBlank()) {
+		if (!isValidThemeName(name)) {
 			return false;
 		}
 		GTheme existing = themeManager.getTheme(name);
@@ -269,6 +270,9 @@ public class ThemeUtils {
 	}
 
 	public static File getSaveFile(String themeName) {
+		if (!isValidThemeName(themeName)) {
+			throw new IllegalArgumentException("Invalid theme name");
+		}
 		File dir = Application.getUserSettingsDirectory();
 		File themeDir = new File(dir, ThemeManager.THEME_DIR);
 		if (!themeDir.exists()) {
@@ -276,5 +280,10 @@ public class ThemeUtils {
 		}
 		String cleanedName = themeName.replaceAll(" ", "_") + "." + GTheme.FILE_EXTENSION;
 		return new File(themeDir, cleanedName);
+	}
+
+	private static boolean isValidThemeName(String name) {
+		return !name.isBlank() && name.chars().noneMatch(c ->
+			Character.isISOControl(c) || "<>:\"/\\|?*".indexOf(c) >= 0);
 	}
 }

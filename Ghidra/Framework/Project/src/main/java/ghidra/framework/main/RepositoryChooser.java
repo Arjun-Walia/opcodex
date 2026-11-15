@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main;
 
+// OPCODEX: product-facing UI wording; compatibility identifiers and help anchors are retained.
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ItemListener;
@@ -196,14 +198,14 @@ class RepositoryChooser extends ReusableDialogComponentProvider {
 			}
 		};
 
-		serverInfoChoice = new GRadioButton("Ghidra Server");
-		serverInfoChoice.getAccessibleContext().setAccessibleName("Ghidra Server");
+		serverInfoChoice = new GRadioButton("Project Server");
+		serverInfoChoice.getAccessibleContext().setAccessibleName("Project Server");
 		serverInfoChoice.setSelected(true);
 		serverInfoChoice.addItemListener(choiceListener);
 		radioButtonPanel.add(serverInfoChoice);
 
-		urlChoice = new GRadioButton("Ghidra URL");
-		urlChoice.getAccessibleContext().setAccessibleName("Ghidra URL");
+		urlChoice = new GRadioButton("Repository URL");
+		urlChoice.getAccessibleContext().setAccessibleName("Repository URL");
 		urlChoice.addItemListener(choiceListener);
 		radioButtonPanel.add(urlChoice);
 

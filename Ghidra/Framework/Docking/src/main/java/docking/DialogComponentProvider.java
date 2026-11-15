@@ -156,7 +156,9 @@ public class DialogComponentProvider
 			}
 		};
 		mainPanel = new JPanel(new BorderLayout());
-		mainPanel.setBorder(BorderFactory.createEtchedBorder());
+		// OPCODEX: clean dialog spacing without the inherited etched frame.
+		mainPanel.setBorder(generic.theme.builtin.OpcodexUi.quietBorder(
+			BorderFactory.createEtchedBorder(), new java.awt.Insets(12, 16, 12, 16)));
 		rootPanel.add(mainPanel, BorderLayout.CENTER);
 
 		taskScheduler = new TaskScheduler(this);

@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.analysis;
 
+// OPCODEX: Refresh the current code location after analysis without moving the Listing cursor.
+
 import java.util.*;
 
 import docking.ActionContext;
@@ -28,8 +30,10 @@ import ghidra.app.CorePluginPackage;
 import ghidra.app.context.ListingActionContext;
 import ghidra.app.context.ListingContextAction;
 import ghidra.app.events.*;
+import ghidra.app.nav.Navigatable;
 import ghidra.app.plugin.PluginCategoryNames;
 import ghidra.app.services.Analyzer;
+import ghidra.app.services.GoToService;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.model.DomainFile;
 import ghidra.framework.options.OptionType;
@@ -40,8 +44,10 @@ import ghidra.program.model.address.*;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.util.GhidraProgramUtilities;
+import ghidra.program.util.ProgramLocation;
 import ghidra.program.util.ProgramSelection;
 import ghidra.util.HelpLocation;
+import ghidra.util.Swing;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskLauncher;
 
@@ -309,6 +315,10 @@ public class AutoAnalysisPlugin extends Plugin implements AutoAnalysisManagerLis
 
 	@Override
 	public void analysisEnded(AutoAnalysisManager manager, boolean isCancelled) {
+		if (!isCancelled) {
+			Program program = manager.getProgram();
+			Swing.runLater(() -> refreshCurrentCodeLocation(program));
+		}
 		MessageLog log = manager.getMessageLog();
 		if (log.hasMessages()) {
 
@@ -321,6 +331,19 @@ public class AutoAnalysisPlugin extends Plugin implements AutoAnalysisManagerLis
 			MultiLineMessageDialog dialog = new MultiLineMessageDialog("Auto Analysis Summary",
 				shortMessage, detailedMessage, MultiLineMessageDialog.WARNING_MESSAGE, false);//modal?
 			DockingWindowManager.showDialog(null, dialog);
+		}
+	}
+
+	private void refreshCurrentCodeLocation(Program program) {
+		GoToService service = tool.getService(GoToService.class);
+		if (service == null || program == null || program.isClosed()) {
+			return;
+		}
+		Navigatable listing = service.getDefaultNavigatable();
+		ProgramLocation location = listing == null ? null : listing.getLocation();
+		if (location != null && location.getProgram() == program &&
+			program.getFunctionManager().getFunctionContaining(location.getAddress()) != null) {
+			firePluginEvent(new ProgramLocationPluginEvent(getName(), location, program));
 		}
 	}
 

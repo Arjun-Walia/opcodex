@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.strings;
 
+// OPCODEX: usable default strings table viewport with room for column headings.
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.atomic.AtomicReference;
@@ -108,7 +110,7 @@ public class DefinedStringsProvider extends ComponentProviderAdapter {
 
 		threadedTablePanel = new GhidraThreadedTablePanel<>(stringModel, 1000);
 		table = threadedTablePanel.getTable();
-		table.setPreferredScrollableViewportSize(new Dimension(350, 150));
+		table.setPreferredScrollableViewportSize(new Dimension(850, 350));
 		table.getSelectionModel().addListSelectionListener(e -> {
 			if (!e.getValueIsAdjusting()) {
 				notifyContextChanged();

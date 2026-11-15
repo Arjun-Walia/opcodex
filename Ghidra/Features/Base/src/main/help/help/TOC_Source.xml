@@ -1,4 +1,5 @@
 <?xml version='1.0' encoding='ISO-8859-1' ?>
+<!-- OPCODEX: product-facing table-of-contents labels; link targets and anchor IDs retained. -->
 <!-- 
 
 	This is an XML file intended to be parsed by the Ghidra help system.  It is loosely based 
@@ -57,20 +58,20 @@
 			sortgroup="a"
 	        text="Getting Started"
 	        target="help/topics/Intro/Intro.htm#GettingStarted">
-        <tocdef id="Starting Ghidra" sortgroup="c" text="Starting Ghidra"  target="help/topics/Intro/Intro.htm#StartingGhidra" />
+        <tocdef id="Starting Ghidra" sortgroup="c" text="Starting Opcodex"  target="help/topics/Intro/Intro.htm#StartingGhidra" />
         <tocdef id="Error Dialogs" sortgroup="d" text="Error Dialogs" target="help/topics/Intro/Intro.htm#ErrorDialogs" />
         <tocdef id="Overview" sortgroup="e" text="Overview"  target="help/topics/Intro/Intro.htm#OverView" />
         <tocdef id="Docking Windows" sortgroup="f" text="Docking Windows"  target="help/topics/DockingWindows/Docking_Windows.htm" />            
-        <tocdef id="Ghidra Project Window" sortgroup="g" text="Ghidra Project Window"  target="help/topics/FrontEndPlugin/Ghidra_Front_end.htm#Project_Window" /> 
-        <tocdef id="Ghidra Server" sortgroup="h" text="Ghidra Server" target="help/topics/GhidraServer/GhidraServer.htm" />
-        <tocdef id="About Ghidra" sortgroup="i" text="About Ghidra" target="help/topics/About/About_Ghidra.htm" />
+        <tocdef id="Ghidra Project Window" sortgroup="g" text="Opcodex Project Window"  target="help/topics/FrontEndPlugin/Ghidra_Front_end.htm#Project_Window" />
+        <tocdef id="Ghidra Server" sortgroup="h" text="Opcodex Server" target="help/topics/GhidraServer/GhidraServer.htm" />
+        <tocdef id="About Ghidra" sortgroup="i" text="About Opcodex" target="help/topics/About/About_Ghidra.htm" />
 
     </tocdef>
 
 
     <tocdef id="Ghidra Projects" 
 			sortgroup="b"
-	        text="Ghidra Projects" 
+	        text="Opcodex Projects"
 	        target="help/topics/Project/Ghidra_Projects.htm">
         <tocdef id="New Project" sortgroup="a" text="New Project"  target="help/topics/FrontEndPlugin/Creating_a_Project.htm" />
         <tocdef id="Open Project" sortgroup="b" text="Open Project"  target="help/topics/FrontEndPlugin/Opening_a_Ghidra_Project.htm" />
@@ -124,7 +125,7 @@
 
     <tocdef id="Ghidra Functionality" 
 		sortgroup="e"
-        text="Ghidra Functionality"
+        text="Opcodex Functionality"
         target = "help/topics/Intro/GhidraFunctionality.htm">
     	<tocdef id="Code Browser" text="Code Browser" target="help/topics/CodeBrowserPlugin/CodeBrowser.htm" >
         	<tocdef id="Browser Field Formatter" sortgroup="a" text="Browser Field Formatter"  target="help/topics/CodeBrowserPlugin/Browser_Field_Formatter.htm" />
@@ -363,8 +364,8 @@
                 <tocdef id="Add and Remove Script Directories" sortgroup="n" text="Add and Remove Script Directories" target="help/topics/GhidraScriptMgrPlugin/GhidraScriptMgrPlugin.htm#Script_Directories" />
             </tocdef>
             <tocdef id="Console" sortgroup="e" text="Console" target="help/topics/ConsolePlugin/console.html" />
-            <tocdef id="Ghidra Script Development" sortgroup="f" text="Ghidra Script Development" target="help/topics/GhidraScriptMgrPlugin/ScriptDevelopment.htm" />
-            <tocdef id="Ghidra Bundles" sortgroup="g" text="Ghidra Bundles" target="help/topics/BundleManager/BundleManager.htm" />
+            <tocdef id="Ghidra Script Development" sortgroup="f" text="Opcodex Script Development" target="help/topics/GhidraScriptMgrPlugin/ScriptDevelopment.htm" />
+            <tocdef id="Ghidra Bundles" sortgroup="g" text="Opcodex Bundles" target="help/topics/BundleManager/BundleManager.htm" />
         </tocdef>
         
         <tocdef id="Program Validator" 

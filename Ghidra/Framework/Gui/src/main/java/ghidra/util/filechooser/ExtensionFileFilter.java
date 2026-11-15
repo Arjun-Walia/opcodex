@@ -127,4 +127,12 @@ public class ExtensionFileFilter implements GhidraFileFilter {
 		}
 		return fullDescription;
 	}
+
+	/** OPCODEX: Export exact extension patterns without parsing a translated description. */
+	@Override
+	public List<String> getNativePatterns() {
+		if (getClass() != ExtensionFileFilter.class) return List.of();
+		return extensions.isEmpty() ? List.of("*.*") :
+			extensions.stream().map(extension -> "*." + extension).toList();
+	}
 }

@@ -8,3 +8,6 @@ src/global/docs/WhatsNew.md||GHIDRA||||END|
 src/main/resources/UserAgreement.html||GHIDRA||||END|
 src/main/resources/defaultTools/CodeBrowser.tool||GHIDRA||||END|
 src/main/resources/splash.txt||GHIDRA||||END|
+
+# OPCODEX: retain the original stable layout for the single Classic theme.
+src/main/resources/classicTools/CodeBrowser.xml||GHIDRA||||END|

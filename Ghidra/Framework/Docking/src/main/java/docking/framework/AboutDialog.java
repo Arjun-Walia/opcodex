@@ -58,7 +58,9 @@ public class AboutDialog extends DialogComponentProvider {
 	 */
 	private JPanel createMainPanel() {
 		JPanel mainPanel = new JPanel(new BorderLayout());
-		mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+		// OPCODEX: keep the About surface flat and padded like the other product dialogs.
+		mainPanel.setBorder(generic.theme.builtin.OpcodexUi.quietBorder(
+			BorderFactory.createRaisedBevelBorder(), new java.awt.Insets(8, 8, 8, 8)));
 		mainPanel.setBackground(Colors.BACKGROUND);
 		mainPanel.getAccessibleContext().setAccessibleName("About");
 		mainPanel.add(createInfoComponent(), BorderLayout.CENTER);

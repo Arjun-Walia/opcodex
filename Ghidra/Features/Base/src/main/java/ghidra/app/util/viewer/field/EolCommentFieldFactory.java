@@ -96,7 +96,7 @@ public class EolCommentFieldFactory extends FieldFactory {
 
 		fieldOptions.registerOption(MAX_DISPLAY_LINES_KEY, 6, hl,
 			"The maximum number of lines used to display the end-of-line comment.");
-		fieldOptions.registerOption(ENABLE_WORD_WRAP_KEY, false, hl,
+		fieldOptions.registerOption(ENABLE_WORD_WRAP_KEY, true, hl,
 			FieldUtils.WORD_WRAP_OPTION_DESCRIPTION);
 
 		fieldOptions.registerOption(ENABLE_SHOW_SEMICOLON_KEY, false, hl,
@@ -107,7 +107,7 @@ public class EolCommentFieldFactory extends FieldFactory {
 			"Displays the address before each referenced repeatable comment.");
 
 		maxDisplayLines = fieldOptions.getInt(MAX_DISPLAY_LINES_KEY, 6);
-		isWordWrap = fieldOptions.getBoolean(ENABLE_WORD_WRAP_KEY, false);
+		isWordWrap = fieldOptions.getBoolean(ENABLE_WORD_WRAP_KEY, true);
 		repeatableCommentStyle =
 			displayOptions.getInt(OptionsGui.COMMENT_REPEATABLE.getStyleOptionName(), -1);
 		automaticCommentStyle =

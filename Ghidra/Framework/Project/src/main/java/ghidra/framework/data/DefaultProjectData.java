@@ -15,6 +15,8 @@
  */
 package ghidra.framework.data;
 
+// OPCODEX: consistent product wording; retain engine identifiers and integration names.
+
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -353,18 +355,17 @@ public class DefaultProjectData implements ProjectData {
 			throw new LockException(defaultMsg);
 		}
 
-		String projectStr = "Project: " + HTMLUtilities.escapeHTML(locator.getLocation()) +
-			System.getProperty("file.separator") + HTMLUtilities.escapeHTML(locator.getName());
+		String projectStr = "Project: " + HTMLUtilities.escapeHTML(new java.io.File(locator.getLocation(), locator.getName()).getPath());
 		String lockInformation = lock.getExistingLockFileInformation();
 		if (!lock.canForceLock()) {
-			String msg = "<html>Project is locked. You have another instance of Ghidra<br>" +
+			String msg = "<html>Project is locked. You have another instance of Opcodex<br>" +
 				"already running with this project open (locally or remotely).<br><br>" +
 				projectStr + "<br><br>" + "Lock information: " + lockInformation;
 			throw new LockException(msg);
 		}
 
 		int userChoice = OptionDialog.showOptionDialog(null, "Project Locked - Delete Lock?",
-			"<html>Project is locked. You may have another instance of Ghidra<br>" +
+			"<html>Project is locked. You may have another instance of Opcodex<br>" +
 				"already running with this project opened (locally or remotely).<br>" + projectStr +
 				"<br><br>" + "If this is not the case, you can delete the lock file:  <br><b>" +
 				locator.getProjectLockFile().getAbsolutePath() + "</b>.<br><br>" +

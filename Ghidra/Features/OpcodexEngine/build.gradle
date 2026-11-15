@@ -1,0 +1,28 @@
+/* Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0 */
+apply from: "$rootProject.projectDir/gradle/distributableGhidraModule.gradle"
+apply from: "$rootProject.projectDir/gradle/javaProject.gradle"
+apply from: "$rootProject.projectDir/gradle/jacocoProject.gradle"
+apply from: "$rootProject.projectDir/gradle/javaTestProject.gradle"
+apply plugin: 'eclipse'
+
+eclipse.project.name = 'Features OpcodexEngine'
+
+dependencies {
+	api project(':Base')
+	api project(':Decompiler')
+}
+
+// Writes the runtime classpath so the CLI and smoke tests can start the engine host from the
+// development tree: java -cp @build/engine-classpath.txt io.opcodex.engine.EngineMain --tcp
+task printEngineClasspath {
+	dependsOn 'classes'
+	def output = file("${buildDir}/engine-classpath.txt")
+	def argFile = file("${buildDir}/engine.args")
+	outputs.files output, argFile
+	doLast {
+		def path = sourceSets.main.runtimeClasspath.asPath
+		output.text = path
+		// A java @argfile: java @build/engine.args io.opcodex.engine.EngineMain --stdio
+		argFile.text = '-cp\n"' + path.replace('\\', '/') + '"\n'
+	}
+}

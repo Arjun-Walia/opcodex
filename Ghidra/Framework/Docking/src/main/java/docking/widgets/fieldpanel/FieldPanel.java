@@ -15,6 +15,8 @@
  */
 package docking.widgets.fieldpanel;
 
+// OPCODEX: Keep horizontal wheel scrolling in range and available while hovering over a field.
+
 import static docking.widgets.EventTrigger.*;
 
 import java.awt.*;
@@ -1434,18 +1436,16 @@ public class FieldPanel extends JPanel
 		int scrollUnit = firstLayout.getScrollableUnitIncrement(0, 1);
 		int scrollAmount = (int) (preciseWheelRotation * scrollUnit * MOUSEWHEEL_LINES_TO_SCROLL);
 
-		if (hoverHandler.isHoverShowing()) {
+		if (horizontal && horizontalScrollingEnabled) {
+			hoverHandler.stopHover();
+			scrollViewHorizontally(scrollAmount);
+		}
+		else if (hoverHandler.isHoverShowing()) {
 			hoverHandler.scroll(scrollAmount);
 		}
 		else {
 			hoverHandler.stopHover();
-
-			if (horizontal && horizontalScrollingEnabled) {
-				scrollViewHorizontally(scrollAmount);
-			}
-			else {
-				scrollView(scrollAmount);
-			}
+			scrollView(scrollAmount);
 		}
 	}
 
@@ -1459,8 +1459,8 @@ public class FieldPanel extends JPanel
 
 		Point pos = vp.getViewPosition();
 
-		// don't allow new x position to go negative or else you can scroll left past the beginning
-		int x = Math.max(0, pos.x + scrollAmount);
+		int max = Math.max(0, vp.getViewSize().width - vp.getExtentSize().width);
+		int x = Math.clamp((long) pos.x + scrollAmount, 0, max);
 		vp.setViewPosition(new Point(x, pos.y));
 	}
 

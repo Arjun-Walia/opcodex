@@ -15,6 +15,8 @@
  */
 package ghidra.framework.main.projectdata.actions;
 
+// OPCODEX: product-facing UI wording; compatibility identifiers and help anchors are retained.
+
 import java.io.IOException;
 import java.util.List;
 
@@ -105,7 +107,7 @@ public abstract class VersionControlAction extends DomainFileProviderContextActi
 		}
 
 		if (OptionDialog.showYesNoDialog(tool.getToolFrame(), "Lost Connection to Server",
-			"The connection to the Ghidra Server has been lost.\n" +
+			"The connection to the project server has been lost.\n" +
 				"Do you want to reconnect now?") == OptionDialog.OPTION_ONE) {
 			try {
 				repository.connect();

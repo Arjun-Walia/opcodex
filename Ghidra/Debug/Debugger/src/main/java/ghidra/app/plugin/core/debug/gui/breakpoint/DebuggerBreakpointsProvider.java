@@ -1063,6 +1063,14 @@ public class DebuggerBreakpointsProvider extends ComponentProviderAdapter
 		String locationsNamePrefix = "Breakpoint Locations";
 		locationTable.setAccessibleNamePrefix(locationsNamePrefix);
 		locationFilterPanel.setAccessibleNamePrefix(locationsNamePrefix);
+        // OPCODEX: locations have their own match-mode artwork; Classic aliases the original assets.
+        locationFilterPanel.setFilterOptionsIconFactory(options -> options.getFilterStateIcon(
+            new generic.theme.GIcon("icon.debugger.filter.locations." + switch (options.getTextFilterStrategy()) {
+                case CONTAINS -> "contains";
+                case MATCHES_EXACTLY -> "exact";
+                case STARTS_WITH -> "starts";
+                case REGULAR_EXPRESSION -> "regex";
+            })));
 
 		breakpointTable.getSelectionModel().addListSelectionListener(evt -> {
 			List<LogicalBreakpointRow> sel = breakpointFilterPanel.getSelectedItems();

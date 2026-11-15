@@ -27,14 +27,15 @@ import ghidra.framework.plugintool.*;
 import ghidra.framework.plugintool.util.PluginStatus;
 import ghidra.util.HelpLocation;
 
+// OPCODEX: product-facing theme descriptions; plugin identifiers remain compatible.
 //@formatter:off
 @PluginInfo(
 	status = PluginStatus.RELEASED,
 	packageName = UtilityPluginPackage.NAME,
 	category = PluginCategoryNames.FRAMEWORK,
-	shortDescription = "Manages themes for the Ghidra GUI",
-	description = "Adds actions and options to manage Themes within Ghidra. " +
-			"This plugin is available only in the Ghidra Project Window."
+	shortDescription = "Manages themes for the Opcodex interface",
+	description = "Adds actions and options to manage themes within Opcodex. " +
+			"This plugin is available only in the Opcodex Project Window."
 )
 //@formatter:on
 public class ThemeManagerPlugin extends Plugin implements ApplicationLevelOnlyPlugin {

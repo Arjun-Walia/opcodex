@@ -262,20 +262,21 @@ class GhidraScriptActionManager {
 			return (contextObject instanceof GTable) || (contextObject instanceof ResourceFile);
 		};
 
-		new ActionBuilder("Ghidra API Help", plugin.getName()).popupMenuPath("Ghidra API Help")
+		// OPCODEX: name the API reference by purpose; retain its original documentation target.
+		new ActionBuilder("API Reference", plugin.getName()).popupMenuPath("API Reference")
 				.popupMenuIcon(icon)
 				.popupWhen(test)
 				.toolBarIcon(icon)
 				.toolBarGroup(null)
-				.description("Help")
+				.description("Open the scripting and extension API reference.")
 				.helpLocation(new HelpLocation(plugin.getName(), "Help"))
 				.enabledWhen(test)
 				.onAction(context -> showGhidraScriptJavadoc())
 				.buildAndInstallLocal(provider);
 
-		new ActionBuilder("Ghidra API Help", plugin.getName())
+		new ActionBuilder("API Reference", plugin.getName())
 				.menuGroup(ToolConstants.HELP_CONTENTS_MENU_GROUP)
-				.menuPath(ToolConstants.MENU_HELP, "Ghidra API Help")
+				.menuPath(ToolConstants.MENU_HELP, "API Reference")
 				.helpLocation(new HelpLocation("Misc", "Welcome_to_Ghidra_Help"))
 				.inWindow(ActionBuilder.When.ALWAYS)
 				.onAction(context -> showGhidraScriptJavadoc())
@@ -311,7 +312,7 @@ class GhidraScriptActionManager {
 
 		if (SystemUtilities.isInDevelopmentMode()) {
 			Msg.showWarn(GhidraScriptActionManager.this, provider.getComponent(),
-				"Error Unzipping Javadoc File", "Cannot view Ghidra API Help in development mode.");
+				"API Reference Unavailable", "The API reference is available in packaged builds.");
 			return;
 		}
 		File zipFile = new File(Application.getInstallationDirectory().getFile(false),

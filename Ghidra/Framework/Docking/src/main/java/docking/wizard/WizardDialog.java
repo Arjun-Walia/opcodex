@@ -193,6 +193,15 @@ public class WizardDialog extends DialogComponentProvider {
 		HelpService help = Help.getHelpService();
 		help.registerHelp(getComponent(), helpLocation);
 		statusChanged();
+		Component focus = step.getDefaultFocusComponent();
+		setFocusComponent(focus);
+		if (focus != null) {
+			SwingUtilities.invokeLater(() -> {
+				if (getCurrentStep() == step && focus.isShowing()) {
+					focus.requestFocusInWindow();
+				}
+			});
+		}
 	}
 
 	private void createButtons() {

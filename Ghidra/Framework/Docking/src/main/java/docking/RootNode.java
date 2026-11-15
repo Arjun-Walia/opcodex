@@ -45,6 +45,9 @@ class RootNode extends WindowNode {
 	private Node child;
 	private List<DetachedWindowNode> detachedWindows;
 	private JPanel childPanel;
+	// OPCODEX: product navigation is independent of saved provider geometry.
+	private OpcodexWorkspaceRail workspaceRail;
+	private OpcodexWorkspaceWorkflow workflow;
 	private StatusBar statusBar;
 	private SwingWindowWrapper windowWrapper;
 
@@ -83,8 +86,14 @@ class RootNode extends WindowNode {
 		c.setLayout(new BorderLayout());
 
 		childPanel = new JPanel(new BorderLayout());
-		childPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
+		childPanel.setBorder(generic.theme.builtin.OpcodexUi.quietBorder(
+			BorderFactory.createEmptyBorder(3, 0, 0, 0), new Insets(5, 5, 6, 6)));
 		c.add(childPanel, BorderLayout.CENTER);
+		workspaceRail = new OpcodexWorkspaceRail(mgr);
+		workspaceRail.setVisible(false); // Providers are registered after the root is constructed.
+		c.add(workspaceRail, BorderLayout.WEST);
+		workflow = new OpcodexWorkspaceWorkflow(mgr);
+		workflow.setVisible(false);
 
 		if (mgr.hasStatusBar()) {
 			statusBar = new StatusBar();
@@ -199,7 +208,8 @@ class RootNode extends WindowNode {
 		mainWindow.setVisible(state);
 
 		if (state) {
-			WindowUtilities.ensureOnScreen(mainWindow);
+			// OPCODEX: default and restored tool windows must fit the available display.
+            WindowUtilities.ensureEntirelyOnScreen(mainWindow);
 		}
 
 		for (DetachedWindowNode windowNode : detachedWindows) {
@@ -297,6 +307,7 @@ class RootNode extends WindowNode {
 		}
 
 		childPanel.removeAll();
+		childPanel.add(workflow, BorderLayout.NORTH);
 		childPanel.add(comp, BorderLayout.CENTER);
 		childPanel.invalidate();
 		clearContextTypes();
@@ -325,6 +336,8 @@ class RootNode extends WindowNode {
 	 * Updates the component hierarchy for the main frame and all sub-frames.
 	 */
 	void update() {
+		workspaceRail.refresh();
+		workflow.refresh();
 		if (invalid) {
 			clearContextTypes();
 			updateChild();

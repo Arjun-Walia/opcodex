@@ -130,4 +130,9 @@ public class SelectProjectStep extends WizardStep<ProjectWizardData> {
 		return panel;
 	}
 
+	@Override
+	public JComponent getDefaultFocusComponent() {
+		return panel.getLocationFocusField();
+	}
+
 }

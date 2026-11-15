@@ -360,7 +360,7 @@ public class FrontEndTool extends PluginTool implements OptionsChangeListener {
 			"Controls the display of tooltip popup windows.");
 		options.registerOption(ENABLE_COMPRESSED_DATABUFFER_OUTPUT,
 			ENABLE_COMPRESSED_DATABUFFER_OUTPUT_DEFAULT, help,
-			"When enabled data buffers sent to Ghidra Server are compressed (see server " +
+			"When enabled data buffers sent to the project server are compressed (see server " +
 				"configuration for other direction)");
 
 		options.registerOption(BLINKING_CURSORS_OPTION_NAME, true, help,
@@ -491,7 +491,7 @@ public class FrontEndTool extends PluginTool implements OptionsChangeListener {
 		}
 
 		if (OptionDialog.showYesNoDialog(tool.getToolFrame(), "Lost Connection to Server",
-			"The connection to the Ghidra Server has been lost.\n" +
+			"The connection to the project server has been lost.\n" +
 				"Do you want to reconnect now?") == OptionDialog.OPTION_ONE) {
 			try {
 				repository.connect();
@@ -837,7 +837,8 @@ public class FrontEndTool extends PluginTool implements OptionsChangeListener {
 
 		// if this is the first time Ghidra is being run, pop up
 		// the What's New help page
-		String showWhatsNewStribng = Preferences.getProperty(GHIDRA_SHOW_WHATS_NEW, "true");
+		// OPCODEX: new profiles start in the workspace; the existing Help action remains available.
+		String showWhatsNewStribng = Preferences.getProperty(GHIDRA_SHOW_WHATS_NEW, "false");
 		boolean showWhatsNew = Boolean.parseBoolean(showWhatsNewStribng);
 		if (!showWhatsNew) {
 			return;
@@ -904,7 +905,7 @@ public class FrontEndTool extends PluginTool implements OptionsChangeListener {
 		private FileWatcher watcher;
 
 		LogWindow(File logFile) {
-			setTitle("Ghidra User Log");
+			setTitle("Opcodex User Log");
 
 			JFrame toolFrame = getToolFrame();
 			setIconImage(toolFrame.getIconImage());

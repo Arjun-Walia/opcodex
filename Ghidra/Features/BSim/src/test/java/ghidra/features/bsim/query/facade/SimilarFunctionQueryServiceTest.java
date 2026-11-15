@@ -24,19 +24,22 @@ import org.junit.*;
 import ghidra.features.bsim.gui.search.results.BSimMatchResult;
 import ghidra.features.bsim.query.protocol.QueryResponseRecord;
 import ghidra.features.bsim.query.protocol.ResponseNearest;
+import ghidra.program.database.ProgramBuilder;
 import ghidra.program.database.symbol.FunctionSymbol;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.listing.*;
 import ghidra.test.AbstractGhidraHeadlessIntegrationTest;
-import ghidra.test.TestEnv;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 import ghidra.util.task.TaskMonitorAdapter;
 
 public class SimilarFunctionQueryServiceTest extends AbstractGhidraHeadlessIntegrationTest {
 
-	private TestEnv env;
+	private static final String FIRST_FUNCTION = "010018a0";
+	private static final String SECOND_FUNCTION = "0100219c";
+
+	private ProgramBuilder builder;
 	private Program program;
 	SimilarFunctionQueryService queryService;
 
@@ -46,8 +49,13 @@ public class SimilarFunctionQueryServiceTest extends AbstractGhidraHeadlessInteg
 
 	@Before
 	public void setUp() throws Exception {
-		env = new TestEnv();
-		program = env.getProgram("notepad_w2k");
+		builder = new ProgramBuilder("BSim query fixture", ProgramBuilder._X86);
+		// Two cdecl functions return their argument plus one or masked to three bits.
+		builder.setBytes(FIRST_FUNCTION, "8b 44 24 04 83 c0 01 c3", true);
+		builder.setBytes(SECOND_FUNCTION, "8b 44 24 04 83 e0 07 c3", true);
+		assertNotNull(builder.createFunction(FIRST_FUNCTION));
+		assertNotNull(builder.createFunction(SECOND_FUNCTION));
+		program = builder.getProgram();
 	}
 
 	@After
@@ -55,8 +63,9 @@ public class SimilarFunctionQueryServiceTest extends AbstractGhidraHeadlessInteg
 		if (queryService != null) {
 			queryService.dispose();
 		}
-		env.release(program);
-		env.dispose();
+		if (builder != null) {
+			builder.dispose();
+		}
 	}
 
 	@Test
@@ -340,10 +349,10 @@ public class SimilarFunctionQueryServiceTest extends AbstractGhidraHeadlessInteg
 	private Set<FunctionSymbol> createKnownFunctionsSet() {
 		Set<FunctionSymbol> functions = new HashSet<>();
 		FunctionManager functionManager = program.getFunctionManager();
-		Function ghidra = functionManager.getFunctionAt(addr("010018a0"));
-		functions.add((FunctionSymbol) ghidra.getSymbol());
-		Function sscanf = functionManager.getFunctionAt(addr("0100219c"));
-		functions.add((FunctionSymbol) sscanf.getSymbol());
+		Function first = functionManager.getFunctionAt(addr(FIRST_FUNCTION));
+		functions.add((FunctionSymbol) first.getSymbol());
+		Function second = functionManager.getFunctionAt(addr(SECOND_FUNCTION));
+		functions.add((FunctionSymbol) second.getSymbol());
 		return functions;
 	}
 

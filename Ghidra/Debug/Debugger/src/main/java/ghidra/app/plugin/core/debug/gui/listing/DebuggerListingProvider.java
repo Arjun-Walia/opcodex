@@ -296,6 +296,10 @@ public class DebuggerListingProvider extends CodeViewerProvider {
 	private final Color trackingColor = DebuggerResources.COLOR_REGISTER_MARKERS;
 
 	DebuggerCoordinates current = DebuggerCoordinates.NOWHERE;
+	// OPCODEX: explain an empty session without changing trace, target or listing state.
+	private OpcodexDebuggerEmptyState opcodexEmptyState;
+	private final generic.theme.ThemeListener opcodexEmptyTheme = event ->
+		Swing.runIfSwingOrRunLater(this::updateOpcodexEmptyState);
 
 	protected Program markedProgram;
 	protected Address markedAddress;
@@ -414,6 +418,10 @@ public class DebuggerListingProvider extends CodeViewerProvider {
 				}
 			}
 		});
+		opcodexEmptyState = new OpcodexDebuggerEmptyState(tool);
+		((ListingPanelContainer)getComponent()).setEmptyState(opcodexEmptyState);
+		generic.theme.Gui.addThemeListener(opcodexEmptyTheme);
+		updateOpcodexEmptyState();
 	}
 
 	@Override
@@ -987,6 +995,7 @@ public class DebuggerListingProvider extends CodeViewerProvider {
 
 	@Override
 	public void dispose() {
+		generic.theme.Gui.removeThemeListener(opcodexEmptyTheme);
 		super.dispose();
 		removeOldStaticTrackingMarker();
 	}
@@ -1006,6 +1015,7 @@ public class DebuggerListingProvider extends CodeViewerProvider {
 			return;
 		}
 		current = coordinates;
+		updateOpcodexEmptyState();
 		doSetProgram(current.getView());
 		goToTrait.goToCoordinates(coordinates);
 		trackingTrait.goToCoordinates(coordinates);
@@ -1013,6 +1023,13 @@ public class DebuggerListingProvider extends CodeViewerProvider {
 		locationLabel.goToCoordinates(coordinates);
 		updateTitle();
 		contextChanged();
+	}
+
+	private void updateOpcodexEmptyState() {
+		if (opcodexEmptyState != null) {
+			((ListingPanelContainer)getComponent()).showEmptyState(
+				generic.theme.builtin.OpcodexUi.active() && current.getTrace() == null);
+		}
 	}
 
 	public void coordinatesActivated(DebuggerCoordinates coordinates) {

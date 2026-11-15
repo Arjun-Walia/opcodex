@@ -427,7 +427,11 @@ public class ApplicationThemeManager extends ThemeManager {
 	}
 
 	private Collection<DiscoverableGTheme> findDiscoverableThemes() {
-		return ClassSearcher.getInstances(DiscoverableGTheme.class);
+		// OPCODEX: ship two product themes and one original workbench; retain imported themes.
+        return ClassSearcher.getInstances(DiscoverableGTheme.class).stream()
+            .filter(theme -> !theme.getClass().getPackageName().equals("generic.theme.builtin") ||
+                theme instanceof generic.theme.builtin.OpcodexTheme ||
+                theme instanceof generic.theme.builtin.GhidraClassicTheme).toList();
 	}
 
 	private void updateChangedValuesMap(ColorValue currentValue, ColorValue newValue) {

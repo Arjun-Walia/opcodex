@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.progmgr;
 
+// OPCODEX: name the actual undo/redo operation in the menu, consistent with its toolbar tooltip.
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -174,6 +176,7 @@ public abstract class AbstractUndoRedoAction extends MultiActionDockingAction {
 		if (canPerformAction(activeProgram)) {
 			String programName = activeProgram.getDomainFile().getName();
 			String undoRedoDescription = getUndoRedoDescription(activeProgram);
+            menuName = actionName + " " + undoRedoDescription + " (" + programName + ")";
 			String text = actionName + " " +
 				HTMLUtilities.escapeHTML(undoRedoDescription + " (" + programName + ")");
 			description = HTMLUtilities.toWrappedHTML(text);

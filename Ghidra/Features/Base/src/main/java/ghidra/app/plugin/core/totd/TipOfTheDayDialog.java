@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.totd;
 
+// OPCODEX: consistent product wording; retain engine identifiers and integration names.
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.List;
@@ -138,7 +140,7 @@ class TipOfTheDayDialog extends ReusableDialogComponentProvider {
 		}
 		String tip = tips.get(tipIndex);
 		tipArea.setText(tip);
-		tipArea.getAccessibleContext().setAccessibleName("Ghidra Tip of The Day");
+		tipArea.getAccessibleContext().setAccessibleName("Opcodex Tip of The Day");
 		tipArea.getAccessibleContext().setAccessibleDescription(tip);
 	}
 

@@ -26,6 +26,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import generic.theme.GColor;
+import generic.theme.builtin.OpcodexUi;
 import generic.theme.GThemeDefaults.Colors;
 
 public class FileChooserToggleButton extends JToggleButton {
@@ -59,9 +60,10 @@ public class FileChooserToggleButton extends JToggleButton {
 
 	private void initBorder() {
 		setForeground(Colors.BACKGROUND);
-		setOpaque(true);
-		setHorizontalTextPosition(SwingConstants.CENTER);
-		setVerticalTextPosition(SwingConstants.BOTTOM);
+		setOpaque(!OpcodexUi.active());
+		setHorizontalAlignment(OpcodexUi.active() ? LEFT : CENTER);
+		setHorizontalTextPosition(OpcodexUi.active() ? RIGHT : CENTER);
+		setVerticalTextPosition(OpcodexUi.active() ? CENTER : BOTTOM);
 		clearBorder();
 
 		// prevents the WinXP LNF from painting its awkward borders
@@ -76,6 +78,38 @@ public class FileChooserToggleButton extends JToggleButton {
 		addFocusListener(new ButtonFocusListener());
 
 		updateBorderBasedOnState();
+	}
+
+	// OPCODEX: places are readable, left-aligned rows in modern themes, with no bevels.
+	@Override public void updateUI() {
+		super.updateUI();
+		boolean modern = OpcodexUi.active();
+		setOpaque(!modern);
+		setHorizontalAlignment(modern ? LEFT : CENTER);
+		setHorizontalTextPosition(modern ? RIGHT : CENTER);
+		setVerticalTextPosition(modern ? CENTER : BOTTOM);
+		setIconTextGap(modern ? 10 : 4);
+	}
+
+	@Override protected void paintComponent(java.awt.Graphics g) {
+		if (OpcodexUi.active()) {
+			g.setColor(new GColor(isSelected() || getModel().isRollover()
+				? "system.color.bg.selected.view" : "system.color.bg.control"));
+			g.fillRect(0, 0, getWidth(), getHeight());
+		}
+		super.paintComponent(g);
+	}
+
+	@Override protected void paintBorder(java.awt.Graphics g) {
+		if (!OpcodexUi.active()) { super.paintBorder(g); return; }
+		if (isFocusOwner()) {
+			g.setColor(FOCUS_COLOR);
+			g.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 6, 6);
+		}
+	}
+
+	@Override public java.awt.Dimension getPreferredSize() {
+		return OpcodexUi.active() ? new java.awt.Dimension(156, 40) : super.getPreferredSize();
 	}
 
 	@Override
@@ -98,6 +132,8 @@ public class FileChooserToggleButton extends JToggleButton {
 	}
 
 	private void updateBorderBasedOnState() {
+		if (OpcodexUi.active()) setCursor(java.awt.Cursor.getPredefinedCursor(
+			isEnabled() ? java.awt.Cursor.HAND_CURSOR : java.awt.Cursor.DEFAULT_CURSOR));
 		if (!isEnabled()) {
 			return;
 		}

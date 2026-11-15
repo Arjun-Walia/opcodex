@@ -15,11 +15,15 @@
  */
 package docking;
 
+// OPCODEX: Identify text editors in the actual toolbar of the focused tool window.
+
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 
 public abstract class WindowNode extends Node {
 	private JPanel toolBarPanel;
@@ -55,6 +59,11 @@ public abstract class WindowNode extends Node {
 			toolBarPanel.add(new JSeparator(SwingConstants.HORIZONTAL), BorderLayout.SOUTH);
 			rootPane.add(toolBarPanel, BorderLayout.NORTH);
 		}
+	}
+
+	boolean isToolbarTextInput(Component component) {
+		return toolBarPanel != null && component instanceof JTextComponent &&
+			SwingUtilities.isDescendingFrom(component, toolBarPanel);
 	}
 
 	public void setLastFocusedProviderInWindow(ComponentPlaceholder lastFocusedInWindow) {

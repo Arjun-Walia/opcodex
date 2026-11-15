@@ -1,17 +1,8 @@
-<!-- OPCODEX: independent product attribution added; upstream license text retained. -->
+<!-- OPCODEX: concise product About text; complete component terms and attribution are preserved in the distribution's LICENSE, NOTICE and THIRD_PARTY_NOTICES.md. -->
 <HTML>
 <BODY>
-<P>Opcodex is an independent modified distribution built on Ghidra. It is not endorsed by the National Security Agency or the Ghidra project.</P>
-<HR>
-<P>
-Licensed under the Apache License, Version 2.0 (the "License"); Unless required by applicable law or
-agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the 
-specific language governing permissions and limitations under the License.
-</P><BR>
-<P>
-This program also includes third party components which have licenses other than Apache 2.0.  See 
-the LICENSE.txt file for details.
-</P>
+<P>A desktop workbench for reverse engineering.</P>
+<P>Licensed under Apache License 2.0. Additional components retain their own license terms.</P>
+<P>License terms and acknowledgements are included in LICENSE, NOTICE and THIRD_PARTY_NOTICES.md.</P>
 </BODY>
- </HTML>
+</HTML>

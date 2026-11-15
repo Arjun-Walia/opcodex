@@ -28,6 +28,7 @@ import docking.*;
 import docking.action.*;
 import docking.widgets.EmptyBorderButton;
 import generic.theme.GThemeDefaults.Colors;
+import generic.theme.builtin.OpcodexUi;
 import ghidra.util.Swing;
 import resources.ResourceManager;
 
@@ -74,6 +75,11 @@ public class MultipleActionDockingToolbarButton extends EmptyBorderButton {
 
 	@Override
 	protected void paintBorder(Graphics g) {
+		// OPCODEX: preserve the dropdown behavior without inherited bevels or bitmap filtering.
+		if (OpcodexUi.active()) {
+			super.paintBorder(g);
+			return;
+		}
 		Border buttonBorder = getBorder();
 		if (buttonBorder == null) {
 			return;
@@ -89,7 +95,8 @@ public class MultipleActionDockingToolbarButton extends EmptyBorderButton {
 
 	private void initIcons() {
 		Icon newIcon = createImageIcon();
-		disabledIcon = ResourceManager.getDisabledIcon(newIcon);
+		disabledIcon = OpcodexUi.active() ? OpcodexUi.disabled(newIcon) :
+			ResourceManager.getDisabledIcon(newIcon);
 		super.setIcon(newIcon);
 		popupContext = createPopupContext();
 	}

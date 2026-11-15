@@ -32,11 +32,14 @@ public class ListingPanelContainer extends JPanel {
 	private TitledPanel rightTitlePanelPanel;
 	private JComponent leftListingPanel;
 	private JComponent northComponent;
+	// OPCODEX: a view-local empty-state layer never removes the original listing or comparison.
+	private JLayer<JComponent> listingLayer;
 
 	public ListingPanelContainer(JComponent leftListingPanel, boolean isConnected) {
-		this.leftListingPanel = leftListingPanel;
+		listingLayer = new JLayer<>(leftListingPanel);
+		this.leftListingPanel = listingLayer;
 		setLayout(new BorderLayout());
-		add(leftListingPanel);
+		add(listingLayer);
 		setConnnected(isConnected);
 	}
 
@@ -103,5 +106,14 @@ public class ListingPanelContainer extends JPanel {
 
 	public JComponent getNorthPanel() {
 		return northComponent;
+	}
+
+	public void setEmptyState(JPanel emptyState) {
+		listingLayer.setGlassPane(emptyState);
+		emptyState.setVisible(false);
+	}
+
+	public void showEmptyState(boolean visible) {
+		listingLayer.getGlassPane().setVisible(visible);
 	}
 }

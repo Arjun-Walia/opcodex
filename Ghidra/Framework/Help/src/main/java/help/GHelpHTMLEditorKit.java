@@ -271,11 +271,10 @@ public class GHelpHTMLEditorKit extends HTMLEditorKit {
 
 	@Override
 	public void read(Reader in, Document doc, int pos) throws IOException, BadLocationException {
-
-		super.read(in, doc, pos);
-
+		// OPCODEX: establish styles before parsing publishes the document's view structure.
 		HTMLDocument htmlDoc = (HTMLDocument) doc;
 		loadGHelpStyleSheet(htmlDoc);
+		super.read(in, doc, pos);
 	}
 
 	private void loadGHelpStyleSheet(HTMLDocument doc) {
@@ -303,7 +302,17 @@ public class GHelpHTMLEditorKit extends HTMLEditorKit {
 
 		StringBuilder buffy = new StringBuilder();
 		try {
-			List<String> lines = FileUtilities.getLines(url);
+			List<String> lines = new java.util.ArrayList<>(FileUtilities.getLines(url));
+			if (generic.theme.builtin.OpcodexUi.active()) {
+				String accent = new GColor("color.border.button.focused").toHexString();
+				lines.addAll(List.of(
+					"body { font-family:sans-serif; font-size:11pt; margin:16px; }",
+					"p, td, li { font-family:sans-serif; font-size:11pt; }",
+					"h1 { font-family:sans-serif; font-size:22pt; font-style:normal; text-align:left; margin:8px; color:#000080; }",
+					"h2 { font-family:sans-serif; font-size:16pt; font-style:normal; color:#984c4c; }",
+					"h3 { font-family:sans-serif; font-size:13pt; font-style:normal; color:#0000ff; }",
+					"a { color:" + accent + "; }"));
+			}
 			for (String line : lines) {
 
 				StringBuilder lineBuilder = new StringBuilder();

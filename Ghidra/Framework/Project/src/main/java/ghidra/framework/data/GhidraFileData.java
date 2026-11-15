@@ -487,6 +487,8 @@ public class GhidraFileData {
 			}
 
 			name = newName;
+			icon = null;
+			disabledIcon = null;
 			parent.fileRenamed(oldName, newName);
 
 			return parent.getDomainFile(newName);
@@ -950,9 +952,8 @@ public class GhidraFileData {
 		}
 		synchronized (fileSystem) {
 
-			FolderItem item = getFolderItem(DomainFile.DEFAULT_VERSION);
-
-			Icon baseIcon = new TranslateIcon(getBaseIcon(item), 1, 1);
+			Icon glyph = OpcodexProjectFileIcons.decorate(name, getBaseIcon());
+			Icon baseIcon = new TranslateIcon(glyph, 1, 1);
 
 			if (versionedFolderItem != null) {
 				MultiIcon multiIcon = new MultiIcon(VERSION_ICON, disabled);
@@ -1000,7 +1001,7 @@ public class GhidraFileData {
 		return DomainFile.UNSUPPORTED_FILE_ICON;
 	}
 
-	private Icon getBaseIcon(FolderItem item) {
+	private Icon getBaseIcon() {
 		try {
 			return getContentHandler().getIcon();
 		}
@@ -2287,6 +2288,8 @@ public class GhidraFileData {
 
 			parent = newParent;
 			name = newName;
+			icon = null;
+			disabledIcon = null;
 
 			oldParent.fileMoved(newParent, oldName, newName);
 

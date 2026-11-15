@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.navigation;
 
+// OPCODEX: avoid the last-program shortcut collision; retain both commands and configurable bindings.
+
 import java.awt.event.KeyEvent;
 import java.util.function.Consumer;
 
@@ -86,7 +88,7 @@ public class ProviderNavigationPlugin extends Plugin {
 			null, ToolConstants.MENU_NAVIGATION_GROUP_WINDOWS, MenuData.NO_MNEMONIC,
 			"xLowInMenuSubGroup"));
 		previousProviderAction.setKeyBindingData(new KeyBindingData(
-			KeyStroke.getKeyStroke(KeyEvent.VK_F6, DockingUtils.CONTROL_KEY_MODIFIER_MASK)));
+			KeyStroke.getKeyStroke(KeyEvent.VK_F6, DockingUtils.CONTROL_KEY_MODIFIER_MASK | java.awt.event.InputEvent.ALT_DOWN_MASK)));
 		previousProviderAction.setHelpLocation(
 			new HelpLocation("Navigation", "Navigation_Previous_Provider"));
 

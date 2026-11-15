@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.scalartable;
 
+// OPCODEX: size search scope from content so larger fonts do not clip controls.
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 
@@ -76,7 +78,8 @@ public class ScalarSearchDialog extends DialogComponentProvider {
 		addCancelButton();
 
 		// wide enough for the default values in the range fields
-		setPreferredSize(425, 300);
+		setPreferredSize(Math.max(500, mainPanel.getPreferredSize().width + 40),
+            Math.max(380, mainPanel.getPreferredSize().height + 110));
 	}
 
 	public void show() {

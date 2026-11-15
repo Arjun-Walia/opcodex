@@ -161,7 +161,8 @@ public class ListingGraphComponentPanel extends AbstractGraphComponentPanel {
 
 		Border beveledBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED,
 			new GColor("color.border.bevel.highlight"), new GColor("color.border.bevel.shadow"));
-		setBorder(beveledBorder);
+		// OPCODEX: a flat node boundary; preserve vertex content and graph behavior.
+		setBorder(generic.theme.builtin.OpcodexUi.flatBorder(beveledBorder));
 
 		addKeyListener(new FieldPanelKeyListener());
 

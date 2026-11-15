@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.help;
 
+// OPCODEX: Label the engine version in summaries while retaining stored metadata keys.
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
@@ -109,7 +111,9 @@ public class AboutDomainObjectUtils {
 
 		for (String key : metadata.keySet()) {
 			String value = metadata.get(key);
-			addInfo(aboutPanel, key + ":", value);
+			// Keep stored metadata keys compatible with existing projects and scripts.
+			String label = key.equals("Created With Ghidra Version") ? "Created With Engine Version" : key;
+			addInfo(aboutPanel, label + ":", value);
 		}
 
 		if (additionalInfo != null && additionalInfo.length() > 0) {

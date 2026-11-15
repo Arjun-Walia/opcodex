@@ -142,7 +142,8 @@ public class GroupedFunctionGraphComponentPanel extends AbstractGraphComponentPa
 		Border beveledBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED,
 			new GColor("color.border.bevel.highlight"), new GColor("color.border.bevel.shadow"));
 
-		setBorder(beveledBorder);
+		// OPCODEX: a flat group boundary; preserve grouping and user-defined colors.
+		setBorder(generic.theme.builtin.OpcodexUi.flatBorder(beveledBorder));
 
 		createActions();
 		setUserText(userText);

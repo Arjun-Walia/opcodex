@@ -15,6 +15,8 @@
  */
 package ghidra.app.plugin.core.interpreter;
 
+// OPCODEX: Use the display title for visible labels only.
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,12 +135,12 @@ public class InterpreterComponentProvider extends ComponentProviderAdapter
 
 	@Override
 	public String getWindowSubMenuName() {
-		return interpreter.getTitle();
+		return interpreter.getDisplayTitle();
 	}
 
 	@Override
 	public String getTitle() {
-		return interpreter.getTitle();
+		return interpreter.getDisplayTitle();
 	}
 
 	@Override

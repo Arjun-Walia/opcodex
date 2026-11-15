@@ -15,6 +15,8 @@
  */
 package docking.theme.gui;
 
+// OPCODEX: show the complete current theme value ID when reusing the editor.
+
 import java.awt.BorderLayout;
 import java.beans.*;
 
@@ -138,6 +140,7 @@ public abstract class ThemeValueEditor<T> {
 
 		void setValue(ThemeValue<T> value) {
 			originalValue = value;
+            setTitle("Edit " + typeName + ": " + value.getId());
 			editor.removePropertyChangeListener(internalListener);
 			editor.setValue(getRawValue(value.getId()));
 			editor.addPropertyChangeListener(internalListener);
