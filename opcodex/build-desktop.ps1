@@ -5,10 +5,15 @@ param(
     [string]$BuildJavaHome = $env:JAVA_HOME,
     [switch]$Install,
     [switch]$Installer,
+    [string]$DesktopShellPath = (Join-Path (Split-Path -Parent $PSScriptRoot) 'opcodex/desktop/src-tauri/target/release/opcodex-desktop.exe'),
     [string]$WixDirectory = $env:OPCODEX_WIX_HOME
 )
 $ErrorActionPreference = 'Stop'
-if (-not $IsWindows) { throw 'Native desktop installation currently supports Windows.' }
+if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'Native desktop installation currently supports Windows.' }
+# Runs on PowerShell 7 and on the Windows PowerShell 5.1 that ships with Windows.
+function Write-OpcodexText([string]$Path, [string[]]$Lines) {
+    [IO.File]::WriteAllLines($Path, $Lines, [Text.UTF8Encoding]::new($false))
+}
 
 $opcodexArchive = (Resolve-Path -LiteralPath $PackagePath).Path
 $opcodexRepository = Split-Path -Parent $PSScriptRoot
@@ -58,8 +63,10 @@ if ($null -eq $opcodexJpackagePath) { throw 'jpackage.exe is required from the b
 
 if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'Opcodex.exe'))) {
     if (Test-Path -LiteralPath $opcodexImage) { throw 'An incomplete app image already exists; inspect it before rebuilding.' }
+    # A failed earlier run can leave a partial extraction behind; start from an empty folder.
+    if (Test-Path -LiteralPath $opcodexInput) { Remove-Item -LiteralPath $opcodexInput -Recurse -Force }
     New-Item -ItemType Directory -Path $opcodexInput -Force | Out-Null
-    [System.IO.Compression.ZipFile]::ExtractToDirectory($opcodexArchive,$opcodexInput,$true)
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($opcodexArchive,$opcodexInput)
     $opcodexPayload = Join-Path $opcodexInput $opcodexRoots[0]
     # Preserve the runtime's available features, including Java scripting/debugging tools.
     # Hosted Temurin 25 images cannot re-link the build-only jdk.jlink/jdk.jpackage modules.
@@ -92,15 +99,15 @@ if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'Opcodex.exe'))) {
     # the existing module loader selects application and extension dependencies at startup.
     $opcodexConfig = @(Get-Content -LiteralPath $opcodexConfigPath)
     if ($opcodexBootstrap -notin $opcodexConfig) { throw 'Native launcher is missing its bootstrap classpath.' }
-    $opcodexConfig | Where-Object {
+    Write-OpcodexText $opcodexConfigPath @($opcodexConfig | Where-Object {
         -not $_.StartsWith('app.classpath=') -or $_ -eq $opcodexBootstrap
-    } | Set-Content -LiteralPath $opcodexConfigPath -Encoding utf8NoBOM
+    })
     $opcodexRecord = [ordered]@{
         product='Opcodex'; version=$opcodexManifest.version
         sourceRevision=$opcodexManifest.sourceRevision; portableSha256=$opcodexHash
         runtime='Build JDK runtime, including its original legal notices'
     }
-    $opcodexRecord | ConvertTo-Json | Set-Content -LiteralPath $opcodexRecordPath -Encoding utf8NoBOM
+    Write-OpcodexText $opcodexRecordPath ($opcodexRecord | ConvertTo-Json)
 }
 $opcodexSavedRecord = Get-Content -LiteralPath $opcodexRecordPath -Raw | ConvertFrom-Json
 if ($opcodexSavedRecord.portableSha256 -ne $opcodexHash) { throw 'Cached app image does not match this package.' }
@@ -114,6 +121,16 @@ if (-not (Test-Path -LiteralPath $opcodexCli)) { throw 'The package is missing t
 if (-not (Test-Path -LiteralPath (Join-Path $opcodexImage 'runtime/bin/java.exe') -PathType Leaf)) {
     throw 'Native app image is missing the bundled Java command required by the Opcodex CLI.'
 }
+# The native Opcodex app replaces the Java launcher. It starts the engine from runtime/ and app/.
+$opcodexShell = $DesktopShellPath
+if (-not (Test-Path -LiteralPath $opcodexShell -PathType Leaf)) {
+    throw 'The native Opcodex app was not built. Run the buildOpcodexDesktopShell Gradle task first.'
+}
+Copy-Item -LiteralPath $opcodexShell -Destination (Join-Path $opcodexImage 'Opcodex.exe') -Force
+$opcodexShellHash = (Get-FileHash -LiteralPath $opcodexShell -Algorithm SHA256).Hash.ToLowerInvariant()
+$opcodexImageRecord = Get-Content -LiteralPath $opcodexRecordPath -Raw | ConvertFrom-Json
+$opcodexImageRecord | Add-Member -NotePropertyName desktopShellSha256 -NotePropertyValue $opcodexShellHash -Force
+Write-OpcodexText $opcodexRecordPath ($opcodexImageRecord | ConvertTo-Json)
 
 if ($Installer) {
     $opcodexInstallerConfig = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'windows-installer.json') -Raw | ConvertFrom-Json
@@ -139,14 +156,13 @@ if ($Installer) {
         $opcodexPublishedMsi = Join-Path (Split-Path -Parent $opcodexArchive) ('opcodex_' + $opcodexManifest.version + '_win_x86_64_setup.msi')
         Copy-Item -LiteralPath $opcodexBuiltMsi -Destination $opcodexPublishedMsi -Force
         $opcodexInstallerHash = (Get-FileHash -LiteralPath $opcodexPublishedMsi -Algorithm SHA256).Hash.ToLowerInvariant()
-        ($opcodexInstallerHash + '  ' + (Split-Path -Leaf $opcodexPublishedMsi)) |
-            Set-Content -LiteralPath ($opcodexPublishedMsi + '.sha256') -Encoding utf8NoBOM
-        [ordered]@{product='Opcodex'; version=$opcodexManifest.version; platform='win_x86_64';
+        Write-OpcodexText ($opcodexPublishedMsi + '.sha256') ($opcodexInstallerHash + '  ' + (Split-Path -Leaf $opcodexPublishedMsi))
+        $opcodexInstallerRecord = [ordered]@{product='Opcodex'; version=$opcodexManifest.version; platform='win_x86_64';
             sourceRevision=$opcodexManifest.sourceRevision; installerVersion=$opcodexInstallerConfig.installerVersion;
             installerSha256=$opcodexInstallerHash; portableSha256=$opcodexHash; bundledRuntime=$true;
             installScope='current-user'; installSubdirectory='Programs\Opcodex\Application';
-            upgradeUuid=$opcodexInstallerConfig.upgradeUuid; signed=$false} |
-            ConvertTo-Json | Set-Content -LiteralPath ($opcodexPublishedMsi + '.json') -Encoding utf8NoBOM
+            upgradeUuid=$opcodexInstallerConfig.upgradeUuid; signed=$false}
+        Write-OpcodexText ($opcodexPublishedMsi + '.json') ($opcodexInstallerRecord | ConvertTo-Json)
         Write-Output ('Installer: ' + $opcodexPublishedMsi)
     }
     finally { $env:PATH = $opcodexSavedPath }
