@@ -2,6 +2,7 @@
 //! Opcodex desktop: hosts the interface, supervises the engine and runs terminals.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod ai;
 mod engine;
 mod terminal;
 
@@ -17,6 +18,7 @@ use terminal::Terminals;
 struct Shell {
     engine: Mutex<Option<Engine>>,
     terminals: Terminals,
+    ai: ai::Requests,
 }
 
 const AGENT_IDS: [&str; 7] = ["claude-code", "claude-desktop", "cursor", "vscode", "windsurf", "gemini", "codex"];
@@ -120,7 +122,42 @@ fn desktop_call(method: &str, params: &Value) -> Value {
                 Err(e) => error(e, "ENGINE_ERROR"),
             }
         }
+        "__desktop.ai.status" => json!({"result": ai::key_status()}),
+        "__desktop.ai.saveKey" | "__desktop.ai.removeKey" => {
+            let provider = match ai::Provider::parse(params["provider"].as_str().unwrap_or_default()) {
+                Ok(p) => p,
+                Err(e) => return error(e, "INVALID_PARAMS"),
+            };
+            let done = if method.ends_with("saveKey") {
+                ai::save_key(provider, params["key"].as_str().unwrap_or_default())
+            } else {
+                ai::remove_key(provider)
+            };
+            match done {
+                Ok(()) => json!({"result": ai::key_status()}),
+                Err(e) => error(e, "INVALID_PARAMS"),
+            }
+        }
+        "__desktop.openFolder" => open_folder(params["kind"].as_str().unwrap_or_default()),
         _ => error(format!("Unknown desktop command {method}"), "NOT_FOUND"),
+    }
+}
+
+/// The plugins or scripts folder (the same places the engine uses), opened in Explorer.
+fn open_folder(kind: &str) -> Value {
+    let base = std::env::var_os("APPDATA").map(PathBuf::from).unwrap_or_else(|| dirs::config_dir().unwrap_or_default()).join("Opcodex");
+    let dir = match kind {
+        "plugins" => base.join("plugins"),
+        "scripts" => base.join("scripts"),
+        _ => return error("Unknown folder.", "INVALID_PARAMS"),
+    };
+    if let Err(e) = std::fs::create_dir_all(&dir) {
+        return error(format!("Couldn't create {}: {e}", dir.display()), "ENGINE_ERROR");
+    }
+    let opener = if cfg!(windows) { "explorer" } else if cfg!(target_os = "macos") { "open" } else { "xdg-open" };
+    match Command::new(opener).arg(&dir).spawn() {
+        Ok(_) => json!({"result": {"path": dir.to_string_lossy()}}),
+        Err(e) => error(format!("Couldn't open the folder: {e}"), "ENGINE_ERROR"),
     }
 }
 
@@ -140,6 +177,12 @@ fn ensure_engine(app: &AppHandle, slot: &mut Option<Engine>) -> Result<(), Strin
 
 #[tauri::command]
 async fn engine_call(app: AppHandle, state: State<'_, Shell>, method: String, params: Value) -> Result<Value, String> {
+    if method == "__desktop.engine.restart" {
+        // Plugins load when the engine starts: drop it, and the next call starts a fresh one.
+        let old = state.engine.lock().map_err(|e| e.to_string())?.take();
+        drop(old);
+        return Ok(json!({"result": {"restarted": true}}));
+    }
     if method.starts_with("__desktop.") {
         return tauri::async_runtime::spawn_blocking(move || desktop_call(&method, &params)).await.map_err(|e| e.to_string());
     }
@@ -157,6 +200,18 @@ async fn engine_call(app: AppHandle, state: State<'_, Shell>, method: String, pa
         }
         Err(e) => Err(format!("The engine connection failed: {e}")),
     }
+}
+
+#[tauri::command]
+fn ai_start(app: AppHandle, state: State<'_, Shell>, provider: String, local: Option<String>, body: Value, id: String)
+    -> Result<(), String> {
+    let provider = ai::Provider::parse(&provider)?;
+    ai::start(app, &state.ai, provider, local, body, id)
+}
+
+#[tauri::command]
+fn ai_cancel(state: State<'_, Shell>, id: String) {
+    state.ai.cancel(&id);
 }
 
 #[tauri::command]
@@ -184,7 +239,7 @@ fn main() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(Shell::default())
-        .invoke_handler(tauri::generate_handler![engine_call, terminal_open, terminal_write, terminal_resize, terminal_close])
+        .invoke_handler(tauri::generate_handler![engine_call, ai_start, ai_cancel, terminal_open, terminal_write, terminal_resize, terminal_close])
         .build(tauri::generate_context!())
         .expect("Opcodex could not start");
     app.run(|handle, event| {
