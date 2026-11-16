@@ -87,6 +87,8 @@ public final class EngineCore implements AutoCloseable {
 		ensureApplication();
 		Services services = new Services(EntitlementProvider.load(EngineCore.class.getClassLoader()));
 		services.catalog().loadProviders(services, EngineCore.class.getClassLoader());
+		// Plugins add operations after Community's, so they can't replace built-in ones.
+		io.opcodex.engine.ops.PluginOps.loadPlugins(services.catalog(), services, EngineCore.class.getClassLoader());
 		Dispatcher dispatcher = new Dispatcher(services.catalog(), tokens, services);
 		dispatcher.setGate((ctx, op, params) -> checkApproval(services, ctx, op, params));
 		return new EngineCore(services, dispatcher);

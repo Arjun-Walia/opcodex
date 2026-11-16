@@ -71,3 +71,9 @@ src/main/java/io/opcodex/engine/ops/DebugOps.java||Apache License 2.0||||END|
 src/main/java/io/opcodex/engine/ops/GraphOps.java||Apache License 2.0||||END|
 src/test.slow/java/io/opcodex/engine/ops/DebugOpsTest.java||Apache License 2.0||||END|
 src/test.slow/java/io/opcodex/engine/ops/GraphOpsTest.java||Apache License 2.0||||END|
+src/main/java/io/opcodex/engine/ops/PluginOps.java||Apache License 2.0||||END|
+src/main/java/io/opcodex/engine/plugins/PluginLoader.java||Apache License 2.0||||END|
+src/main/java/io/opcodex/engine/plugins/PluginStore.java||Apache License 2.0||||END|
+src/main/java/io/opcodex/engine/plugins/ScriptRunner.java||Apache License 2.0||||END|
+src/test/java/io/opcodex/engine/plugins/PluginStoreTest.java||Apache License 2.0||||END|
+src/test.slow/java/io/opcodex/engine/ops/PluginOpsTest.java||Apache License 2.0||||END|
