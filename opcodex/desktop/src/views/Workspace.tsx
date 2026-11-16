@@ -1,4 +1,6 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
+import { GraphView } from '../components/GraphView';
+import { DebugView } from '../components/DebugView';
 import { useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { PanelLeft, PanelRight, X } from 'lucide-react';
 import { DecompileView, DisassemblyView, HexView } from '../components/CodeViews';
@@ -15,6 +17,8 @@ const TABS: { id: Tab; label: string; key: string }[] = [
   { id: 'disassembly', label: 'Assembly', key: '3' },
   { id: 'hex', label: 'Bytes', key: '4' },
   { id: 'strings', label: 'Strings', key: '5' },
+  { id: 'graph', label: 'Graph', key: '6' },
+  { id: 'debug', label: 'Debug', key: '7' },
 ];
 
 function Tabs() {
@@ -129,12 +133,14 @@ export function Workspace() {
             <X size={15} />
           </button>
         </div>
-        <div className="view" role="tabpanel" key={session.tab === 'strings' ? 'strings' : `${session.tab}:${session.location ?? ''}`}>
+        <div className="view" role="tabpanel" key={session.tab === 'strings' || session.tab === 'debug' || session.tab === 'graph' ? session.tab : `${session.tab}:${session.location ?? ''}`}>
           {session.tab === 'overview' && <Overview />}
           {session.tab === 'decompile' && <DecompileView />}
           {session.tab === 'disassembly' && <DisassemblyView />}
           {session.tab === 'hex' && <HexView />}
           {session.tab === 'strings' && <StringsView />}
+          {session.tab === 'graph' && <GraphView />}
+          {session.tab === 'debug' && <DebugView />}
         </div>
       </section>
       <div className="slot slot-right">

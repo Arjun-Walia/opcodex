@@ -32,7 +32,7 @@ function Shell() {
   }, [session.project, screen]);
 
   useEffect(() => {
-    const tabs: Record<string, Tab> = { '1': 'overview', '2': 'decompile', '3': 'disassembly', '4': 'hex', '5': 'strings' };
+    const tabs: Record<string, Tab> = { '1': 'overview', '2': 'decompile', '3': 'disassembly', '4': 'hex', '5': 'strings', '6': 'graph', '7': 'debug' };
     function onKey(e: KeyboardEvent) {
       const mod = e.ctrlKey || e.metaKey;
       if (mod && e.key.toLowerCase() === 'k') {
