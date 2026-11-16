@@ -324,3 +324,13 @@
     border-top: 1px solid var(--border-subtle);
   }
 }
+
+/* Comments added by people, agents or scripts. */
+.asm-comment {
+  color: var(--code-comment);
+  font-style: italic;
+}
+.graph-comment {
+  fill: var(--code-comment);
+  font-style: italic;
+}

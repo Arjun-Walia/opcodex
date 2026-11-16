@@ -195,6 +195,7 @@ export function GraphView() {
                           <text x={BLOCK_PAD_X + 10 * CHAR_WIDTH} y={ty + LINE_HEIGHT * 0.72}>
                             <tspan className="graph-mn">{mn.toLowerCase()}</tspan>
                             <tspan className="graph-ops"> {rest.join(' ')}</tspan>
+                            {ins.comment && <tspan className="graph-comment"> ; {ins.comment}</tspan>}
                           </text>
                         </g>
                       );

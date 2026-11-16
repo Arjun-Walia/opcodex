@@ -45,7 +45,10 @@ export function blockSize(lines: string[]): { width: number; height: number } {
 }
 
 export function layoutBlocks(graph: FunctionGraph): Layout {
-  const nodes = graph.blocks.map((b) => ({ id: b.start, ...blockSize(b.instructions.map((i) => i.text)) }));
+  const nodes = graph.blocks.map((b) => ({
+    id: b.start,
+    ...blockSize(b.instructions.map((i) => (i.comment ? `${i.text} ; ${i.comment}` : i.text))),
+  }));
   const known = new Set(nodes.map((n) => n.id));
   const edges = graph.edges.filter((e) => known.has(e.from) && known.has(e.to));
   return run(nodes, edges, { nodesep: 36, ranksep: 48 });

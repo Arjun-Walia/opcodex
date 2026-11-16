@@ -1,11 +1,11 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import type { ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, Bot, House, LayoutGrid, Search, Settings, SquareTerminal } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bot, House, LayoutGrid, MessageSquare, Puzzle, Search, Settings, SquareTerminal } from 'lucide-react';
 import { usePrefs } from '../state/prefs';
 import { useSession } from '../state/session';
 import { Logo } from './Logo';
 
-export type Screen = 'home' | 'workspace' | 'agents' | 'settings';
+export type Screen = 'home' | 'workspace' | 'agents' | 'plugins' | 'settings';
 
 interface FrameProps {
   screen: Screen;
@@ -13,6 +13,8 @@ interface FrameProps {
   onPalette: () => void;
   terminalOpen: boolean;
   onTerminal: () => void;
+  chatOpen: boolean;
+  onChat: () => void;
   children: ReactNode;
 }
 
@@ -42,7 +44,7 @@ function RailButton(props: {
   );
 }
 
-export function Frame({ screen, onNavigate, onPalette, terminalOpen, onTerminal, children }: FrameProps) {
+export function Frame({ screen, onNavigate, onPalette, terminalOpen, onTerminal, chatOpen, onChat, children }: FrameProps) {
   const session = useSession();
   const prefs = usePrefs();
   const program = session.programs.find((p) => p.programId === session.programId);
@@ -72,8 +74,14 @@ export function Frame({ screen, onNavigate, onPalette, terminalOpen, onTerminal,
         <RailButton label="Agents" current={screen === 'agents'} onClick={() => onNavigate('agents')}>
           <Bot size={18} />
         </RailButton>
+        <RailButton label="Agent chat" shortcut="Ctrl J" current={chatOpen} onClick={onChat}>
+          <MessageSquare size={18} />
+        </RailButton>
         <RailButton label="Terminal" shortcut="Ctrl `" current={terminalOpen} onClick={onTerminal}>
           <SquareTerminal size={18} />
+        </RailButton>
+        <RailButton label="Plugins" current={screen === 'plugins'} onClick={() => onNavigate('plugins')}>
+          <Puzzle size={18} />
         </RailButton>
         <div className="rail-spacer" />
         <RailButton label="Settings" shortcut="Ctrl ," current={screen === 'settings'} onClick={() => onNavigate('settings')}>
@@ -104,7 +112,7 @@ export function Frame({ screen, onNavigate, onPalette, terminalOpen, onTerminal,
               )}
             </>
           ) : (
-            <strong>{screen === 'settings' ? 'Settings' : screen === 'agents' ? 'Agents' : 'Opcodex'}</strong>
+            <strong>{screen === 'settings' ? 'Settings' : screen === 'agents' ? 'Agents' : screen === 'plugins' ? 'Plugins' : 'Opcodex'}</strong>
           )}
         </div>
         <button type="button" className="topbar-search" onClick={onPalette}>

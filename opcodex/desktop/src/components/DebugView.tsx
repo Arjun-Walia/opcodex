@@ -201,7 +201,10 @@ export function DebugView() {
                 </button>
                 <span className="asm-addr">{ins.address}</span>
                 <span className="asm-mn">{ins.mnemonic.toLowerCase()}</span>
-                <span className="asm-ops">{ins.operands}</span>
+                <span className="asm-ops">
+                  {ins.operands}
+                  {ins.comment && <span className="asm-comment"> ; {ins.comment}</span>}
+                </span>
               </div>
             );
           })}

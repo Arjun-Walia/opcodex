@@ -70,6 +70,8 @@ export interface Instruction {
   bytes: string;
   mnemonic: string;
   operands: string;
+  /** Pre and end-of-line comments, joined. */
+  comment?: string;
 }
 
 export interface FunctionDetail {
@@ -107,7 +109,7 @@ export interface Job {
 
 // function.graph / function.callgraph
 export type EdgeKind = 'true' | 'false' | 'jump' | 'fall';
-export type GraphBlock = { start: string; end: string; instructions: { address: string; text: string }[] };
+export type GraphBlock = { start: string; end: string; instructions: { address: string; text: string; comment?: string }[] };
 export type FunctionGraph = {
   entry: string;
   name: string;

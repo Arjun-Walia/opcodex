@@ -133,10 +133,25 @@ final class CodeOps {
 				operands.add(instruction.getDefaultOperandRepresentation(i));
 			}
 			item.addProperty("operands", String.join(",", operands));
+			String comment = comments(instruction);
+			if (comment != null) {
+				item.addProperty("comment", comment);
+			}
 			items.add(item);
 		}
 		JsonObject out = new JsonObject();
 		out.add("items", items);
 		return out;
+	}
+
+	/** Pre and end-of-line comments of an instruction, as one line, or null when there are none. */
+	static String comments(Instruction instruction) {
+		String pre = instruction.getComment(ghidra.program.model.listing.CommentType.PRE);
+		String eol = instruction.getComment(ghidra.program.model.listing.CommentType.EOL);
+		String joined = java.util.stream.Stream.of(pre, eol)
+				.filter(c -> c != null && !c.isBlank())
+				.map(c -> c.replaceAll("\\s*\\R\\s*", " ").trim())
+				.collect(java.util.stream.Collectors.joining(" · "));
+		return joined.isEmpty() ? null : joined;
 	}
 }

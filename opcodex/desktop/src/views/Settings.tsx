@@ -1,6 +1,7 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import { useRef, useState, type ChangeEvent } from 'react';
 import { Bot, Check, Download, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import { AiModels } from '../components/AiModels';
 import { Logo } from '../components/Logo';
 import { useEngine } from '../state/session';
 import { LayoutPreview, ThemePreview } from '../components/Previews';
@@ -68,6 +69,7 @@ const SHORTCUTS: [string, string[]][] = [
   ['Debug: stop', ['Shift', 'F5']],
   ['Back', ['Alt', '←']],
   ['Forward', ['Alt', '→']],
+  ['Agent chat', ['Ctrl', 'J']],
   ['Close a dialog', ['Esc']],
 ];
 
@@ -81,6 +83,7 @@ export function Settings({ onOpenAgents }: { onOpenAgents: () => void }) {
   const opcodex = prefs.themes.filter((t) => t.source === 'opcodex');
   const community = prefs.themes.filter((t) => t.source === 'community');
   const yours = prefs.themes.filter((t) => t.source === 'custom');
+  const fromPlugins = prefs.themes.filter((t) => t.source === 'plugin');
 
   function custom(update: Partial<Layout>) {
     prefs.setLayout({ ...prefs.layout, ...update, id: 'custom', name: 'Your own', description: 'Arranged by you.' });
@@ -151,6 +154,12 @@ export function Settings({ onOpenAgents }: { onOpenAgents: () => void }) {
               </div>
             </>
           )}
+          {fromPlugins.length > 0 && (
+            <>
+              <h3 className="group-title">From plugins</h3>
+              <div className="choice-grid">{fromPlugins.map((t) => <ThemeCard key={t.id} theme={t} />)}</div>
+            </>
+          )}
         </section>
 
         <section className="settings-section">
@@ -199,11 +208,13 @@ export function Settings({ onOpenAgents }: { onOpenAgents: () => void }) {
           </div>
         </section>
 
+        <AiModels />
+
         <section className="settings-section">
           <div className="settings-head">
             <div>
               <h2>Agents and privacy</h2>
-              <p>Analysis runs on this computer. Opcodex sends nothing anywhere unless you connect a cloud model yourself.</p>
+              <p>Analysis runs on this computer. Opcodex sends nothing anywhere unless you add a cloud model above and allow it in the chat.</p>
             </div>
             <button type="button" className="button" onClick={onOpenAgents}>
               <Bot size={14} /> Open Agents

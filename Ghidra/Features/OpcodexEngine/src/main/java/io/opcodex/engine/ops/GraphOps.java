@@ -96,6 +96,10 @@ final class GraphOps {
 					JsonObject i = new JsonObject();
 					i.addProperty("address", instruction.getAddress().toString());
 					i.addProperty("text", instruction.toString());
+					String comment = CodeOps.comments(instruction);
+					if (comment != null) {
+						i.addProperty("comment", comment);
+					}
 					instructions.add(i);
 				}
 				else {

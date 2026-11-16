@@ -62,6 +62,12 @@ final class DecompilerPool implements AutoCloseable {
 				created.toggleCCode(true);
 				created.toggleSyntaxTree(true);
 				created.setSimplificationStyle("decompile");
+				// Show comments people and agents add, not only those the analysis produced.
+				ghidra.app.decompiler.DecompileOptions options = new ghidra.app.decompiler.DecompileOptions();
+				options.grabFromProgram(program);
+				options.setEOLCommentIncluded(true);
+				options.setPRECommentIncluded(true);
+				created.setOptions(options);
 				if (!created.openProgram(program)) {
 					String message = created.getLastMessage();
 					created.dispose();
