@@ -329,11 +329,6 @@ public final class PluginOps {
 				long limit = Long.getLong("opcodex.script.timeLimitMs", SCRIPT_TIME_LIMIT_MS);
 				ScriptRunner.Result result = ScriptRunner.run(script, project, program, at, args, limit);
 				if (result.error() != null) {
-					if (result.timedOut() && program instanceof ghidra.framework.data.DomainObjectAdapterDB db) {
-						// The script still holds its own nested transaction open: end it all, rolled back.
-						db.forceLock(true, "script time limit");
-						db.unlock();
-					}
 					throw new ScriptFailed(result); // rolls the transaction back
 				}
 				return result;

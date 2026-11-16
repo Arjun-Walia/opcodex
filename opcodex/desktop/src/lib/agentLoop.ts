@@ -5,6 +5,8 @@ import {
   anthropicBody,
   decode,
   fromToolName,
+  insideThinking,
+  stripThinking,
   openaiBody,
   resultText,
   SseBuffer,
@@ -33,6 +35,8 @@ export type TurnDeps = {
   /** Asks the person to approve a change; resolves true to go ahead. */
   approve(tool: Tool, input: Record<string, unknown>): Promise<boolean>;
   onText(delta: string): void;
+  /** The model is reasoning before it answers. */
+  onThinking?(): void;
   onTool(event: { phase: 'start' | 'done'; call: ToolCall; result?: ToolResult }): void;
   cancelled(): boolean;
 };
@@ -52,16 +56,22 @@ async function oneReply(deps: TurnDeps, messages: ChatMessage[]): Promise<{ part
   const state = codec.start() as never;
   const sse = new SseBuffer();
   let text = '';
+  let thinkingShown = false;
   for await (const chunk of deps.send(body)) {
     if (deps.cancelled()) break;
     for (const e of sse.push(chunk)) {
       const delta = (codec.event as (s: never, d: string) => string)(state, e.data);
+      if (!thinkingShown && ((state as { thinking?: boolean }).thinking || insideThinking(text + delta))) {
+        thinkingShown = true;
+        deps.onThinking?.();
+      }
       if (delta) {
         text += delta;
         deps.onText(delta);
       }
     }
   }
+  text = stripThinking(text).trim() ? stripThinking(text) : '';
   const out = (codec.finish as (s: never) => { toolCalls: ToolCall[]; error?: string })(state);
   if (out.error) throw new Error(out.error);
   const parts: Part[] = [];

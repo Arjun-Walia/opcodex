@@ -4,7 +4,7 @@ import { Fragment, useEffect, useRef, useState, type KeyboardEvent } from 'react
 import { Bot, Check, ChevronRight, Loader2, Plus, Send, ShieldAlert, Square, Wrench, X } from 'lucide-react';
 import { call, isDesktopApp } from '../engine/client';
 import { keyStatus, stream, type KeyStatus } from '../engine/ai';
-import { systemPrompt, toolsFrom, type CatalogOp, type ChatMessage, type Provider, type Tool, type ToolCall, type ToolResult } from '../lib/agent';
+import { insideThinking, stripThinking, systemPrompt, toolsFrom, type CatalogOp, type ChatMessage, type Provider, type Tool, type ToolCall, type ToolResult } from '../lib/agent';
 import { runTurn, type Policy } from '../lib/agentLoop';
 import { usePrefs } from '../state/prefs';
 import { useSession } from '../state/session';
@@ -104,6 +104,7 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
   const [approval, setApproval] = useState<Approval | null>(null);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
+  const [thinking, setThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [keys, setKeys] = useState<KeyStatus | null>(null);
   const abort = useRef<AbortController | null>(null);
@@ -135,6 +136,7 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
     setDraft('');
     setError(null);
     setBusy(true);
+    setThinking(false);
     setStreaming('');
     const controller = new AbortController();
     abort.current = controller;
@@ -154,7 +156,7 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
           provider,
           model: ai.models[provider],
           system: systemPrompt({ program: program?.name, programId: session.programId, location: session.location }),
-          tools: toolsFrom(catalog),
+          tools: toolsFrom(catalog, { core: provider === 'local' }),
           policy,
           send: (body) => stream(provider, ai.localUrl, body, controller.signal),
           execute: async (op, params) => {
@@ -164,6 +166,7 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
           },
           approve: (tool, params) => new Promise<boolean>((resolve) => setApproval({ tool, input: params, resolve })),
           onText: (delta) => current() && setStreaming((s) => s + delta),
+          onThinking: () => current() && setThinking(true),
           onTool: ({ call: c, result: r }) => {
             if (!current()) return;
             setStreaming('');
@@ -307,14 +310,14 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
           Object.values(activity)
             .filter((a) => !messages.some((m) => m.parts.some((p) => p.type === 'tool_call' && p.id === a.call.id)))
             .map((a) => <ToolChip key={a.call.id} activity={a} />)}
-        {streaming && (
+        {stripThinking(streaming).trim() && (
           <div className="chat-msg assistant">
-            <RichText text={streaming} />
+            <RichText text={stripThinking(streaming)} />
           </div>
         )}
-        {busy && !streaming && !approval && (
+        {busy && (!stripThinking(streaming).trim() || insideThinking(streaming)) && !approval && (
           <div className="chat-thinking">
-            <Loader2 size={14} className="spin" /> Working…
+            <Loader2 size={14} className="spin" /> {thinking || insideThinking(streaming) ? 'Thinking…' : 'Working…'}
           </div>
         )}
         {approval && (

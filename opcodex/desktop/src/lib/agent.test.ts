@@ -5,6 +5,8 @@ import {
   fromToolName,
   openaiBody,
   SseBuffer,
+  insideThinking,
+  stripThinking,
   toolsFrom,
   toolName,
   type ChatMessage,
@@ -32,6 +34,30 @@ const history: ChatMessage[] = [
   { role: 'assistant', parts: [{ type: 'text', text: 'Let me look.' }, { type: 'tool_call', id: 't1', name: 'code_decompile', input: { address: '0x1000' } }] },
   { role: 'user', parts: [{ type: 'tool_result', id: 't1', content: '{"c":"int main()"}', isError: false }] },
 ];
+
+describe('local models', () => {
+  it('get a focused tool set', () => {
+    const many = [
+      ...catalog,
+      { name: 'debug.start', description: 'x', class: 'read', params: { type: 'object' } },
+    ];
+    expect(toolsFrom(many, { core: true }).map((t) => t.op)).toEqual(['code.decompile', 'symbol.rename']);
+    expect(toolsFrom(many).map((t) => t.op)).toContain('debug.start');
+  });
+
+  it('keep reasoning out of the answer', () => {
+    expect(stripThinking('<think>hmm\nlet me see</think>\nIt calls 20 functions.')).toBe('It calls 20 functions.');
+    expect(stripThinking('<think>still going')).toBe('');
+    expect(insideThinking('<think>still going')).toBe(true);
+    expect(insideThinking('<think>done</think> answer')).toBe(false);
+  });
+
+  it('note reasoning streamed in a separate field', () => {
+    const state = decode.openai.start();
+    expect(decode.openai.event(state, JSON.stringify({ choices: [{ delta: { reasoning: 'hmm' } }] }))).toBe('');
+    expect((state as { thinking?: boolean }).thinking).toBe(true);
+  });
+});
 
 describe('request bodies', () => {
   it('builds an Anthropic messages request with tool use and results', () => {

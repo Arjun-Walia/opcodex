@@ -97,9 +97,17 @@ public final class ScriptRunner {
 		if (thread.isAlive()) {
 			monitor.cancel();
 			thread.interrupt();
+			try {
+				// End the script's own nested transaction for it, so the caller's rollback can
+				// complete and the program stays usable even if the script never returns.
+				script.end(false);
+			}
+			catch (RuntimeException alreadyEnded) {
+				// It finished at the last moment.
+			}
 			return new Result(truncate(out.toString()), "The script ran longer than " +
 				Math.max(1, timeLimitMillis / 60000) + " minutes and was stopped; nothing it changed was kept. " +
-				"If it ignores cancellation it may keep using the processor until Opcodex restarts.", true);
+				"If it ignores cancellation it may keep using the processor until the engine restarts.", true);
 		}
 		Throwable t = failure.get();
 		if (t != null) {

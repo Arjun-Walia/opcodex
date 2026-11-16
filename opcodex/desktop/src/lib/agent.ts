@@ -20,9 +20,29 @@ export function toolName(op: string): string {
   return op.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 64);
 }
 
-export function toolsFrom(catalog: CatalogOp[]): Tool[] {
+/**
+ * A focused set for local models: small models and servers with short context windows (Ollama
+ * defaults to 4096 tokens) cope badly with dozens of tool definitions.
+ */
+export const CORE_TOOLS = new Set([
+  'program.info',
+  'program.summary',
+  'program.functions.list',
+  'function.get',
+  'code.decompile',
+  'code.disassemble',
+  'xrefs.to',
+  'xrefs.from',
+  'program.strings.list',
+  'symbol.rename',
+  'comment.set',
+  'history.list',
+]);
+
+export function toolsFrom(catalog: CatalogOp[], options: { core?: boolean } = {}): Tool[] {
   return catalog
     .filter((op) => op.class !== 'system' && !HIDDEN.test(op.name))
+    .filter((op) => !options.core || CORE_TOOLS.has(op.name))
     .map((op) => ({ name: toolName(op.name), op: op.name, description: op.description, cls: op.class, schema: op.params }));
 }
 
@@ -125,8 +145,19 @@ function finish(pending: Map<number, Pending>, stop: string): Decoded {
   return { toolCalls, stop };
 }
 
-type AnthropicState = { pending: Map<number, Pending>; stop: string; error?: string };
-type OpenAiState = { pending: Map<number, Pending>; stop: string; error?: string };
+type AnthropicState = { pending: Map<number, Pending>; stop: string; error?: string; thinking?: boolean };
+type OpenAiState = { pending: Map<number, Pending>; stop: string; error?: string; thinking?: boolean };
+
+/** Removes reasoning that some local models put in the text as <think>…</think>. */
+export function stripThinking(text: string): string {
+  return text.replace(/<think>[\s\S]*?(<\/think>\s*|$)/g, '');
+}
+
+/** True while the text ends inside an unfinished <think> block. */
+export function insideThinking(text: string): boolean {
+  const open = text.lastIndexOf('<think>');
+  return open >= 0 && text.indexOf('</think>', open) < 0;
+}
 
 /** Stream decoders: `event` returns new text to show; `finish` returns tool calls and the stop reason. */
 export const decode = {
@@ -139,7 +170,9 @@ export const decode = {
       } catch {
         return '';
       }
-      if (e.type === 'content_block_start' && e.content_block?.type === 'tool_use') {
+      if (e.type === 'content_block_start' && e.content_block?.type === 'thinking') {
+        state.thinking = true;
+      } else if (e.type === 'content_block_start' && e.content_block?.type === 'tool_use') {
         state.pending.set(e.index, { id: e.content_block.id, name: e.content_block.name, json: '' });
       } else if (e.type === 'content_block_delta') {
         if (e.delta?.type === 'text_delta') return e.delta.text ?? '';
@@ -172,6 +205,8 @@ export const decode = {
       }
       const choice = e.choices?.[0];
       if (!choice) return '';
+      // Thinking models stream reasoning separately (Ollama: "reasoning"; others: "reasoning_content").
+      if (choice.delta?.reasoning || choice.delta?.reasoning_content) state.thinking = true;
       for (const call of choice.delta?.tool_calls ?? []) {
         const index = call.index ?? 0;
         // Ids must be unique across the conversation; some local servers omit them.
