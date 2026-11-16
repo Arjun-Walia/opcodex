@@ -431,3 +431,14 @@
 .err-text {
   color: var(--danger);
 }
+
+.chat-list {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+.chat-list li {
+  margin: 2px 0;
+}
+.chat-heading {
+  margin-top: 4px;
+}

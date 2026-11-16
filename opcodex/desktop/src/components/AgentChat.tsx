@@ -6,6 +6,7 @@ import { call, isDesktopApp } from '../engine/client';
 import { keyStatus, stream, type KeyStatus } from '../engine/ai';
 import { insideThinking, stripThinking, systemPrompt, toolsFrom, type CatalogOp, type ChatMessage, type Provider, type Tool, type ToolCall, type ToolResult } from '../lib/agent';
 import { runTurn, type Policy } from '../lib/agentLoop';
+import { parse, type Inline } from '../lib/markdown';
 import { usePrefs } from '../state/prefs';
 import { useSession } from '../state/session';
 
@@ -22,41 +23,59 @@ const SUGGESTIONS = [
   'Summarise this program for a triage report',
 ];
 
-/** Renders model text as paragraphs, inline code and fenced code blocks. Never as HTML. */
-function RichText({ text }: { text: string }) {
-  const blocks = text.split(/```/);
+function Inlines({ items }: { items: Inline[] }) {
   return (
     <>
-      {blocks.map((block, i) => {
-        if (i % 2 === 1) {
-          const body = block.replace(/^[a-zA-Z0-9+#-]*\n/, '');
+      {items.map((it, i) =>
+        it.type === 'code' ? <code key={i}>{it.text}</code> : it.type === 'bold' ? <strong key={i}>{it.text}</strong> : <Fragment key={i}>{it.text}</Fragment>,
+      )}
+    </>
+  );
+}
+
+/** Renders model text (a small Markdown subset) as React elements. Never as HTML. */
+function RichText({ text }: { text: string }) {
+  return (
+    <>
+      {parse(text).map((block, i) => {
+        if (block.type === 'code') {
           return (
             <pre key={i} className="chat-code">
-              {body.replace(/\n$/, '')}
+              {block.text}
             </pre>
           );
         }
-        return block
-          .split(/\n{2,}/)
-          .filter((p) => p.trim())
-          .map((para, j) => (
-            <p key={`${i}-${j}`}>
-              {para.split(/(`[^`\n]+`)/).map((piece, k) =>
-                piece.startsWith('`') && piece.endsWith('`') && piece.length > 2 ? (
-                  <code key={k}>{piece.slice(1, -1)}</code>
-                ) : (
-                  <Fragment key={k}>
-                    {piece.split('\n').map((line, n) => (
-                      <Fragment key={n}>
-                        {n > 0 && <br />}
-                        {line}
-                      </Fragment>
-                    ))}
-                  </Fragment>
-                ),
-              )}
+        if (block.type === 'heading') {
+          return (
+            <p key={i} className="chat-heading">
+              <strong>
+                <Inlines items={block.inlines} />
+              </strong>
             </p>
-          ));
+          );
+        }
+        if (block.type === 'list') {
+          const Tag = block.ordered ? 'ol' : 'ul';
+          return (
+            <Tag key={i} className="chat-list">
+              {block.items.map((item, j) => (
+                <li key={j}>
+                  <Inlines items={item} />
+                </li>
+              ))}
+            </Tag>
+          );
+        }
+        return (
+          <p key={i}>
+            {block.lines.map((line, j) => (
+              <Fragment key={j}>
+                {j > 0 && <br />}
+                <Inlines items={line} />
+              </Fragment>
+            ))}
+          </p>
+        );
       })}
     </>
   );
