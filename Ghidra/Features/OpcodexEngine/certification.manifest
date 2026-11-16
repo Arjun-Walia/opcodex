@@ -64,3 +64,5 @@ src/test.slow/java/io/opcodex/engine/policy/ApprovalPolicyTest.java||Apache Lice
 src/main/java/io/opcodex/engine/ops/SummaryOps.java||Apache License 2.0||||END|
 src/main/resources/io/opcodex/engine/risky-apis.json||Apache License 2.0||||END|
 src/test.slow/java/io/opcodex/engine/ops/SummaryOpsTest.java||Apache License 2.0||||END|
+
+src/test/java/io/opcodex/engine/spi/EntitlementProviderTest.java||Apache License 2.0||||END|

@@ -85,7 +85,7 @@ public final class EngineCore implements AutoCloseable {
 	/** Initialises the analysis engine if needed and builds an engine for these credentials. */
 	public static EngineCore start(Map<String, Credential> tokens) throws IOException {
 		ensureApplication();
-		Services services = new Services(EntitlementProvider.COMMUNITY);
+		Services services = new Services(EntitlementProvider.load(EngineCore.class.getClassLoader()));
 		services.catalog().loadProviders(services, EngineCore.class.getClassLoader());
 		Dispatcher dispatcher = new Dispatcher(services.catalog(), tokens, services);
 		dispatcher.setGate((ctx, op, params) -> checkApproval(services, ctx, op, params));
