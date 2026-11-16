@@ -38,6 +38,7 @@ src/main/java/io/opcodex/engine/rpc/RpcException.java||Apache License 2.0||||END
 src/main/java/io/opcodex/engine/rpc/TcpServer.java||Apache License 2.0||||END|
 src/main/java/io/opcodex/engine/session/CallContext.java||Apache License 2.0||||END|
 src/main/java/io/opcodex/engine/session/Credential.java||Apache License 2.0||||END|
+src/main/java/io/opcodex/engine/session/ParentWatch.java||Apache License 2.0||||END|
 src/main/java/io/opcodex/engine/session/SessionFiles.java||Apache License 2.0||||END|
 src/main/java/io/opcodex/engine/spi/EngineServices.java||Apache License 2.0||||END|
 src/main/java/io/opcodex/engine/spi/EntitlementProvider.java||Apache License 2.0||||END|
@@ -50,6 +51,7 @@ src/test/java/io/opcodex/engine/jobs/JobManagerTest.java||Apache License 2.0||||
 src/test/java/io/opcodex/engine/policy/PolicyChallengesTest.java||Apache License 2.0||||END|
 src/test/java/io/opcodex/engine/rpc/DispatcherTest.java||Apache License 2.0||||END|
 src/test/java/io/opcodex/engine/rpc/LineTransportTest.java||Apache License 2.0||||END|
+src/test/java/io/opcodex/engine/session/ParentWatchTest.java||Apache License 2.0||||END|
 src/test/java/io/opcodex/engine/session/SessionFilesTest.java||Apache License 2.0||||END|
 src/test.slow/java/io/opcodex/engine/EngineHarness.java||Apache License 2.0||||END|
 src/test.slow/java/io/opcodex/engine/ops/CodeOpsTest.java||Apache License 2.0||||END|

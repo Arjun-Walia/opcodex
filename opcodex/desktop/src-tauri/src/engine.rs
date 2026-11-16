@@ -6,7 +6,7 @@ use serde_json::{json, Value};
 use std::io::{BufRead, BufReader, Write};
 use std::net::{SocketAddr, TcpStream};
 use std::path::{Path, PathBuf};
-use std::process::{Child, Command, Stdio};
+use std::process::{Child, ChildStdin, Command, Stdio};
 use std::time::Duration;
 
 const ENGINE_MAIN: &str = "io.opcodex.engine.EngineMain";
@@ -14,6 +14,9 @@ const UTILITY_JAR: &str = "Ghidra/Framework/Utility/lib/Utility.jar";
 
 pub struct Engine {
     child: Child,
+    /// Held open for the engine's whole life: when this process exits or crashes the pipe
+    /// closes and the engine stops instead of running on unattended.
+    _lifeline: ChildStdin,
     port: u16,
     token: String,
 }
@@ -110,11 +113,10 @@ impl Engine {
         hide_console(&mut command);
         let mut child = command.spawn().map_err(|e| format!("Couldn't start the engine: {e}"))?;
         let line = json!({"credential": token, "kind": "DESKTOP"}).to_string() + "\n";
-        child
-            .stdin
-            .take()
-            .ok_or("engine stdin unavailable")?
+        let mut lifeline = child.stdin.take().ok_or("engine stdin unavailable")?;
+        lifeline
             .write_all(line.as_bytes())
+            .and_then(|_| lifeline.flush())
             .map_err(|e| format!("Couldn't hand the engine its credential: {e}"))?;
         let mut ready = String::new();
         BufReader::new(child.stdout.take().ok_or("engine stdout unavailable")?)
@@ -124,7 +126,7 @@ impl Engine {
             .ok()
             .and_then(|v| v["port"].as_u64())
             .ok_or_else(|| "The engine didn't report that it was ready.".to_string())?;
-        Ok(Engine { child, port: port as u16, token })
+        Ok(Engine { child, _lifeline: lifeline, port: port as u16, token })
     }
 
     pub fn is_running(&mut self) -> bool {

@@ -18,6 +18,7 @@ import ghidra.GhidraLaunchable;
 import io.opcodex.engine.rpc.LineTransport;
 import io.opcodex.engine.rpc.TcpServer;
 import io.opcodex.engine.session.Credential;
+import io.opcodex.engine.session.ParentWatch;
 import io.opcodex.engine.session.SessionFiles;
 
 /**
@@ -27,7 +28,7 @@ import io.opcodex.engine.session.SessionFiles;
  * then JSON-RPC lines are served on stdin/stdout. All logging goes to stderr.</li>
  * <li>{@code --tcp}: serves 127.0.0.1 on a random port, writes the session files and prints
  * {@code {"ready":true,"port":N}}. With {@code --desktop-token-stdin}, the first stdin line holds
- * the desktop credential.</li>
+ * the desktop credential, and the engine exits when the desktop closes its stdin.</li>
  * </ul>
  */
 public final class EngineMain implements GhidraLaunchable {
@@ -97,6 +98,10 @@ public final class EngineMain implements GhidraLaunchable {
 		ready.addProperty("port", port);
 		out.println(ready);
 		out.flush();
+		if (desktopFromStdin) {
+			// The desktop holds stdin open while it runs; stop with it (the hook cleans up).
+			ParentWatch.start(stdin, () -> System.exit(0));
+		}
 		stopped.await();
 	}
 
