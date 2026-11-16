@@ -75,6 +75,8 @@ function TerminalView({ session, active, onExit }: { session: Session; active: b
       const input = xterm.onData((data) => invoke('terminal_write', { id, data }));
       const resize = xterm.onResize(({ cols, rows }) => invoke('terminal_resize', { id, cols, rows }));
       cleanups.push(() => input.dispose(), () => resize.dispose());
+      // Listening now: the shell's output so far (banner, prompt) was held until this point.
+      await invoke('terminal_ready', { id });
     })().catch((e) => xterm.write(`\r\nCouldn't start the terminal: ${String(e)}\r\n`));
 
     const observer = new ResizeObserver(() => {

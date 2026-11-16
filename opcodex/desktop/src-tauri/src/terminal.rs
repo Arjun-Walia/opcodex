@@ -6,13 +6,76 @@ use std::collections::HashMap;
 use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU32, Ordering};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, Emitter};
 
 pub struct Terminal {
     master: Box<dyn MasterPty + Send>,
     writer: Box<dyn Write + Send>,
     child: Box<dyn Child + Send + Sync>,
+    gate: Arc<Gate>,
+}
+
+/// What a terminal sends to the interface.
+#[derive(Debug, PartialEq)]
+pub enum Output {
+    Data(String),
+    Exit,
+}
+
+/// Holds a new shell's output until the interface is listening, then passes it on in order.
+/// Without this, the banner and prompt printed before the interface subscribed were lost.
+#[derive(Default)]
+pub struct Gate {
+    state: Mutex<GateState>,
+}
+
+#[derive(Default)]
+struct GateState {
+    ready: bool,
+    held: String,
+    exited: bool,
+}
+
+impl Gate {
+    /// Passes output on, or holds it until `open`.
+    pub fn send(&self, output: Output, deliver: &dyn Fn(Output)) {
+        let Ok(mut state) = self.state.lock() else { return };
+        if state.ready {
+            deliver(output);
+            return;
+        }
+        match output {
+            Output::Data(text) => state.held.push_str(&text),
+            Output::Exit => state.exited = true,
+        }
+    }
+
+    /// The interface is listening: deliver what was held, then everything as it comes.
+    pub fn open(&self, deliver: &dyn Fn(Output)) {
+        let Ok(mut state) = self.state.lock() else { return };
+        if state.ready {
+            return;
+        }
+        state.ready = true;
+        if !state.held.is_empty() {
+            deliver(Output::Data(std::mem::take(&mut state.held)));
+        }
+        if state.exited {
+            deliver(Output::Exit);
+        }
+    }
+}
+
+fn deliverer(app: AppHandle, id: u32) -> impl Fn(Output) {
+    move |output| match output {
+        Output::Data(text) => {
+            let _ = app.emit(&format!("terminal-data-{id}"), text);
+        }
+        Output::Exit => {
+            let _ = app.emit(&format!("terminal-exit-{id}"), ());
+        }
+    }
 }
 
 #[derive(Default)]
@@ -92,6 +155,9 @@ impl Terminals {
             let _ = writer.write_all(format!("{line}\r").as_bytes());
         }
         let id = self.next.fetch_add(1, Ordering::SeqCst) + 1;
+        let gate = Arc::new(Gate::default());
+        let thread_gate = gate.clone();
+        let deliver = deliverer(app, id);
         std::thread::spawn(move || {
             let mut buffer = [0u8; 8192];
             let mut pending = Vec::new();
@@ -102,15 +168,25 @@ impl Terminals {
                         pending.extend_from_slice(&buffer[..n]);
                         let text = take_utf8(&mut pending);
                         if !text.is_empty() {
-                            let _ = app.emit(&format!("terminal-data-{id}"), text);
+                            thread_gate.send(Output::Data(text), &deliver);
                         }
                     }
                 }
             }
-            let _ = app.emit(&format!("terminal-exit-{id}"), ());
+            thread_gate.send(Output::Exit, &deliver);
         });
-        self.open.lock().map_err(|e| e.to_string())?.insert(id, Terminal { master: pair.master, writer, child });
+        self.open.lock().map_err(|e| e.to_string())?.insert(id, Terminal { master: pair.master, writer, child, gate });
         Ok(id)
+    }
+
+    /// Called once the interface listens for this terminal's output.
+    pub fn ready(&self, app: AppHandle, id: u32) -> Result<(), String> {
+        let gate = {
+            let open = self.open.lock().map_err(|e| e.to_string())?;
+            open.get(&id).ok_or("That terminal is closed.")?.gate.clone()
+        };
+        gate.open(&deliverer(app, id));
+        Ok(())
     }
 
     pub fn write(&self, id: u32, data: &str) -> Result<(), String> {
@@ -142,6 +218,40 @@ impl Terminals {
                 let _ = term.child.kill();
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod gate_tests {
+    use super::{Gate, Output};
+    use std::sync::Mutex;
+
+    #[test]
+    fn output_before_the_interface_listens_is_held_then_delivered_in_order() {
+        let got = Mutex::new(Vec::new());
+        let deliver = |o: Output| got.lock().unwrap().push(o);
+        let gate = Gate::default();
+        gate.send(Output::Data("Windows PowerShell\r\n".into()), &deliver);
+        gate.send(Output::Data("PS C:\\> ".into()), &deliver);
+        assert!(got.lock().unwrap().is_empty());
+        gate.open(&deliver);
+        gate.send(Output::Data("dir".into()), &deliver);
+        assert_eq!(
+            *got.lock().unwrap(),
+            vec![Output::Data("Windows PowerShell\r\nPS C:\\> ".into()), Output::Data("dir".into())]
+        );
+    }
+
+    #[test]
+    fn an_early_exit_is_not_lost() {
+        let got = Mutex::new(Vec::new());
+        let deliver = |o: Output| got.lock().unwrap().push(o);
+        let gate = Gate::default();
+        gate.send(Output::Data("bye".into()), &deliver);
+        gate.send(Output::Exit, &deliver);
+        gate.open(&deliver);
+        gate.open(&deliver); // a second call changes nothing
+        assert_eq!(*got.lock().unwrap(), vec![Output::Data("bye".into()), Output::Exit]);
     }
 }
 

@@ -228,6 +228,11 @@ fn terminal_open(app: AppHandle, state: State<'_, Shell>, cols: u16, rows: u16, 
 }
 
 #[tauri::command]
+fn terminal_ready(app: AppHandle, state: State<'_, Shell>, id: u32) -> Result<(), String> {
+    state.terminals.ready(app, id)
+}
+
+#[tauri::command]
 fn terminal_write(state: State<'_, Shell>, id: u32, data: String) -> Result<(), String> {
     state.terminals.write(id, &data)
 }
@@ -246,7 +251,7 @@ fn main() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(Shell::default())
-        .invoke_handler(tauri::generate_handler![engine_call, ai_start, ai_cancel, terminal_open, terminal_write, terminal_resize, terminal_close])
+        .invoke_handler(tauri::generate_handler![engine_call, ai_start, ai_cancel, terminal_open, terminal_ready, terminal_write, terminal_resize, terminal_close])
         .build(tauri::generate_context!())
         .expect("Opcodex could not start");
     app.run(|handle, event| {
