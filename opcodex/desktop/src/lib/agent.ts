@@ -174,7 +174,8 @@ export const decode = {
       if (!choice) return '';
       for (const call of choice.delta?.tool_calls ?? []) {
         const index = call.index ?? 0;
-        const p = state.pending.get(index) ?? { id: call.id ?? `call_${index}`, name: '', json: '' };
+        // Ids must be unique across the conversation; some local servers omit them.
+        const p = state.pending.get(index) ?? { id: call.id ?? `call_${Math.random().toString(36).slice(2, 10)}_${index}`, name: '', json: '' };
         if (call.id) p.id = call.id;
         if (call.function?.name) p.name = call.function.name;
         if (call.function?.arguments) p.json += call.function.arguments;

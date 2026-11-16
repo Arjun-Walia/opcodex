@@ -37,6 +37,10 @@ public class GraphOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 		builder.setBytes("0x1040", "31 c0 0f a2 c3");
 		builder.createEmptyFunction("probe", "0x1040", 5, VoidDataType.dataType);
 		builder.disassemble("0x1040", 5);
+		// recur(edi): if (edi) { push rdi; edi--; recur(edi); pop rdi; } ret
+		builder.setBytes("0x1060", "85 ff 74 0a 57 ff cf e8 f4 ff ff ff 5f 90 c3");
+		builder.createEmptyFunction("recur", "0x1060", 15, VoidDataType.dataType);
+		builder.disassemble("0x1060", 15);
 		return builder;
 	}
 

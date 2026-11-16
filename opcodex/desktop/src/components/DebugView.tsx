@@ -30,6 +30,7 @@ export function DebugView() {
   const [listing, setListing] = useState<{ fn: string; items: Instruction[] }>({ fn: '', items: [] });
   const [editing, setEditing] = useState<string | null>(null);
   const rowRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const triedFor = useRef<string | null>(null);
   const programId = session.programId;
 
   const send = useCallback(
@@ -60,6 +61,10 @@ export function DebugView() {
     const pc = state?.pc ?? session.location;
     const fn = state?.function ?? '';
     if (!pc || (listing.fn === fn && listing.items.some((i) => i.address === pc))) return;
+    // Once per location: if the listing can't include it (data, undecoded bytes), don't loop.
+    const key = `${fn}@${pc}`;
+    if (triedFor.current === key) return;
+    triedFor.current = key;
     let live = true;
     (async () => {
       const start = await call<{ entry: string }>('function.get', { programId, address: pc }).then((f) => f.entry, () => pc);
@@ -88,6 +93,10 @@ export function DebugView() {
   const onKey = (e: KeyboardEvent) => {
     const target = e.target as HTMLElement | null;
     if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+    if (busy && ['F5', 'F9', 'F10', 'F11'].includes(e.key)) {
+      e.preventDefault(); // one step at a time: held keys don't pile up requests
+      return;
+    }
     if (e.key === 'F5' && e.shiftKey) {
       e.preventDefault();
       if (state) send('debug.stop').then(() => setState(null));

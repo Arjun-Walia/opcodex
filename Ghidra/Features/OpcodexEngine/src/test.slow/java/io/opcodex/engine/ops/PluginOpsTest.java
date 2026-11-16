@@ -42,6 +42,18 @@ public class PluginOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 				}
 			}
 			""");
+		Files.writeString(home.resolve("scripts/Spins.java"), """
+			import ghidra.app.script.GhidraScript;
+			public class Spins extends GhidraScript {
+				@Override
+				protected void run() throws Exception {
+					setEOLComment(currentAddress, "should not stay");
+					while (true) {
+						Thread.onSpinWait();
+					}
+				}
+			}
+			""");
 		Files.writeString(home.resolve("scripts/Breaks.java"), """
 			import ghidra.app.script.GhidraScript;
 			public class Breaks extends GhidraScript {
@@ -110,6 +122,27 @@ public class PluginOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 	}
 
 	@Test
+	public void aRunawayScriptIsStoppedAtTheTimeLimit() {
+		System.setProperty("opcodex.script.timeLimitMs", "3000");
+		try {
+			long revision = engine.revision(programId);
+			JsonObject run = engine.desktop("script.run", params("programId", programId, "script", "user:Spins.java",
+				"expectedRevision", revision, "address", "0x1000")).getAsJsonObject();
+			assertFalse(run.get("ok").getAsBoolean());
+			assertTrue(run.get("error").getAsString(), run.get("error").getAsString().contains("was stopped"));
+			assertNull(builder.getProgram().getListing().getComment(ghidra.program.model.listing.CommentType.EOL,
+				builder.getProgram().getAddressFactory().getAddress("0x1000")));
+			// The program still takes changes afterwards.
+			JsonObject next = engine.desktop("script.run", params("programId", programId, "script", "user:TagEntry.java",
+				"expectedRevision", engine.revision(programId), "address", "0x1000")).getAsJsonObject();
+			assertTrue(next.toString(), next.get("ok").getAsBoolean());
+		}
+		finally {
+			System.clearProperty("opcodex.script.timeLimitMs");
+		}
+	}
+
+	@Test
 	public void agentsNeedAllowAllToRunScriptsAndCannotInstallPlugins() {
 		long revision = engine.revision(programId);
 		JsonObject run = engine.raw(EngineHarness.CLIENT, "mcp:test", "script.run",
@@ -145,8 +178,12 @@ public class PluginOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 		assertEquals("hello from acme", engine.client("acme.hello", params()).getAsJsonObject()
 				.get("message").getAsString());
 
-		engine.desktop("plugin.setEnabled", params("id", "acme", "enabled", false));
+		// Its jar is open in this engine: removal finishes when the engine restarts.
+		JsonObject removing = engine.desktop("plugin.remove", params("id", "acme")).getAsJsonObject();
+		assertTrue(removing.get("restartNeeded").getAsBoolean());
+		assertTrue(removing.toString(), removing.toString().contains("\"removing\":true"));
 		start();
+		assertFalse(engine.client("plugin.list", params()).toString().contains("acme"));
 		JsonObject gone = engine.raw(EngineHarness.CLIENT, null, "acme.hello", params());
 		assertEquals("-32601", EngineHarness.errorCode(gone)); // method not found
 	}

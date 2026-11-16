@@ -256,7 +256,15 @@ public final class Workspace implements AutoCloseable {
 					committed = true;
 				}
 				finally {
-					program.endTransaction(tx, committed);
+					try {
+						program.endTransaction(tx, committed);
+					}
+					catch (IllegalStateException alreadyEnded) {
+						// Force-ended and rolled back (a script past its time limit): nothing to end.
+						if (committed) {
+							throw alreadyEnded;
+						}
+					}
 				}
 				if (program.isChanged()) {
 					program.save(txName, TaskMonitor.DUMMY);

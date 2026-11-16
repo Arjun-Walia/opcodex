@@ -24,6 +24,7 @@ dirs = "7"
 keyring = { version = "3.6", features = ["windows-native"] }
 reqwest = { version = "0.13", default-features = false, features = ["native-tls", "stream"] }
 futures-util = "0.3"
+url = "2"
 
 [profile.release]
 lto = true

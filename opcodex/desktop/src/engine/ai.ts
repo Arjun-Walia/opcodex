@@ -90,12 +90,13 @@ export async function* stream(provider: Provider, localUrl: string, body: unknow
     }),
   ]);
   const onAbort = () => {
-    invoke('ai_cancel', { id }).catch(() => undefined);
     finished = true;
     nudge();
   };
+  let completed = false;
   signal.addEventListener('abort', onAbort);
   try {
+    if (signal.aborted) return; // stopped before it began: send nothing
     await invoke('ai_start', { provider, local: provider === 'local' ? localUrl : null, body, id });
     while (true) {
       if (queue.length) {
@@ -108,7 +109,10 @@ export async function* stream(provider: Provider, localUrl: string, body: unknow
       });
     }
     if (failure) throw failure;
+    completed = !signal.aborted;
   } finally {
+    // Stopped, abandoned or failed early: make sure the provider request stops too.
+    if (!completed) invoke('ai_cancel', { id }).catch(() => undefined);
     signal.removeEventListener('abort', onAbort);
     unlisten.forEach((u) => u());
   }

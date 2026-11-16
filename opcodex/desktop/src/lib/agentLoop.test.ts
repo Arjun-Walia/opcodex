@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { toolsFrom, type ChatMessage } from './agent';
-import { needsApproval, runTurn, type TurnDeps } from './agentLoop';
+import { needsApproval, runTurn, settle, type TurnDeps } from './agentLoop';
 
 const tools = toolsFrom([
   { name: 'code.decompile', description: 'd', class: 'read', params: { type: 'object' } },
@@ -104,6 +104,50 @@ describe('runTurn', () => {
     const { d } = deps(Array.from({ length: 30 }, () => toolCall('code_decompile', {})));
     const out = await runTurn(d, user);
     expect((out.at(-1)!.parts[0] as { text: string }).text).toMatch(/Stopped after 20 steps/);
+  });
+
+  it('a stop before any reply leaves no empty message and sends nothing more', async () => {
+    let sends = 0;
+    let stop = false;
+    const { d } = deps([answer('never')], {
+      send: async function* () {
+        sends++;
+        stop = true;
+        yield '';
+      },
+      cancelled: () => stop,
+    });
+    const out = await runTurn(d, user);
+    expect(out).toEqual(user);
+    expect(sends).toBe(1);
+  });
+
+  it('a stop during a tool call answers it, so the next message is valid', async () => {
+    let stop = false;
+    const { d, calls } = deps([toolCall('symbol_rename', { name: 'x' }), answer('unused')], {
+      approve: async () => {
+        stop = true;
+        return false;
+      },
+      cancelled: () => stop,
+    });
+    const out = await runTurn(d, user);
+    expect(calls).toEqual([]);
+    const lastCall = out[1].parts.find((p) => p.type === 'tool_call');
+    expect(lastCall).toBeTruthy();
+    expect(out.at(-1)!.role).toBe('user');
+    expect(out.at(-1)!.parts[0]).toMatchObject({ type: 'tool_result', id: 'c1', isError: true });
+  });
+
+  it('settle drops empty replies and answers dangling tool calls', () => {
+    const dangling: ChatMessage[] = [
+      ...user,
+      { role: 'assistant', parts: [] },
+      { role: 'assistant', parts: [{ type: 'tool_call', id: 't9', name: 'code_decompile', input: {} }] },
+    ];
+    const out = settle(dangling);
+    expect(out.some((m) => m.role === 'assistant' && m.parts.length === 0)).toBe(false);
+    expect(out.at(-1)).toEqual({ role: 'user', parts: [{ type: 'tool_result', id: 't9', content: 'Stopped by the user.', isError: true }] });
   });
 
   it('surfaces a model error', async () => {

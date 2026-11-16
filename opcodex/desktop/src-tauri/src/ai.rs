@@ -5,8 +5,9 @@
 
 use futures_util::StreamExt;
 use serde_json::{json, Value};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
+use std::time::Duration;
 use tauri::{AppHandle, Emitter};
 
 const SERVICE: &str = "Opcodex";
@@ -83,18 +84,50 @@ pub fn key_status() -> Value {
     json!({ "anthropic": has(Provider::Anthropic), "openai": has(Provider::OpenAi) })
 }
 
-/// Only addresses on this computer are allowed for local models.
+/// Only addresses on this computer are allowed for local models: parsed as a URL, so tricks such
+/// as user info ("localhost:80@elsewhere") can't point the request at another machine.
 pub fn local_base(base: &str) -> Result<String, String> {
     let trimmed = base.trim().trim_end_matches('/');
-    let rest = trimmed
-        .strip_prefix("http://")
-        .ok_or("A local model address starts with http:// (for example http://127.0.0.1:11434/v1).")?;
-    let host = rest.split(['/', ':']).next().unwrap_or("");
-    let host = if rest.starts_with('[') { rest.split(']').next().unwrap_or("").trim_start_matches('[') } else { host };
-    if !matches!(host, "127.0.0.1" | "localhost" | "::1") {
+    let wrong = "A local model address looks like http://127.0.0.1:11434/v1 and must be on this computer.";
+    let url = reqwest::Url::parse(trimmed).map_err(|_| wrong.to_string())?;
+    if url.scheme() != "http" || !url.username().is_empty() || url.password().is_some()
+        || url.query().is_some() || url.fragment().is_some() {
+        return Err(wrong.into());
+    }
+    let loopback = match url.host() {
+        Some(url::Host::Domain(d)) => d.eq_ignore_ascii_case("localhost"),
+        Some(url::Host::Ipv4(ip)) => ip.is_loopback(),
+        Some(url::Host::Ipv6(ip)) => ip.is_loopback(),
+        None => false,
+    };
+    if !loopback {
         return Err("Local models must run on this computer (127.0.0.1 or localhost).".into());
     }
-    Ok(trimmed.to_string())
+    Ok(url.as_str().trim_end_matches('/').to_string())
+}
+
+/// Splits a byte stream into text without breaking characters across chunk boundaries.
+#[derive(Default)]
+pub struct Utf8Carry {
+    pending: Vec<u8>,
+}
+
+impl Utf8Carry {
+    pub fn push(&mut self, bytes: &[u8]) -> String {
+        self.pending.extend_from_slice(bytes);
+        let valid = match std::str::from_utf8(&self.pending) {
+            Ok(_) => self.pending.len(),
+            Err(e) if e.error_len().is_none() => e.valid_up_to(), // an incomplete character at the end
+            Err(_) => return String::from_utf8_lossy(&std::mem::take(&mut self.pending)).into_owned(),
+        };
+        let rest = self.pending.split_off(valid);
+        let text = String::from_utf8(std::mem::replace(&mut self.pending, rest)).unwrap_or_default();
+        text
+    }
+
+    pub fn finish(&mut self) -> String {
+        String::from_utf8_lossy(&std::mem::take(&mut self.pending)).into_owned()
+    }
 }
 
 /// The fixed address for a provider request.
@@ -109,12 +142,19 @@ pub fn endpoint(provider: Provider, local: Option<&str>) -> Result<String, Strin
 #[derive(Default)]
 pub struct Requests {
     running: Mutex<HashMap<String, tauri::async_runtime::JoinHandle<()>>>,
+    /// Cancels that arrived before their request was registered.
+    cancelled: Mutex<HashSet<String>>,
 }
 
 impl Requests {
     pub fn cancel(&self, id: &str) {
-        if let Some(handle) = self.running.lock().ok().and_then(|mut m| m.remove(id)) {
-            handle.abort();
+        match self.running.lock().ok().and_then(|mut m| m.remove(id)) {
+            Some(handle) => handle.abort(),
+            None => {
+                if let Ok(mut c) = self.cancelled.lock() {
+                    c.insert(id.to_string());
+                }
+            }
         }
     }
 }
@@ -137,7 +177,17 @@ pub fn start(app: AppHandle, requests: &Requests, provider: Provider, local: Opt
     };
     let task_id = id.clone();
     let handle = tauri::async_runtime::spawn(async move {
-        let client = reqwest::Client::new();
+        let client = match reqwest::Client::builder()
+            .redirect(reqwest::redirect::Policy::none()) // never re-send the conversation elsewhere
+            .connect_timeout(Duration::from_secs(15))
+            .build()
+        {
+            Ok(c) => c,
+            Err(e) => {
+                emit(&app, "ai:error", json!({"id": task_id, "message": format!("Couldn't start the request: {e}")}));
+                return;
+            }
+        };
         let mut request = client.post(&url).header("content-type", "application/json").body(text);
         request = match (provider, key) {
             (Provider::Anthropic, Some(k)) => request.header("x-api-key", k).header("anthropic-version", "2023-06-01"),
@@ -155,19 +205,34 @@ pub fn start(app: AppHandle, requests: &Requests, provider: Provider, local: Opt
                     return;
                 }
                 let mut stream = response.bytes_stream();
+                let mut carry = Utf8Carry::default();
                 while let Some(chunk) = stream.next().await {
                     match chunk {
-                        Ok(bytes) => emit(&app, "ai:data", json!({"id": task_id, "chunk": String::from_utf8_lossy(&bytes)})),
+                        Ok(bytes) => {
+                            let text = carry.push(&bytes);
+                            if !text.is_empty() {
+                                emit(&app, "ai:data", json!({"id": task_id, "chunk": text}));
+                            }
+                        }
                         Err(e) => {
                             emit(&app, "ai:error", json!({"id": task_id, "message": friendly(&e)}));
                             return;
                         }
                     }
                 }
+                let rest = carry.finish();
+                if !rest.is_empty() {
+                    emit(&app, "ai:data", json!({"id": task_id, "chunk": rest}));
+                }
                 emit(&app, "ai:done", json!({"id": task_id}));
             }
         }
     });
+    let cancelled_early = requests.cancelled.lock().map(|mut c| c.remove(&id)).unwrap_or(false);
+    if cancelled_early {
+        handle.abort();
+        return Ok(());
+    }
     if let Ok(mut running) = requests.running.lock() {
         running.retain(|_, h| !h.inner().is_finished());
         running.insert(id, handle);
@@ -205,8 +270,32 @@ mod tests {
         assert!(local_base("http://192.168.1.5:11434/v1").is_err());
         assert!(local_base("http://evil.example/v1").is_err());
         assert!(local_base("http://127.0.0.1.evil.example/v1").is_err());
+        assert!(local_base("http://localhost:80@evil.com/v1").is_err());
+        assert!(local_base("http://[::1]@evil.com/v1").is_err());
+        assert!(local_base("http://user:pw@127.0.0.1:11434/v1").is_err());
+        assert!(local_base("http://127.0.0.2:11434/v1").is_ok()); // all of 127/8 is this computer
         assert!(local_base("https://api.openai.com/v1").is_err());
         assert!(local_base("file:///etc/passwd").is_err());
+    }
+
+    #[test]
+    fn characters_split_across_chunks_stay_whole() {
+        let text = "naïve 😀 漢字";
+        let bytes = text.as_bytes();
+        for cut in 0..bytes.len() {
+            let mut carry = Utf8Carry::default();
+            let mut out = carry.push(&bytes[..cut]);
+            out += &carry.push(&bytes[cut..]);
+            out += &carry.finish();
+            assert_eq!(out, text, "cut at {cut}");
+        }
+    }
+
+    #[test]
+    fn a_cancel_before_start_is_remembered() {
+        let r = Requests::default();
+        r.cancel("x");
+        assert!(r.cancelled.lock().unwrap().contains("x"));
     }
 
     #[test]

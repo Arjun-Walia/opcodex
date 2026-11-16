@@ -117,6 +117,31 @@ public class DebugOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 	}
 
 	@Test
+	public void stepOverARecursiveCallReturnsAtTheCallersDepth() {
+		JsonObject regs = new JsonObject();
+		regs.addProperty("RDI", "3");
+		JsonObject start = params("programId", programId, "address", "0x1060");
+		start.add("registers", regs);
+		engine.client("debug.start", start);
+		JsonObject state = call("debug.step", "count", 4);
+		assertEquals("00001067", state.get("pc").getAsString());
+		String spAtCall = reg(state, "RSP");
+		state = call("debug.stepOver");
+		assertEquals("0000106c", state.get("pc").getAsString());
+		assertEquals("back at the caller's depth", spAtCall, reg(state, "RSP"));
+	}
+
+	@Test
+	public void anUnknownStartingRegisterIsRefused() {
+		JsonObject regs = new JsonObject();
+		regs.addProperty("NOPE", "1");
+		JsonObject start = params("programId", programId, "address", "0x1000");
+		start.add("registers", regs);
+		JsonObject response = engine.raw(EngineHarness.CLIENT, null, "debug.start", start);
+		assertEquals("INVALID_PARAMS", EngineHarness.errorCode(response));
+	}
+
+	@Test
 	public void nothingToStepWithoutASession() {
 		JsonObject response = engine.raw(EngineHarness.CLIENT, null, "debug.step", params("programId", programId));
 		assertEquals("NOT_FOUND", EngineHarness.errorCode(response));

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, type WheelEvent } from 'react';
 import { GitBranch, Loader2, Maximize2, Minus, Network, Plus } from 'lucide-react';
 import type { CallGraph, FunctionGraph } from '../engine/types';
-import { BLOCK_PAD_X, BLOCK_PAD_Y, CHAR_WIDTH, LINE_HEIGHT, layoutBlocks, layoutCalls, pathOf, type Layout } from '../lib/graph';
+import { BLOCK_PAD_X, BLOCK_PAD_Y, CHAR_WIDTH, LINE_HEIGHT, layoutBlocks, layoutCalls, pathOf, shownLines, type Layout } from '../lib/graph';
 import { useEngine, useSession } from '../state/session';
 
 type Mode = 'blocks' | 'calls';
@@ -107,6 +107,7 @@ export function GraphView() {
     );
 
   const blockOf = new Map((blocks.data?.blocks ?? []).map((b) => [b.start, b]));
+  const lineLimit = blocks.data ? shownLines(blocks.data) : Number.MAX_SAFE_INTEGER;
   const callOf = new Map((calls.data?.nodes ?? []).map((n) => [n.entry, n]));
 
   return (
@@ -183,7 +184,12 @@ export function GraphView() {
                 return (
                   <g key={n.id} transform={`translate(${x},${y})`} className={`graph-node${entry ? ' root' : ''}`}>
                     <rect width={n.width} height={n.height} rx={8} />
-                    {block?.instructions.map((ins, i) => {
+                    {block && block.instructions.length > lineLimit && (
+                      <text x={BLOCK_PAD_X} y={BLOCK_PAD_Y + LINE_HEIGHT * lineLimit + LINE_HEIGHT * 0.72} className="graph-addr">
+                        … {block.instructions.length - lineLimit} more
+                      </text>
+                    )}
+                    {block?.instructions.slice(0, lineLimit).map((ins, i) => {
                       const [mn, ...rest] = ins.text.split(' ');
                       const ty = BLOCK_PAD_Y + LINE_HEIGHT * i;
                       return (
@@ -208,6 +214,9 @@ export function GraphView() {
         )}
         {(mode === 'blocks' ? blocks.data?.truncated : calls.data?.truncated) && (
           <div className="graph-note">This graph is large; only part of it is shown.</div>
+        )}
+        {mode === 'blocks' && !blocks.data?.truncated && lineLimit !== Number.MAX_SAFE_INTEGER && (
+          <div className="graph-note">A large function: each block shows its first lines. Double-click a line to read it all in Assembly.</div>
         )}
       </div>
     </div>

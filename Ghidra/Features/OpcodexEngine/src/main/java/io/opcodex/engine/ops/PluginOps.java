@@ -24,8 +24,7 @@ public final class PluginOps {
 	private static final long SCRIPT_TIME_LIMIT_MS = 10 * 60 * 1000;
 
 	private static volatile PluginStore store = PluginStore.standard();
-	private static volatile PluginLoader.Loaded loaded =
-		new PluginLoader.Loaded(Map.of(), Map.of());
+	private static volatile PluginLoader.Loaded loaded = PluginLoader.Loaded.none();
 	private static volatile Set<String> enabledAtStart = Set.of();
 
 	private PluginOps() {
@@ -34,8 +33,15 @@ public final class PluginOps {
 	/** Called once at engine start, after Community's operations are registered. */
 	public static void loadPlugins(Catalog catalog, EngineServices services, ClassLoader parent) {
 		store = PluginStore.standard();
+		store.finishRemovals();
 		loaded = PluginLoader.load(store, catalog, services, parent);
 		enabledAtStart = enabledWithOperations();
+	}
+
+	/** Called when the engine closes: releases plugin jars. */
+	public static void unloadPlugins() {
+		loaded.close();
+		loaded = PluginLoader.Loaded.none();
 	}
 
 	private static Set<String> enabledWithOperations() {
@@ -84,7 +90,13 @@ public final class PluginOps {
 				})),
 			new Operation("plugin.remove", "Removes a plugin. Desktop only.", OperationClass.SYSTEM, byId,
 				Schemas.any("Plugins."), (ctx, p) -> guarded(() -> {
-					store.remove(Params.requireString(p, "id"));
+					String id = Params.requireString(p, "id");
+					if (loaded.operations().containsKey(id)) {
+						store.removeLater(id); // its jars are open in this engine
+					}
+					else {
+						store.remove(id);
+					}
 					return list();
 				})),
 			new Operation("plugin.themes", "Returns the theme files of enabled plugins.", OperationClass.READ, none,
@@ -147,7 +159,8 @@ public final class PluginOps {
 			plugins.add(describe(plugin));
 		}
 		out.add("plugins", plugins);
-		out.addProperty("restartNeeded", !enabledWithOperations().equals(enabledAtStart));
+		boolean removing = store.list().stream().anyMatch(p -> store.removalPending(p.id()));
+		out.addProperty("restartNeeded", removing || !enabledWithOperations().equals(enabledAtStart));
 		return out;
 	}
 
@@ -159,6 +172,7 @@ public final class PluginOps {
 		o.addProperty("description", plugin.description());
 		o.addProperty("author", plugin.author());
 		o.addProperty("enabled", plugin.enabled());
+		o.addProperty("removing", store.removalPending(plugin.id()));
 		String error = plugin.error() != null ? plugin.error() : loaded.errors().get(plugin.id());
 		if (error != null) {
 			o.addProperty("error", error);
@@ -312,9 +326,14 @@ public final class PluginOps {
 			written = services.workspace().write(programId, "Script " + file.getFileName(), precheck, program -> {
 				Address at = addressText == null ? program.getMinAddress()
 						: Params.address(program, "address", addressText);
-				ScriptRunner.Result result = ScriptRunner.run(script, project, program, at, args,
-					ScriptRunner.timeLimit(SCRIPT_TIME_LIMIT_MS));
+				long limit = Long.getLong("opcodex.script.timeLimitMs", SCRIPT_TIME_LIMIT_MS);
+				ScriptRunner.Result result = ScriptRunner.run(script, project, program, at, args, limit);
 				if (result.error() != null) {
+					if (result.timedOut() && program instanceof ghidra.framework.data.DomainObjectAdapterDB db) {
+						// The script still holds its own nested transaction open: end it all, rolled back.
+						db.forceLock(true, "script time limit");
+						db.unlock();
+					}
 					throw new ScriptFailed(result); // rolls the transaction back
 				}
 				return result;

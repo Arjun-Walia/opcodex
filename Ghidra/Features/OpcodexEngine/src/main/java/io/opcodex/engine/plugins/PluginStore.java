@@ -67,7 +67,8 @@ public final class PluginStore {
 		}
 		Set<String> disabled = disabled();
 		try (Stream<Path> dirs = Files.list(root)) {
-			dirs.filter(Files::isDirectory).sorted().forEach(dir -> out.add(read(dir, disabled)));
+			dirs.filter(d -> Files.isDirectory(d) && !d.getFileName().toString().startsWith("."))
+					.sorted().forEach(dir -> out.add(read(dir, disabled)));
 		}
 		catch (IOException e) {
 			// An unreadable plugins folder means no plugins.
@@ -161,7 +162,17 @@ public final class PluginStore {
 				throw new IllegalArgumentException("A plugin named " + id + " is already installed. Remove it first.");
 			}
 			Files.createDirectories(root);
-			copyTree(top, target);
+			// Copy beside the target, then move: a failed copy never leaves a half-installed plugin.
+			Path partial = root.resolve("." + id + ".installing");
+			deleteTree(partial);
+			try {
+				copyTree(top, partial);
+				Files.move(partial, target);
+			}
+			finally {
+				deleteTree(partial);
+			}
+			setEnabled(id, true); // a reinstall starts on, whatever an earlier copy was set to
 			return read(target, disabled());
 		}
 		catch (NoSuchFileException e) {
@@ -177,8 +188,51 @@ public final class PluginStore {
 
 	public void remove(String id) throws IOException {
 		Plugin plugin = find(id).orElseThrow(() -> new IllegalArgumentException("No plugin named " + id + "."));
-		deleteTree(plugin.dir());
+		deletePlugin(plugin.dir());
 		setEnabled(id, true); // forget its state
+	}
+
+	/**
+	 * Marks a plugin to be removed when the engine next starts: its jars are open in this engine,
+	 * and Windows can't delete open files. It is turned off now.
+	 */
+	public void removeLater(String id) throws IOException {
+		find(id).orElseThrow(() -> new IllegalArgumentException("No plugin named " + id + "."));
+		setEnabled(id, false);
+		Files.writeString(root.resolve(id).resolve(".remove"), "", StandardCharsets.UTF_8);
+	}
+
+	/** Finishes removals scheduled with removeLater. Call before loading plugins. */
+	public void finishRemovals() {
+		for (Plugin plugin : list()) {
+			if (Files.exists(plugin.dir().resolve(".remove"))) {
+				try {
+					deletePlugin(plugin.dir());
+					setEnabled(plugin.id(), true);
+				}
+				catch (IOException e) {
+					// Still locked: try again next time.
+				}
+			}
+		}
+	}
+
+	public boolean removalPending(String id) {
+		return Files.exists(root.resolve(id).resolve(".remove"));
+	}
+
+	/** Deletes a plugin folder with its manifest last, so a failure never leaves a broken plugin. */
+	private static void deletePlugin(Path dir) throws IOException {
+		Path manifest = dir.resolve(MANIFEST);
+		try (Stream<Path> walk = Files.walk(dir)) {
+			for (Path p : walk.sorted(Comparator.reverseOrder()).toList()) {
+				if (!p.equals(manifest) && !p.equals(dir)) {
+					Files.deleteIfExists(p);
+				}
+			}
+		}
+		Files.deleteIfExists(manifest);
+		Files.deleteIfExists(dir);
 	}
 
 	public void setEnabled(String id, boolean enabled) throws IOException {
@@ -222,7 +276,7 @@ public final class PluginStore {
 					throw new IllegalArgumentException("The plugin has too many files.");
 				}
 				Path out = base.resolve(entry.getName()).normalize();
-				if (!out.startsWith(base) || entry.getName().contains("..")) {
+				if (!out.startsWith(base) || out.equals(base)) {
 					throw new IllegalArgumentException("The plugin zip has an unsafe path: " + entry.getName());
 				}
 				if (entry.isDirectory()) {

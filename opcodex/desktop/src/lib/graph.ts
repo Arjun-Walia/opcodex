@@ -44,10 +44,22 @@ export function blockSize(lines: string[]): { width: number; height: number } {
   };
 }
 
+/** Above this many blocks, each block shows only its first lines so the window stays responsive. */
+export const COMPACT_BLOCKS = 250;
+export const COMPACT_LINES = 4;
+
+export function shownLines(graph: FunctionGraph): number {
+  return graph.blocks.length > COMPACT_BLOCKS ? COMPACT_LINES : Number.MAX_SAFE_INTEGER;
+}
+
 export function layoutBlocks(graph: FunctionGraph): Layout {
+  const limit = shownLines(graph);
   const nodes = graph.blocks.map((b) => ({
     id: b.start,
-    ...blockSize(b.instructions.map((i) => (i.comment ? `${i.text} ; ${i.comment}` : i.text))),
+    ...blockSize([
+      ...b.instructions.slice(0, limit).map((i) => (i.comment ? `${i.text} ; ${i.comment}` : i.text)),
+      ...(b.instructions.length > limit ? [`… ${b.instructions.length - limit} more`] : []),
+    ]),
   }));
   const known = new Set(nodes.map((n) => n.id));
   const edges = graph.edges.filter((e) => known.has(e.from) && known.has(e.to));

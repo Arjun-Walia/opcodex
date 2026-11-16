@@ -142,6 +142,7 @@ public final class EngineCore implements AutoCloseable {
 
 	@Override
 	public void close() {
+		io.opcodex.engine.ops.PluginOps.unloadPlugins();
 		services.workspace().jobs().close();
 		services.workspace().close();
 	}

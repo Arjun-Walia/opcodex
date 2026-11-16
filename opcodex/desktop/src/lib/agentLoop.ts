@@ -83,13 +83,34 @@ async function runCall(deps: TurnDeps, call: ToolCall): Promise<ToolResult> {
   }
 }
 
+/**
+ * Makes a conversation valid to send again after a stop: no empty assistant messages, and every
+ * tool call answered (providers refuse a tool call without its result).
+ */
+export function settle(messages: ChatMessage[]): ChatMessage[] {
+  const out = messages.filter((m) => m.role !== 'assistant' || m.parts.length > 0);
+  const last = out.at(-1);
+  if (last?.role === 'assistant') {
+    const open = last.parts.filter((p): p is ToolCall => p.type === 'tool_call');
+    if (open.length) {
+      return [
+        ...out,
+        { role: 'user', parts: open.map((c) => ({ type: 'tool_result', id: c.id, content: 'Stopped by the user.', isError: true }) as ToolResult) },
+      ];
+    }
+  }
+  return out;
+}
+
 /** Runs one user turn to completion and returns the full conversation afterwards. */
 export async function runTurn(deps: TurnDeps, history: ChatMessage[]): Promise<ChatMessage[]> {
   let messages = history;
   for (let step = 0; step < MAX_STEPS; step++) {
+    if (deps.cancelled()) return settle(messages);
     const reply = await oneReply(deps, messages);
-    messages = [...messages, { role: 'assistant', parts: reply.parts }];
-    if (reply.calls.length === 0 || deps.cancelled()) return messages;
+    if (reply.parts.length) messages = [...messages, { role: 'assistant', parts: reply.parts }];
+    if (deps.cancelled()) return settle(messages);
+    if (reply.calls.length === 0) return messages;
     const results: ToolResult[] = [];
     for (const call of reply.calls) {
       deps.onTool({ phase: 'start', call });

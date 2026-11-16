@@ -107,6 +107,8 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
   const [error, setError] = useState<string | null>(null);
   const [keys, setKeys] = useState<KeyStatus | null>(null);
   const abort = useRef<AbortController | null>(null);
+  // Bumped by "New chat": a reply still finishing must not bring the old conversation back.
+  const generation = useRef(0);
   const scroller = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const desktop = isDesktopApp();
@@ -136,6 +138,8 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
     setStreaming('');
     const controller = new AbortController();
     abort.current = controller;
+    const mine = generation.current;
+    const current = () => generation.current === mine;
     const history: ChatMessage[] = [...messages, { role: 'user', parts: [{ type: 'text', text: prompt }] }];
     setMessages(history);
     try {
@@ -159,8 +163,9 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
             return out;
           },
           approve: (tool, params) => new Promise<boolean>((resolve) => setApproval({ tool, input: params, resolve })),
-          onText: (delta) => setStreaming((s) => s + delta),
+          onText: (delta) => current() && setStreaming((s) => s + delta),
           onTool: ({ call: c, result: r }) => {
+            if (!current()) return;
             setStreaming('');
             setActivity((a) => ({ ...a, [c.id]: { call: c, result: r } }));
           },
@@ -168,15 +173,18 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
         },
         history,
       );
-      setMessages(result);
+      if (current()) setMessages(result);
       if (changed) session.bump();
     } catch (e) {
-      if (!controller.signal.aborted) setError(e instanceof Error ? e.message : String(e));
+      if (current() && !controller.signal.aborted) setError(e instanceof Error ? e.message : String(e));
+      if (current() && controller.signal.aborted) setMessages(history);
     } finally {
-      setStreaming('');
-      setBusy(false);
-      setApproval(null);
-      abort.current = null;
+      if (current()) {
+        setStreaming('');
+        setBusy(false);
+        setApproval(null);
+        abort.current = null;
+      }
     }
   }
 
@@ -188,6 +196,10 @@ export function AgentChat({ open, onClose, onOpenSettings }: { open: boolean; on
 
   function newChat() {
     stop();
+    generation.current += 1;
+    setBusy(false);
+    setStreaming('');
+    abort.current = null;
     setMessages([]);
     setActivity({});
     setError(null);

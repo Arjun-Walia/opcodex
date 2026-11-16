@@ -44,9 +44,29 @@ public final class DebugSession implements AutoCloseable {
 
 	public DebugSession(Program program, Address start, Map<String, BigInteger> registers) {
 		this.program = program;
-		this.emu = new EmulatorHelper(program);
-		emu.setMemoryFaultHandler(new QuietFaults());
 		Language language = program.getLanguage();
+		Map<Register, BigInteger> starting = new LinkedHashMap<>();
+		registers.forEach((name, value) -> {
+			Register reg = language.getRegister(name);
+			if (reg == null) {
+				throw new IllegalArgumentException("No register named " + name);
+			}
+			starting.put(reg, value);
+		});
+		this.emu = new EmulatorHelper(program);
+		try {
+			this.sentinel = setUp(language, start, starting);
+		}
+		catch (RuntimeException e) {
+			emu.dispose(); // don't leak an emulator when a start fails
+			throw e;
+		}
+		this.shown = RegisterSets.shown(language);
+		previous = snapshot();
+	}
+
+	private Address setUp(Language language, Address start, Map<Register, BigInteger> starting) {
+		emu.setMemoryFaultHandler(new QuietFaults());
 		// Processor-specific operations without an emulator model (cpuid, rdtsc, xgetbv...) give 0.
 		emu.registerDefaultCallOtherCallback(new BreakCallBack() {
 			@Override
@@ -66,9 +86,9 @@ public final class DebugSession implements AutoCloseable {
 		});
 		AddressSpace space = start.getAddressSpace();
 		int pointer = language.getDefaultSpace().getPointerSize();
-		long top = pointer >= 8 ? 0x7ff0_0000_0000L : 0x7ff0_0000L;
-		this.sentinel = space.getAddress(pointer >= 8 ? 0x7fee_dead_0000L : 0x7fed_0000L);
-		this.shown = RegisterSets.shown(language);
+		long maxOffset = space.getMaxAddress().getOffset();
+		long top = pointer >= 8 ? 0x7ff0_0000_0000L : Math.min(0x7ff0_0000L, maxOffset & ~0xfffL);
+		Address sentinel = space.getAddress(Math.min(pointer >= 8 ? 0x7fee_dead_0000L : 0x7fed_0000L, top - 0x100));
 		Register sp = emu.getStackPointerRegister();
 		long spValue = top - 0x1000;
 		emu.writeRegister(sp, spValue);
@@ -82,15 +102,9 @@ public final class DebugSession implements AutoCloseable {
 			emu.writeRegister(sp, spValue);
 			emu.writeMemoryValue(space.getAddress(spValue), pointer, sentinel.getOffset());
 		}
-		registers.forEach((name, value) -> {
-			Register reg = language.getRegister(name);
-			if (reg == null) {
-				throw new IllegalArgumentException("No register named " + name);
-			}
-			emu.writeRegister(reg, value);
-		});
+		starting.forEach(emu::writeRegister);
 		emu.writeRegister(emu.getPCRegister(), start.getAddressableWordOffset());
-		previous = snapshot();
+		return sentinel;
 	}
 
 	private static Register linkRegister(Language language) {
@@ -108,6 +122,7 @@ public final class DebugSession implements AutoCloseable {
 
 	public synchronized JsonObject step(int count) {
 		events.clear();
+		previous = snapshot();
 		for (int i = 0; i < count && running; i++) {
 			stepOne();
 		}
@@ -120,12 +135,16 @@ public final class DebugSession implements AutoCloseable {
 	/** Runs a call as one step; anything else steps once. */
 	public synchronized JsonObject stepOver() {
 		events.clear();
+		previous = snapshot();
 		Instruction instruction = instructionAtPc();
 		if (instruction == null || !instruction.getFlowType().isCall() || isExternalCall(instruction)) {
 			return step(1);
 		}
 		Address after = instruction.getFallThrough();
-		JsonObject state = runUntil(after);
+		BigInteger depth = emu.readRegister(emu.getStackPointerRegister());
+		// Back at the instruction after the call AND at the caller's stack depth, so a recursive
+		// call returning to the same address deeper down doesn't count.
+		JsonObject state = runUntil(after, depth);
 		if ("reached".equals(reason)) {
 			reason = "step"; // stepping over a call is still a step
 			state.addProperty("reason", reason);
@@ -135,21 +154,24 @@ public final class DebugSession implements AutoCloseable {
 
 	public synchronized JsonObject run() {
 		events.clear();
-		return runUntil(null);
+		previous = snapshot();
+		return runUntil(null, null);
 	}
 
 	public synchronized JsonObject runTo(Address target) {
 		events.clear();
-		return runUntil(target);
+		previous = snapshot();
+		return runUntil(target, null);
 	}
 
-	private JsonObject runUntil(Address target) {
+	private JsonObject runUntil(Address target, BigInteger minStack) {
 		long limit = MAX_RUN_INSTRUCTIONS;
 		boolean first = true;
 		while (running && limit-- > 0) {
 			Address pc = emu.getExecutionAddress();
 			if (!first) {
-				if (target != null && pc.equals(target)) {
+				if (target != null && pc.equals(target) &&
+					(minStack == null || emu.readRegister(emu.getStackPointerRegister()).compareTo(minStack) >= 0)) {
 					reason = "reached";
 					return state();
 				}
@@ -211,9 +233,15 @@ public final class DebugSession implements AutoCloseable {
 	}
 
 	/** An imported function a call goes to. */
-	private record Import(String name, boolean noReturn) {
+	private record Import(String name, boolean noReturn, int purge) {
 		static Import of(Function f, Address fallback) {
-			return f != null ? new Import(f.getName(), f.hasNoReturn()) : new Import(fallback.toString(), false);
+			return f != null ? new Import(f.getName(), f.hasNoReturn(), purgeOf(f)) : new Import(fallback.toString(), false, 0);
+		}
+
+		/** Bytes the callee pops (stdcall), or 0 when unknown or none. */
+		static int purgeOf(Function f) {
+			int purge = f.getStackPurgeSize();
+			return purge > 0 && purge != Function.UNKNOWN_STACK_DEPTH_CHANGE && purge < 0x10000 ? purge : 0;
 		}
 	}
 
@@ -229,7 +257,8 @@ public final class DebugSession implements AutoCloseable {
 			if (f != null && f.isThunk()) {
 				Function thunked = f.getThunkedFunction(true);
 				if (thunked != null && thunked.isExternal()) {
-					return new Import(thunked.getName(), thunked.hasNoReturn() || f.hasNoReturn());
+					return new Import(thunked.getName(), thunked.hasNoReturn() || f.hasNoReturn(),
+						Math.max(Import.purgeOf(thunked), Import.purgeOf(f)));
 				}
 			}
 			if (ref.getReferenceType().isIndirect() || ref.getReferenceType().isData()) {
@@ -256,6 +285,11 @@ public final class DebugSession implements AutoCloseable {
 		Register result = RegisterSets.returnRegister(program.getLanguage());
 		if (result != null) {
 			emu.writeRegister(result, 0);
+		}
+		if (target.purge() > 0) {
+			// The callee would have popped its arguments (stdcall); keep the stack as it would be.
+			Register sp = emu.getStackPointerRegister();
+			emu.writeRegister(sp, emu.readRegister(sp).add(BigInteger.valueOf(target.purge())));
 		}
 		emu.writeRegister(emu.getPCRegister(), instruction.getFallThrough().getAddressableWordOffset());
 		events.add("Stepped over the call to " + target.name() + " (imported; returns 0 in the emulator).");
@@ -306,7 +340,6 @@ public final class DebugSession implements AutoCloseable {
 				changed.add(reg.getName());
 			}
 		}
-		previous = now;
 		out.add("registers", registers);
 		out.add("changed", changed);
 		out.add("stack", stack());
@@ -326,7 +359,13 @@ public final class DebugSession implements AutoCloseable {
 		AddressSpace space = program.getAddressFactory().getDefaultAddressSpace();
 		boolean little = !program.getLanguage().isBigEndian();
 		for (int i = 0; i < STACK_SLOTS; i++) {
-			Address at = space.getAddress(sp.longValue() + (long) i * pointer);
+			Address at;
+			try {
+				at = space.getAddress(sp.longValue() + (long) i * pointer);
+			}
+			catch (Exception outOfRange) {
+				break; // the stack pointer is near the end of the address space
+			}
 			byte[] bytes = emu.readMemory(at, pointer);
 			byte[] ordered = bytes.clone();
 			if (little) {

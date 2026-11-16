@@ -145,10 +145,17 @@ fn desktop_call(method: &str, params: &Value) -> Value {
 
 /// The plugins or scripts folder (the same places the engine uses), opened in Explorer.
 fn open_folder(kind: &str) -> Value {
-    let base = std::env::var_os("APPDATA").map(PathBuf::from).unwrap_or_else(|| dirs::config_dir().unwrap_or_default()).join("Opcodex");
+    // The same folders the engine uses (see PluginStore.standard).
+    let plugins = match std::env::var_os("OPCODEX_PLUGINS_DIR").filter(|v| !v.is_empty()) {
+        Some(dir) => PathBuf::from(dir),
+        None => match std::env::var_os("APPDATA") {
+            Some(appdata) => PathBuf::from(appdata).join("Opcodex").join("plugins"),
+            None => dirs::home_dir().unwrap_or_default().join(".config").join("opcodex").join("plugins"),
+        },
+    };
     let dir = match kind {
-        "plugins" => base.join("plugins"),
-        "scripts" => base.join("scripts"),
+        "plugins" => plugins,
+        "scripts" => plugins.parent().map(|p| p.join("scripts")).unwrap_or_default(),
         _ => return error("Unknown folder.", "INVALID_PARAMS"),
     };
     if let Err(e) = std::fs::create_dir_all(&dir) {

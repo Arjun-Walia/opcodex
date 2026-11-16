@@ -87,6 +87,31 @@ function KeyRow({ provider, status, onStatus }: { provider: (typeof CLOUD)[numbe
   );
 }
 
+/** Edited freely; saved on blur or Enter (an empty name keeps the previous one). */
+function ModelField({ label, value, onCommit }: { label: string; value: string; onCommit: (v: string) => void }) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+  const commit = () => {
+    const v = draft.trim();
+    if (v && v !== value) onCommit(v);
+    else setDraft(value);
+  };
+  return (
+    <label className="ai-model">
+      <span>{label}</span>
+      <input
+        className="mono"
+        value={draft}
+        spellCheck={false}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+        aria-label={`${label} model name`}
+      />
+    </label>
+  );
+}
+
 export function AiModels() {
   const prefs = usePrefs();
   const { ai } = prefs;
@@ -98,16 +123,12 @@ export function AiModels() {
   }, [desktop]);
 
   const model = (p: Provider, label: string) => (
-    <label className="ai-model">
-      <span>{label}</span>
-      <input
-        className="mono"
-        value={ai.models[p]}
-        spellCheck={false}
-        onChange={(e) => prefs.setAi({ models: { ...ai.models, [p]: e.target.value } })}
-        aria-label={`${label} model name`}
-      />
-    </label>
+    <ModelField
+      key={p}
+      label={label}
+      value={ai.models[p]}
+      onCommit={(value) => prefs.setAi({ models: { ...ai.models, [p]: value } })}
+    />
   );
 
   return (

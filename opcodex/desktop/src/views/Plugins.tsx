@@ -268,7 +268,7 @@ export function Plugins() {
                 <button
                   type="button"
                   className="button"
-                  disabled={!session.programId || run?.script.id === s.id && !run.result && !run.error}
+                  disabled={!session.programId || (!!run && !run.result && !run.error)}
                   title={session.programId ? `Run on the open program${session.location ? ` at ${session.location}` : ''}` : 'Open a program first'}
                   onClick={() => runScript(s)}
                 >

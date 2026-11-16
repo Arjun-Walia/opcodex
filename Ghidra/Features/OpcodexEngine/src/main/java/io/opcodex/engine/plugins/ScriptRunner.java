@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import generic.jar.ResourceFile;
 import ghidra.app.plugin.core.osgi.BundleHost;
@@ -21,7 +22,10 @@ public final class ScriptRunner {
 
 	public static final int MAX_OUTPUT_CHARS = 200_000;
 
-	public record Result(String output, String error) {
+	public record Result(String output, String error, boolean timedOut) {
+		Result(String output, String error) {
+			this(output, error, false);
+		}
 	}
 
 	private static BundleHost host;
@@ -60,33 +64,49 @@ public final class ScriptRunner {
 		}
 	}
 
-	/** Runs inside the caller's transaction. Printing is captured; errors are returned, not thrown. */
+	/**
+	 * Runs inside the caller's transaction, on a thread of its own with a hard time limit. Printing
+	 * is captured; failures are returned, not thrown. A script that ignores cancellation is
+	 * abandoned at the limit: the caller rolls the transaction back, so its later writes fail.
+	 */
 	public static Result run(GhidraScript script, Project project, Program program, Address at, String[] args,
-			TaskMonitor monitor) {
+			long timeLimitMillis) {
 		StringWriter out = new StringWriter();
 		PrintWriter writer = new PrintWriter(out, true);
 		script.setScriptArgs(args);
 		GhidraState state = new GhidraState(null, project, program,
 			at == null ? null : new ProgramLocation(program, at), null, null);
+		TaskMonitorAdapter monitor = new TaskMonitorAdapter(true);
+		AtomicReference<Throwable> failure = new AtomicReference<>();
+		Thread thread = new Thread(() -> {
+			try {
+				script.execute(state, new ScriptControls(writer, writer, false, monitor));
+			}
+			catch (Throwable t) {
+				failure.set(t);
+			}
+		}, "opcodex-script-" + script.getClass().getSimpleName());
+		thread.setDaemon(true);
+		thread.start();
 		try {
-			script.execute(state, new ScriptControls(writer, writer, false, monitor));
-			return new Result(truncate(out.toString()), null);
+			thread.join(timeLimitMillis);
 		}
-		catch (Exception e) {
-			String message = e.getMessage() == null ? e.toString() : e.getMessage();
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		if (thread.isAlive()) {
+			monitor.cancel();
+			thread.interrupt();
+			return new Result(truncate(out.toString()), "The script ran longer than " +
+				Math.max(1, timeLimitMillis / 60000) + " minutes and was stopped; nothing it changed was kept. " +
+				"If it ignores cancellation it may keep using the processor until Opcodex restarts.", true);
+		}
+		Throwable t = failure.get();
+		if (t != null) {
+			String message = t.getMessage() == null ? t.toString() : t.getMessage();
 			return new Result(truncate(out.toString()), message);
 		}
-	}
-
-	/** A monitor that cancels after a time limit, so a runaway script can't hang the engine. */
-	public static TaskMonitor timeLimit(long millis) {
-		long deadline = System.currentTimeMillis() + millis;
-		return new TaskMonitorAdapter(true) {
-			@Override
-			public boolean isCancelled() {
-				return super.isCancelled() || System.currentTimeMillis() > deadline;
-			}
-		};
+		return new Result(truncate(out.toString()), null);
 	}
 
 	static String truncate(String text) {
