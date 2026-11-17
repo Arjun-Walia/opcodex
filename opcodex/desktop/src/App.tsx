@@ -1,6 +1,7 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import { useEffect, useState } from 'react';
 import { pickPath } from './engine/client';
+import { AgentChat } from './components/AgentChat';
 import { CommandPalette } from './components/CommandPalette';
 import { DropTarget } from './components/DropTarget';
 import { TerminalPanel } from './components/TerminalPanel';
@@ -11,6 +12,7 @@ import { PrefsProvider, usePrefs } from './state/prefs';
 import { SessionProvider, useSession, type Tab } from './state/session';
 import { Agents } from './views/Agents';
 import { Home } from './views/Home';
+import { Plugins } from './views/Plugins';
 import { Settings } from './views/Settings';
 import { Welcome } from './views/Welcome';
 import { Workspace } from './views/Workspace';
@@ -22,6 +24,7 @@ function Shell() {
   const [palette, setPalette] = useState(false);
   const [agent, setAgent] = useState(false);
   const [terminal, setTerminal] = useState(false);
+  const [chat, setChat] = useState(false);
 
   useEffect(() => {
     if (session.programId && !session.activity) setScreen('workspace');
@@ -32,7 +35,7 @@ function Shell() {
   }, [session.project, screen]);
 
   useEffect(() => {
-    const tabs: Record<string, Tab> = { '1': 'overview', '2': 'decompile', '3': 'disassembly', '4': 'hex', '5': 'strings' };
+    const tabs: Record<string, Tab> = { '1': 'overview', '2': 'decompile', '3': 'disassembly', '4': 'hex', '5': 'strings', '6': 'graph', '7': 'debug' };
     function onKey(e: KeyboardEvent) {
       const mod = e.ctrlKey || e.metaKey;
       if (mod && e.key.toLowerCase() === 'k') {
@@ -41,6 +44,9 @@ function Shell() {
       } else if (e.ctrlKey && e.key === '`') {
         e.preventDefault();
         setTerminal((t) => !t);
+      } else if (mod && e.key.toLowerCase() === 'j') {
+        e.preventDefault();
+        setChat((c) => !c);
       } else if (mod && e.key === ',') {
         e.preventDefault();
         setScreen('settings');
@@ -81,12 +87,18 @@ function Shell() {
     }
   }
 
+  function openAiSettings() {
+    setScreen('settings');
+    setTimeout(() => document.getElementById('ai-models')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  }
+
   if (!prefs.onboarded) return <Welcome />;
 
   let content: JSX.Element;
   if (session.activity) content = <ActivityView key="activity" />;
   else if (screen === 'settings') content = <Settings key="settings" onOpenAgents={() => setScreen('agents')} />;
   else if (screen === 'agents') content = <Agents key="agents" />;
+  else if (screen === 'plugins') content = <Plugins key="plugins" />;
   else if (screen === 'workspace' && session.project) content = <Workspace key="workspace" />;
   else content = <Home key="home" onConnectAgent={() => setScreen('agents')} />;
 
@@ -100,11 +112,14 @@ function Shell() {
         onPalette={() => setPalette(true)}
         terminalOpen={terminal}
         onTerminal={() => setTerminal((t) => !t)}
+        chatOpen={chat}
+        onChat={() => setChat((c) => !c)}
       >
         <div className="main-stack">
           <div className="main-content">{content}</div>
           <TerminalPanel open={terminal} onClose={() => setTerminal(false)} />
         </div>
+        <AgentChat open={chat} onClose={() => setChat(false)} onOpenSettings={openAiSettings} />
       </Frame>
       {palette && (
         <CommandPalette
@@ -114,6 +129,8 @@ function Shell() {
           onOpenProject={openProject}
           onSettings={() => setScreen('settings')}
           onAgent={() => setScreen('agents')}
+          onChat={() => setChat(true)}
+          onPlugins={() => setScreen('plugins')}
         />
       )}
       {agent && <AgentSheet onClose={() => setAgent(false)} />}

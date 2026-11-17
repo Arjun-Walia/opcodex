@@ -72,4 +72,17 @@ public class CodeOpsTest extends AbstractGhidraHeadlessIntegrationTest {
 			params("programId", programId, "address", entry, "count", 2001));
 		assertEquals("INVALID_PARAMS", EngineHarness.errorCode(tooMany));
 	}
+
+	@Test
+	public void commentsShowInAssemblyAndCode() {
+		engine.desktop("comment.set", params("programId", programId, "address", entry, "kind", "eol",
+			"text", "returns the answer", "expectedRevision", engine.revision(programId)));
+		JsonObject asm = engine.client("code.disassemble",
+			params("programId", programId, "address", entry, "count", 3)).getAsJsonObject();
+		assertEquals("returns the answer",
+			asm.getAsJsonArray("items").get(0).getAsJsonObject().get("comment").getAsString());
+		JsonObject c = engine.client("code.decompile", params("programId", programId, "address", entry))
+				.getAsJsonObject();
+		assertTrue(c.toString(), c.toString().contains("returns the answer"));
+	}
 }

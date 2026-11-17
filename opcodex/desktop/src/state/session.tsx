@@ -4,7 +4,10 @@ import { call, EngineError } from '../engine/client';
 import type { Job, ProgramEntry } from '../engine/types';
 import { addRecent, loadRecent, saveRecent, type RecentProject } from '../lib/recent';
 
-export type Tab = 'overview' | 'decompile' | 'disassembly' | 'hex' | 'strings';
+export type Tab = 'overview' | 'decompile' | 'disassembly' | 'hex' | 'strings' | 'graph' | 'debug';
+
+/** Views that follow navigation instead of switching to Code. */
+const STAYS: Tab[] = ['disassembly', 'graph', 'debug'];
 
 interface Activity {
   title: string;
@@ -192,13 +195,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       goTo: (entry) =>
         setState((s) =>
           s.location === entry
-            ? { ...s, tab: s.tab === 'disassembly' ? s.tab : 'decompile' }
+            ? { ...s, tab: STAYS.includes(s.tab) ? s.tab : 'decompile' }
             : {
                 ...s,
                 location: entry,
                 back: s.location ? [...s.back, s.location].slice(-100) : s.back,
                 forward: [],
-                tab: s.tab === 'disassembly' ? s.tab : 'decompile',
+                tab: STAYS.includes(s.tab) ? s.tab : 'decompile',
               },
         ),
       goBack: () =>

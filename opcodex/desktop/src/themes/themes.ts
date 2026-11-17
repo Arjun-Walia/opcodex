@@ -19,7 +19,7 @@ export interface Theme {
   name: string;
   author: string;
   kind: 'dark' | 'light';
-  source: 'opcodex' | 'community' | 'custom';
+  source: 'opcodex' | 'community' | 'custom' | 'plugin';
   colors: {
     background: string;
     surface: string;

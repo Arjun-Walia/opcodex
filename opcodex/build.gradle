@@ -60,9 +60,19 @@ tasks.register('buildOpcodexLinuxInstaller', Exec) {
 
 // The native Opcodex app (Tauri): interface, engine supervision and terminal.
 def opcodexNpm = System.getProperty('os.name').startsWith('Windows') ? 'npm.cmd' : 'npm'
+// A fresh checkout (CI) has no node_modules, so `tauri` isn't found: install from the lockfile first.
+def installOpcodexDesktopDeps = tasks.register('installOpcodexDesktopDeps', Exec) {
+    description = 'Install the desktop app\'s npm packages from its lockfile when they are missing or stale.'
+    def lock = file('opcodex/desktop/package-lock.json')
+    def installed = file('opcodex/desktop/node_modules/.package-lock.json')
+    onlyIf { !installed.exists() || installed.lastModified() < lock.lastModified() }
+    workingDir file('opcodex/desktop')
+    commandLine opcodexNpm, 'ci', '--no-audit', '--no-fund'
+}
 def buildOpcodexDesktopShell = tasks.register('buildOpcodexDesktopShell', Exec) {
     group = 'distribution'
     description = 'Build the native Opcodex app (Tauri) with its bundled interface.'
+    dependsOn installOpcodexDesktopDeps
     workingDir file('opcodex/desktop')
     commandLine opcodexNpm, 'run', 'tauri', '--', 'build'
 }

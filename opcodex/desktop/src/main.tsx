@@ -7,6 +7,8 @@ import '@fontsource/jetbrains-mono/500.css';
 import './styles/tokens.css';
 import './styles/app.css';
 import './styles/experience.css';
+import './styles/tools.css';
+import './styles/chat.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(

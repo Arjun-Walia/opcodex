@@ -70,6 +70,8 @@ export interface Instruction {
   bytes: string;
   mnemonic: string;
   operands: string;
+  /** Pre and end-of-line comments, joined. */
+  comment?: string;
 }
 
 export interface FunctionDetail {
@@ -104,3 +106,35 @@ export interface Job {
   progress?: number;
   maximum?: number;
 }
+
+// function.graph / function.callgraph
+export type EdgeKind = 'true' | 'false' | 'jump' | 'fall';
+export type GraphBlock = { start: string; end: string; instructions: { address: string; text: string; comment?: string }[] };
+export type FunctionGraph = {
+  entry: string;
+  name: string;
+  blocks: GraphBlock[];
+  edges: { from: string; to: string; kind: EdgeKind }[];
+  truncated: boolean;
+};
+export type CallGraph = {
+  root: string;
+  nodes: { entry: string; name: string; level: number; external: boolean }[];
+  edges: { from: string; to: string }[];
+  truncated: boolean;
+};
+
+// debug.*
+export type DebugState = {
+  pc: string;
+  running: boolean;
+  reason: 'started' | 'step' | 'breakpoint' | 'reached' | 'returned' | 'exited' | 'limit' | 'error';
+  steps: number;
+  instruction: string;
+  function: string;
+  registers: { name: string; value: string; bits: number }[];
+  changed: string[];
+  stack: { address: string; value: string; offset: number }[];
+  breakpoints: string[];
+  events: string[];
+};

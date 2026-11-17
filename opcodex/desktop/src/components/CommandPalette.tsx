@@ -1,7 +1,7 @@
 // Copyright 2026 Opcodex contributors. SPDX-License-Identifier: Apache-2.0
 import { useEffect, useState } from 'react';
 import { Command } from 'cmdk';
-import { Binary, Bot, Braces, FileCode2, FolderOpen, FunctionSquare, Gauge, Hash, House, Moon } from 'lucide-react';
+import { Binary, Bot, Braces, Bug, FileCode2, FolderOpen, FunctionSquare, Gauge, GitBranch, Hash, House, MessageSquare, Moon, Puzzle } from 'lucide-react';
 import { call } from '../engine/client';
 import type { FunctionSummary, Page } from '../engine/types';
 import { useSession } from '../state/session';
@@ -13,9 +13,11 @@ interface Props {
   onOpenProject: () => void;
   onSettings: () => void;
   onAgent: () => void;
+  onChat: () => void;
+  onPlugins: () => void;
 }
 
-export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, onSettings, onAgent }: Props) {
+export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, onSettings, onAgent, onChat, onPlugins }: Props) {
   const session = useSession();
   const [query, setQuery] = useState('');
   const [matches, setMatches] = useState<FunctionSummary[]>([]);
@@ -90,6 +92,12 @@ export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, 
               <Command.Item onSelect={() => run(() => session.setTab('strings'))}>
                 <Hash size={15} /> Strings <span className="hint">Alt 5</span>
               </Command.Item>
+              <Command.Item onSelect={() => run(() => session.setTab('graph'))}>
+                <GitBranch size={15} /> Graph <span className="hint">Alt 6</span>
+              </Command.Item>
+              <Command.Item onSelect={() => run(() => session.setTab('debug'))}>
+                <Bug size={15} /> Debug <span className="hint">Alt 7</span>
+              </Command.Item>
             </Command.Group>
           )}
           <Command.Group heading="Actions">
@@ -104,6 +112,12 @@ export function CommandPalette({ onClose, onHome, onOpenProgram, onOpenProject, 
             </Command.Item>
             <Command.Item onSelect={() => run(onSettings)}>
               <Moon size={15} /> Themes and layout <span className="hint">Ctrl ,</span>
+            </Command.Item>
+            <Command.Item onSelect={() => run(onChat)}>
+              <MessageSquare size={15} /> Agent chat <span className="hint">Ctrl J</span>
+            </Command.Item>
+            <Command.Item onSelect={() => run(onPlugins)}>
+              <Puzzle size={15} /> Plugins and scripts
             </Command.Item>
             <Command.Item onSelect={() => run(onAgent)}>
               <Bot size={15} /> Agents: connect apps and permissions

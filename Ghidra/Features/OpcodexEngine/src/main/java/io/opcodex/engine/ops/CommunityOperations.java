@@ -25,6 +25,9 @@ public final class CommunityOperations implements OperationProvider {
 		all.addAll(SummaryOps.operations(services));
 		all.addAll(EditOps.operations(services));
 		all.addAll(HistoryOps.operations(services));
+		all.addAll(GraphOps.operations(services));
+		all.addAll(DebugOps.operations(services));
+		all.addAll(PluginOps.operations(services));
 		return all;
 	}
 }
